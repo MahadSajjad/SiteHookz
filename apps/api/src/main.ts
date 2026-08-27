@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import helmet from 'helmet';
-import * as cookieParser from 'cookie-parser';
+import * as helmetImport from 'helmet';
+import cookieParser from 'cookie-parser';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
@@ -15,11 +15,11 @@ async function bootstrap() {
 
   const port = process.env.API_PORT || 3000;
 
-  app.use(helmet());
+  app.use(helmetImport.default ? helmetImport.default() : (helmetImport as any)());
   app.use(cookieParser());
   
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
       // In production, validate against trusted domains
       if (!origin) return callback(null, true);
       

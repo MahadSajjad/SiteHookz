@@ -179,7 +179,7 @@ export class AuthService {
         where: { tokenHash: hash }
       });
 
-      if (!resetToken || resetToken.consumedAt || resetToken.expiresAt < new Date()) {
+      if (!resetToken || resetToken.usedAt || resetToken.expiresAt < new Date()) {
         throw new BusinessException('AUTH_INVALID_TOKEN', 400, 'Invalid or expired token');
       }
 
@@ -192,7 +192,7 @@ export class AuthService {
 
       await tx.passwordResetToken.update({
         where: { id: resetToken.id },
-        data: { consumedAt: new Date() }
+        data: { usedAt: new Date() }
       });
 
       // Revoke existing AuthSessions
