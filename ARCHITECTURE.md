@@ -94,3 +94,17 @@ Used for BullMQ queues. In the future: caching and rate limiting state.
 
 ## Local Development Tenant Strategy
 Uses the `X-Organization-Slug` header **only in development mode**. This allows testing multi-tenant behavior locally without complex DNS configurations, but is securely disabled in production.
+
+## Tenant Resolution Architecture
+- Production API is centralized at \pi.sitehookz.com\.
+- Frontend applications use <slug>.sitehookz.com (or similar) and extract the tenant slug.
+- Frontend MUST send the \X-SiteHookz-Organization: <slug>\ header on all tenant-scoped requests.
+- **SECURITY BOUNDARY**: The \X-SiteHookz-Organization\ header is an UNTRUSTED tenant selector. The \TenantGuard\ uses it to resolve the Organization, but MUST independently verify the authenticated \UserAccount\ has an \ACTIVE\ \OrganizationMembership\ before granting access.
+
+## Authentication Architecture
+- We use short-lived JWT access tokens and long-lived refresh tokens.
+- Refresh tokens are cryptographically random hashes stored in the database (\AuthSession\).
+- The refresh token is transmitted to the client strictly via a \HttpOnly\, \Secure\, \SameSite=lax\ cookie bound to the API domain path (\/api/v1/auth\).
+- Access tokens are kept in memory by the client application and used as Bearer tokens.
+- Password resets revoke all active \AuthSession\s for the user.
+

@@ -54,8 +54,8 @@ export class InvitationsService {
       }
 
       const user = await tx.userAccount.findUnique({ where: { id: userAccountId } });
-      if (user.email !== invitation.email) {
-        throw new BusinessException('INVITATION_EMAIL_MISMATCH', 400, 'Email mismatch');
+      if (!user || user.email !== invitation.email) {
+        throw new BusinessException('INVITATION_EMAIL_MISMATCH', 400, 'Email mismatch or user not found');
       }
 
       let membership = await tx.organizationMembership.findUnique({
