@@ -72,3 +72,22 @@
 
 ## Session Revocation on Password Reset
 - All auth sessions are instantly revoked when a user resets their password.
+
+## Authentication & Token Security
+- Refresh tokens MUST be cryptographically random and securely hashed before storage in \AuthSession\.
+- Refresh tokens MUST be transmitted via \HttpOnly\ cookies, never exposed to JavaScript.
+- Replaying a revoked refresh token MUST trigger immediate revocation of all user sessions.
+- Password resets MUST revoke all active \AuthSession\s.
+- Access tokens MUST be kept in memory by the client application.
+
+## Tenant Isolation & Authorization
+- The \X-SiteHookz-Organization\ header is an untrusted tenant selector. 
+- \TenantGuard\ enforces that the authenticated user possesses an \ACTIVE\ \OrganizationMembership\ for the requested tenant.
+- Permissions are strictly namespaced (e.g. \platform.organization.read\) and verified against the user's \RoleAssignments\ in the requested tenant.
+- Branch-scoped permissions must evaluate the \ranchId\ constraint on the \RoleAssignment\.
+
+## Invitation Security
+- Invitations use opaque, cryptographically random tokens (not JWTs).
+- The raw token is emailed to the user, and only the SHA-256 hash is stored.
+- Invitations are validated transactionally against the user's authenticated email to prevent hijacking.
+
