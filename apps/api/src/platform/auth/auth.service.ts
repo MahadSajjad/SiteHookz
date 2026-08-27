@@ -46,7 +46,7 @@ export class AuthService {
     return { id: user.id, email: user.email };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, ipAddress?: string, userAgent?: string) {
     const normalizedEmail = dto.email.trim().toLowerCase();
     const user = await this.prisma.userAccount.findUnique({
       where: { email: normalizedEmail }
@@ -69,8 +69,84 @@ export class AuthService {
     const refreshToken = crypto.randomBytes(64).toString('hex');
     const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
 
-    // Create auth session... (simulated)
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await this.prisma.authSession.create({
+      data: {
+        userAccountId: user.id,
+        refreshTokenHash: hashedRefreshToken,
+        expiresAt,
+        ipAddress,
+        userAgent,
+        lastUsedAt: new Date(),
+      }
+    });
 
     return { accessToken, refreshToken, user: { id: user.id, email: user.email } };
+  }
+
+  async refresh(refreshToken: string, ipAddress?: string, userAgent?: string) {
+    const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    
+    const session = await this.prisma.authSession.findFirst({
+      where: { refreshTokenHash: hashedRefreshToken },
+      include: { userAccount: true }
+    });
+
+    if (!session || session.revokedAt || session.expiresAt < new Date()) {
+      if (session && !session.revokedAt) {
+        // Token exists but is expired. Just delete it.
+        await this.prisma.authSession.delete({ where: { id: session.id } });
+      }
+      if (session && session.revokedAt) {
+        // Security incident: Replay of revoked token! Revoke ALL sessions for this user.
+        await this.prisma.authSession.updateMany({
+          where: { userAccountId: session.userAccountId, revokedAt: null },
+          data: { revokedAt: new Date() }
+        });
+      }
+      throw new BusinessException('AUTH_INVALID_TOKEN', 401, 'Invalid refresh token');
+    }
+
+    const user = session.userAccount;
+    if (user.status === 'SUSPENDED' || user.status === 'DEACTIVATED') {
+      throw new BusinessException('AUTH_ACCOUNT_SUSPENDED', 403, 'Account is not active');
+    }
+
+    const newRefreshToken = crypto.randomBytes(64).toString('hex');
+    const newHashedRefreshToken = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    // Rotate the session
+    await this.prisma.$transaction([
+      this.prisma.authSession.delete({ where: { id: session.id } }),
+      this.prisma.authSession.create({
+        data: {
+          userAccountId: user.id,
+          refreshTokenHash: newHashedRefreshToken,
+          expiresAt,
+          ipAddress,
+          userAgent,
+          lastUsedAt: new Date(),
+        }
+      })
+    ]);
+
+    const accessToken = this.jwtService.sign({ sub: user.id, email: user.email });
+
+    return { accessToken, newRefreshToken };
+  }
+
+  async logout(refreshToken: string) {
+    const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    await this.prisma.authSession.deleteMany({
+      where: { refreshTokenHash: hashedRefreshToken }
+    });
+  }
+
+  async logoutAll(userAccountId: string) {
+    await this.prisma.authSession.deleteMany({
+      where: { userAccountId }
+    });
   }
 }

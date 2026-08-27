@@ -14,19 +14,12 @@ export class TenantResolverService {
   ) {}
 
   async resolveTenant(req: Request): Promise<any> {
-    const mode = this.configService.get('TENANT_RESOLUTION_MODE', 'production');
-    let slug: string | null = null;
-
-    if (mode === 'development' && this.configService.get('DEV_TENANT_HEADER_ENABLED') === 'true') {
-      slug = req.headers['x-organization-slug'] as string;
-    } else {
-      const host = req.hostname;
-      if (host) {
-        const parts = host.split('.');
-        if (parts.length > 2) {
-          slug = parts[0];
-        }
-      }
+    // Always use header as untrusted tenant selector for both dev and prod
+    // because API is centralized at api.sitehookz.com
+    slug = (req.headers['x-sitehookz-organization'] || req.headers['x-organization-slug']) as string;
+    
+    if (slug) {
+      slug = slug.trim().toLowerCase();
     }
 
     if (!slug) {

@@ -11,7 +11,6 @@ export const createOrganizationSchema = z.object({
   defaultLocale: z.string().default('en-US'),
   timezone: z.string().default('UTC'),
   currency: z.string().default('USD'),
-  institutionType: z.enum(['SCHOOL', 'TUITION_CENTER']),
 });
 
 export type CreateOrganizationDto = z.infer<typeof createOrganizationSchema>;

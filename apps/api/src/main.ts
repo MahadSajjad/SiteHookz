@@ -19,7 +19,22 @@ async function bootstrap() {
   app.use(cookieParser());
   
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: (origin, callback) => {
+      // In production, validate against trusted domains
+      if (!origin) return callback(null, true);
+      
+      const allowedLocal = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
+      const baseDomain = process.env.TENANT_BASE_DOMAIN || 'sitehookz.com';
+      
+      const isAllowedLocal = process.env.NODE_ENV !== 'production' && allowedLocal.includes(origin);
+      const isAllowedProd = origin === `https://${baseDomain}` || origin.endsWith(`.${baseDomain}`);
+      
+      if (isAllowedLocal || isAllowedProd) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 

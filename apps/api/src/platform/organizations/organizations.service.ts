@@ -40,38 +40,12 @@ export class OrganizationsService {
         }
       });
 
-      // Create Education Profile
-      await tx.educationOrganizationProfile.create({
-        data: {
-          organizationId: org.id,
-          institutionType: dto.institutionType,
-        }
-      });
-
       // Create Membership for Creator
       const membership = await tx.organizationMembership.create({
         data: {
           organizationId: org.id,
           userAccountId: userAccountId,
           status: 'ACTIVE'
-        }
-      });
-
-      // Assign an Owner role (System role logic abbreviated for skeleton)
-      const role = await tx.role.create({
-        data: {
-          organizationId: org.id,
-          name: 'Owner',
-          type: 'SYSTEM',
-          scopeType: 'ORGANIZATION',
-          key: 'system_owner'
-        }
-      });
-
-      await tx.roleAssignment.create({
-        data: {
-          organizationMembershipId: membership.id,
-          roleId: role.id,
         }
       });
 
