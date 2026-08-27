@@ -4,8 +4,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "outDir": "${configDir}/dist",
+    "rootDir": "${configDir}/src",
     "exactOptionalPropertyTypes": false
   }
 }
