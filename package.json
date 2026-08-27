@@ -1,0 +1,35 @@
+{
+  "name": "sitehookz",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:api": "turbo run dev --filter=@sitehookz/api",
+    "dev:education": "turbo run dev --filter=@sitehookz/education-web",
+    "dev:marketing": "turbo run dev --filter=@sitehookz/marketing-web",
+    "dev:worker": "turbo run dev --filter=@sitehookz/worker",
+    "dev:admin": "turbo run dev --filter=@sitehookz/platform-admin-web",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:api": "turbo run test --filter=@sitehookz/api",
+    "test:web": "turbo run test --filter=@sitehookz/education-web --filter=@sitehookz/marketing-web --filter=@sitehookz/platform-admin-web",
+    "test:integration": "turbo run test:integration --filter=@sitehookz/api",
+    "db:generate": "pnpm --filter @sitehookz/database db:generate",
+    "db:migrate": "pnpm --filter @sitehookz/database db:migrate",
+    "db:migrate:dev": "pnpm --filter @sitehookz/database db:migrate:dev",
+    "db:seed": "pnpm --filter @sitehookz/database db:seed",
+    "db:studio": "pnpm --filter @sitehookz/database db:studio",
+    "db:reset": "pnpm --filter @sitehookz/database db:reset",
+    "clean": "turbo run clean",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "prettier": "^3.5.0"
+  }
+}

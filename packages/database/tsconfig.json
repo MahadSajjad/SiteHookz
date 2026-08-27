@@ -1,0 +1,4 @@
+{
+  "extends": "@sitehookz/typescript-config/library.json",
+  "include": ["src/**/*", "prisma/**/*"]
+}

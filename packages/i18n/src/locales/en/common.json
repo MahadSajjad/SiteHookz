@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "SiteHookz"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "archive": "Archive",
+    "restore": "Restore",
+    "edit": "Edit",
+    "view": "View"
+  }
+}

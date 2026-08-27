@@ -1,0 +1,13 @@
+{
+  "name": "@sitehookz/testing",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "vitest": "^2.0.0"
+  },
+  "devDependencies": {
+    "@sitehookz/typescript-config": "workspace:*",
+    "typescript": "^5.7.0"
+  }
+}

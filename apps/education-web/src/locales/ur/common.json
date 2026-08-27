@@ -1,0 +1,25 @@
+{
+  "auth": {
+    "loginTitle": "اپنے اکاؤنٹ میں سائن ان کریں",
+    "email": "ای میل ایڈریس",
+    "password": "پاس ورڈ",
+    "confirmPassword": "پاس ورڈ کی تصدیق کریں",
+    "forgotPassword": "پاس ورڈ بھول گئے؟",
+    "registerLink": "اکاؤنٹ چاہیے؟",
+    "loginLink": "پہلے سے ہی اکاؤنٹ ہے؟ سائن ان کریں",
+    "signIn": "سائن ان کریں",
+    "signUp": "سائن اپ کریں",
+    "registerTitle": "اپنا اکاؤنٹ بنائیں",
+    "resetPassword": "پاس ورڈ ری سیٹ کریں",
+    "logout": "لاگ آؤٹ"
+  },
+  "common": {
+    "loading": "لوڈ ہو رہا ہے..."
+  },
+  "nav": {
+    "dashboard": "ڈیش بورڈ"
+  },
+  "dashboard": {
+    "title": "ڈیش بورڈ"
+  }
+}

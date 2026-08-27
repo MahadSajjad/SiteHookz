@@ -1,0 +1,25 @@
+{
+  "auth": {
+    "loginTitle": "Sign in to your account",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot your password?",
+    "registerLink": "Need an account?",
+    "loginLink": "Already have an account? Sign in",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "registerTitle": "Create your account",
+    "resetPassword": "Reset Password",
+    "logout": "Logout"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "nav": {
+    "dashboard": "Dashboard"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  }
+}
