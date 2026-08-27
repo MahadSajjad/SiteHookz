@@ -2,8 +2,5 @@
   "name": "@sitehookz/typescript-config",
   "version": "0.0.0",
   "private": true,
-  "files": ["*.json"],
-  "exports": {
-    "./*": "./*"
-  }
+  "files": ["*.json"]
 }

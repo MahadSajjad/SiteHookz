@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useTranslation } from 'react-i18next';
 
 const orgSchema = z.object({
   name: z.string().min(2),
@@ -14,7 +13,6 @@ const orgSchema = z.object({
 type OrgForm = z.infer<typeof orgSchema>;
 
 export function CreateOrganizationPage() {
-  const { t } = useTranslation();
   
   const { register, watch, handleSubmit, formState: { errors } } = useForm<OrgForm>({
     resolver: zodResolver(orgSchema),
