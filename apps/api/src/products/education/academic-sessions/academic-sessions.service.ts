@@ -27,7 +27,7 @@ export class AcademicSessionsService {
         code,
         startDate: new Date(dto.startDate),
         endDate: new Date(dto.endDate),
-        status: 'UPCOMING'
+        status: 'PLANNED'
       }
     });
   }

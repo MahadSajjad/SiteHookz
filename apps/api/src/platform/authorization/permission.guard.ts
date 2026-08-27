@@ -1,11 +1,11 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
 import { SKIP_TENANT_KEY } from '../tenancy/tenant.guard';
 import { BusinessException } from '../../common/exceptions/business.exception';
 
 export const REQUIRE_PERMISSION_KEY = 'requirePermission';
-export const RequirePermission = (permission: string) => import('@nestjs/common').then(m => m.SetMetadata(REQUIRE_PERMISSION_KEY, permission));
+export const RequirePermission = (permission: string) => SetMetadata(REQUIRE_PERMISSION_KEY, permission);
 
 @Injectable()
 export class PermissionGuard implements CanActivate {

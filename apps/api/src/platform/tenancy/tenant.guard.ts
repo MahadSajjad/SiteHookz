@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
@@ -6,7 +6,7 @@ import { TenantResolverService } from './tenant-resolver.service';
 import { BusinessException } from '../../common/exceptions/business.exception';
 
 export const SKIP_TENANT_KEY = 'skipTenant';
-export const SkipTenant = () => import('@nestjs/common').then(m => m.SetMetadata(SKIP_TENANT_KEY, true));
+export const SkipTenant = () => SetMetadata(SKIP_TENANT_KEY, true);
 
 @Injectable()
 export class TenantGuard implements CanActivate {

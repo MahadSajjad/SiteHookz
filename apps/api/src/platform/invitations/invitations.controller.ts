@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Req } from '@nestjs/common';
 import { InvitationsService } from './invitations.service';
 import { TenantContext } from '../../common/decorators/tenant-context.decorator';
 import { RequirePermission } from '../authorization/permission.guard';
@@ -11,12 +11,11 @@ export class InvitationsController {
   @RequirePermission('platform.invitations.create')
   @Post()
   async create(@TenantContext() tenant: any, @Body() dto: any) {
-    return this.invitationsService.create(tenant.organizationId, dto);
+    return this.invitationsService.create(tenant.organization.id, dto, tenant.membership.id);
   }
 
-  @Public()
   @Post('accept')
-  async accept(@Body('token') token: string) {
-    return this.invitationsService.accept(token);
+  async accept(@Body('token') token: string, @Req() req: any) {
+    return this.invitationsService.accept(token, req.user.userAccountId);
   }
 }

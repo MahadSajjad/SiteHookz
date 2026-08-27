@@ -16,7 +16,7 @@ export class TenantResolverService {
   async resolveTenant(req: Request): Promise<any> {
     // Always use header as untrusted tenant selector for both dev and prod
     // because API is centralized at api.sitehookz.com
-    slug = (req.headers['x-sitehookz-organization'] || req.headers['x-organization-slug']) as string;
+    let slug = (req.headers['x-sitehookz-organization'] || req.headers['x-organization-slug']) as string;
     
     if (slug) {
       slug = slug.trim().toLowerCase();

@@ -32,11 +32,9 @@ export class OrganizationsService {
           name: dto.name,
           slug: dto.slug,
           status: 'ONBOARDING',
-          settings: {
-            defaultLocale: dto.defaultLocale,
-            timezone: dto.timezone,
-            currency: dto.currency,
-          }
+          defaultLocale: dto.defaultLocale,
+          timezone: dto.timezone,
+          currency: dto.currency,
         }
       });
 

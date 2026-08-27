@@ -149,4 +149,59 @@ export class AuthService {
       where: { userAccountId }
     });
   }
+
+  async forgotPassword(email: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await this.prisma.userAccount.findUnique({
+      where: { email: normalizedEmail }
+    });
+
+    if (user) {
+      const token = crypto.randomBytes(32).toString('hex');
+      const hash = crypto.createHash('sha256').update(token).digest('hex');
+      
+      await this.prisma.passwordResetToken.create({
+        data: {
+          userAccountId: user.id,
+          tokenHash: hash,
+          expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+        }
+      });
+      await this.mailService.sendPasswordResetEmail(normalizedEmail, token);
+    }
+  }
+
+  async resetPassword(dto: any) {
+    const hash = crypto.createHash('sha256').update(dto.token).digest('hex');
+    
+    return this.prisma.$transaction(async (tx) => {
+      const resetToken = await tx.passwordResetToken.findUnique({
+        where: { tokenHash: hash }
+      });
+
+      if (!resetToken || resetToken.consumedAt || resetToken.expiresAt < new Date()) {
+        throw new BusinessException('AUTH_INVALID_TOKEN', 400, 'Invalid or expired token');
+      }
+
+      const passwordHash = await argon2.hash(dto.newPassword);
+      
+      await tx.userAccount.update({
+        where: { id: resetToken.userAccountId },
+        data: { passwordHash }
+      });
+
+      await tx.passwordResetToken.update({
+        where: { id: resetToken.id },
+        data: { consumedAt: new Date() }
+      });
+
+      // Revoke existing AuthSessions
+      await tx.authSession.updateMany({
+        where: { userAccountId: resetToken.userAccountId, revokedAt: null },
+        data: { revokedAt: new Date() }
+      });
+
+      return { success: true };
+    });
+  }
 }
