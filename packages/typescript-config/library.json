@@ -1,7 +1,3 @@
 {
-  "extends": "./base.json",
-  "compilerOptions": {
-    "outDir": "${configDir}/dist",
-    "rootDir": "${configDir}/src"
-  }
+  "extends": "./base.json"
 }
