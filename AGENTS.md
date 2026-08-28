@@ -3,26 +3,33 @@
 **IMPORTANT: Read this file before making any code changes.**
 
 ## What SiteHookz Is
+
 SiteHookz is a multi-product SaaS platform. The first product being built is **SiteHookz Education**. Future products will include Gym Management, POS, E-commerce, and other business SaaS applications. The **Organization** is the tenant root for all products.
 
 ## Current Product Scope
+
 - **Education Product**: Only the Education product is currently implemented. It owns `AcademicSession` and `EducationOrganizationProfile`.
 - **Platform Core**: Owns `Organization`, `Branch`, `UserAccount`, auth, memberships, roles, permissions, and invitations.
 
 ## Multi-Product Architecture
+
 Strict boundaries exist between Platform Core and Products:
+
 - Platform Core **MUST NOT** import Education (or any other product).
 - Products import from the Platform Core.
 - Each product adds its own domain models, permissions (`namespace.resource.action`), role templates, terminology, and i18n.
 
 ## Repository Boundaries
+
 - `apps/api/src/platform/` — Platform Core modules
 - `apps/api/src/products/education/` — Education product API
 - `packages/*` — Shared reusable packages
 - `products/education/` — Education product package (contracts, permissions, role templates)
 
 ## Authoritative Documentation Files
+
 Before asking questions or making architectural decisions, consult:
+
 - `PLAN.md`
 - `MEMORY.md`
 - `DECISIONS.md`
@@ -32,6 +39,7 @@ Before asking questions or making architectural decisions, consult:
 - `SECURITY.md`
 
 ## Rules for AI Agents
+
 1. Read `AGENTS.md`, `MEMORY.md`, `DECISIONS.md`, `ARCHITECTURE.md`, and `CODING_STANDARDS.md` before coding.
 2. Do not create one-off architectural patterns when an existing platform pattern exists.
 3. Do not split meaningful features into unnecessary micro-components.
@@ -44,6 +52,7 @@ Before asking questions or making architectural decisions, consult:
 10. **Never** store tokens in `localStorage`.
 
 ## Required Coding Workflow
+
 1. Read documentation.
 2. Understand existing patterns.
 3. Implement following patterns.
@@ -52,6 +61,7 @@ Before asking questions or making architectural decisions, consult:
 6. Update documentation if architectural changes made.
 
 ## Definition of Done
+
 - TypeScript strict mode passes.
 - Lint passes.
 - Tests pass.
@@ -65,19 +75,23 @@ Before asking questions or making architectural decisions, consult:
 - Permissions checked.
 
 ## Security Requirements
+
 See [SECURITY.md](SECURITY.md) for detailed requirements.
 
 ## i18n Requirements
-- All user-facing text uses `t()`. 
-- Locales: `en`, `ur`. 
+
+- All user-facing text uses `t()`.
+- Locales: `en`, `ur`.
 - RTL support is required.
 
 ## Tenancy Rules
+
 - `Organization` is the tenant root.
 - The Organization `slug` generates the subdomain (e.g., `<slug>.sitehookz.com`).
 - All queries must be scoped by `organizationId`.
 
 ## Permission Rules
+
 - Format: `namespace.resource.action`.
 - Enforced via `@RequirePermission` decorator.
 - Branch-aware authorization is required where applicable.

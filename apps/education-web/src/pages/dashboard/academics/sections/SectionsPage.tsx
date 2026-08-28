@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { useApiClient } from '../../../../hooks/useApiClient';
+import { useQuery } from "@tanstack/react-query";
+import { useApiClient } from "../../../../hooks/useApiClient";
 
 export function SectionsPage() {
   const api = useApiClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: ['education.sections.list'],
-    queryFn: () => api.sections.list()
+    queryKey: ["education.sections.list"],
+    queryFn: () => api.sections.list(),
   });
 
   if (isLoading) return <div>Loading Sections...</div>;

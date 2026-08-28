@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../infrastructure/database/prisma.service';
-import { BusinessException } from '../../common/exceptions/business.exception';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { TenantContext } from '../tenancy/tenant.guard';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
+import { BusinessException } from "../../common/exceptions/business.exception";
+import { CreateRoleDto } from "./dto/create-role.dto";
+import { TenantContext } from "../tenancy/tenant.guard";
 
 @Injectable()
 export class RolesService {
@@ -24,36 +24,42 @@ export class RolesService {
         organizationId_key: {
           organizationId,
           key: normalizedKey,
-        }
-      }
+        },
+      },
     });
 
     if (existing) {
-      throw new BusinessException('ROLE_IN_USE', 409, 'Role key is already in use in this organization');
+      throw new BusinessException(
+        "ROLE_IN_USE",
+        409,
+        "Role key is already in use in this organization",
+      );
     }
 
     // Enforce permission escalation ceiling
     if (dto.permissions && dto.permissions.length > 0) {
       // Owner bypass: If user has 'platform.roles.manage_all', they can bypass
       const hasFullControl = tenantContext.assignments.some(
-        a => a.scopeType === 'ORGANIZATION' && a.permissions.includes('platform.roles.manage_all')
+        (a) =>
+          a.scopeType === "ORGANIZATION" &&
+          a.permissions.includes("platform.roles.manage_all"),
       );
 
       if (!hasFullControl) {
-        // Otherwise, they can only grant permissions they possess at ORGANIZATION scope 
+        // Otherwise, they can only grant permissions they possess at ORGANIZATION scope
         // (assuming roles are org-scoped for definition).
         const userOrgPermissions = new Set(
           tenantContext.assignments
-            .filter(a => a.scopeType === 'ORGANIZATION')
-            .flatMap(a => a.permissions)
+            .filter((a) => a.scopeType === "ORGANIZATION")
+            .flatMap((a) => a.permissions),
         );
 
         for (const requestedPerm of dto.permissions) {
           if (!userOrgPermissions.has(requestedPerm)) {
             throw new BusinessException(
-              'PERMISSION_ESCALATION', 
-              403, 
-              `Cannot assign permission ${requestedPerm} as you do not possess it at the organization scope`
+              "PERMISSION_ESCALATION",
+              403,
+              `Cannot assign permission ${requestedPerm} as you do not possess it at the organization scope`,
             );
           }
         }
@@ -64,12 +70,16 @@ export class RolesService {
     let permissionIds: string[] = [];
     if (dto.permissions && dto.permissions.length > 0) {
       const perms = await this.prisma.permission.findMany({
-        where: { key: { in: dto.permissions } }
+        where: { key: { in: dto.permissions } },
       });
-      permissionIds = perms.map(p => p.id);
+      permissionIds = perms.map((p) => p.id);
 
       if (permissionIds.length !== dto.permissions.length) {
-        throw new BusinessException('INVALID_PERMISSION', 400, 'One or more provided permissions are invalid');
+        throw new BusinessException(
+          "INVALID_PERMISSION",
+          400,
+          "One or more provided permissions are invalid",
+        );
       }
     }
 
@@ -77,41 +87,52 @@ export class RolesService {
       data: {
         organizationId,
         name: dto.name,
-        type: 'CUSTOM',
+        type: "CUSTOM",
         scopeType: dto.scopeType,
         key: normalizedKey,
         rolePermissions: {
-          create: permissionIds.map(id => ({
-            permissionId: id
-          }))
-        }
-      }
+          create: permissionIds.map((id) => ({
+            permissionId: id,
+          })),
+        },
+      },
     });
   }
 
   async delete(organizationId: string, roleId: string) {
-    const role = await this.prisma.role.findFirst({ 
+    const role = await this.prisma.role.findFirst({
       where: { id: roleId, organizationId },
       include: {
         _count: {
           select: {
             roleAssignments: true,
-            invitationRoleAssignments: true
-          }
-        }
-      }
+            invitationRoleAssignments: true,
+          },
+        },
+      },
     });
-    
+
     if (!role) {
-      throw new BusinessException('ROLE_NOT_FOUND', 404, 'Role not found');
-    }
-    
-    if (role.type === 'SYSTEM' || !role.isDeletable) {
-      throw new BusinessException('ROLE_SYSTEM_PROTECTED', 403, 'Cannot delete system or protected role');
+      throw new BusinessException("ROLE_NOT_FOUND", 404, "Role not found");
     }
 
-    if (role._count.roleAssignments > 0 || role._count.invitationRoleAssignments > 0) {
-      throw new BusinessException('ROLE_IN_USE', 409, 'Role is currently in use by active members or pending invitations');
+    if (role.type === "SYSTEM" || !role.isDeletable) {
+      throw new BusinessException(
+        "ROLE_SYSTEM_PROTECTED",
+        403,
+        "Cannot delete system or protected role",
+      );
+    }
+
+    if (
+      role._count.roleAssignments > 0 ||
+      role._count.invitationRoleAssignments > 0
+    ) {
+      throw new BusinessException(
+        "ROLE_IN_USE",
+        409,
+        "Role is currently in use by active members or pending invitations",
+      );
     }
 
     await this.prisma.role.delete({ where: { id: roleId } });

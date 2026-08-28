@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
 
-describe('AuthController (e2e)', () => {
+describe("AuthController (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -19,10 +19,15 @@ describe('AuthController (e2e)', () => {
     await app.close();
   });
 
-  it('/api/v1/auth/register (POST) - success', () => {
+  it("/api/v1/auth/register (POST) - success", () => {
     return request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: 'test@example.com', password: 'Password123!', firstName: 'Test', lastName: 'User' })
+      .post("/api/v1/auth/register")
+      .send({
+        email: "test@example.com",
+        password: "Password123!",
+        firstName: "Test",
+        lastName: "User",
+      })
       .expect(201);
   });
 });

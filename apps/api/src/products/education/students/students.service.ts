@@ -17,12 +17,42 @@ export class StudentsService {
     const { search, status, gender, admissionBranchId, page, limit, sort, dir } = query;
     const where: any = { organizationId: tenant.organizationId, archivedAt: null };
 
+    const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
+    if (accessibleBranches.length === 0) return { items: [], total: 0, page: 1, limit: 20 };
+
+    if (!accessibleBranches.includes('*')) {
+      where.enrollments = {
+        some: {
+          status: 'ACTIVE',
+          branchId: { in: accessibleBranches }
+        }
+      };
+    }
+
     if (status) where.status = status;
     if (gender) where.gender = gender;
+    /* admissionBranchId is origin metadata. Auth now uses enrollment. */
     if (admissionBranchId) where.admissionBranchId = admissionBranchId;
     if (search) {
       where.OR = [
         { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
+        { admissionNumber: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.student.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { [sort]: dir },
+      }),
+      this.prisma.student.count({ where }),
+    ]);
+
+    return { items, total, page, limit };
+  } },
         { lastName: { contains: search, mode: 'insensitive' } },
         { admissionNumber: { contains: search, mode: 'insensitive' } },
       ];

@@ -1,4 +1,4 @@
-import { UserAccountStatus } from '../enums';
+import { UserAccountStatus } from "../enums";
 
 export interface UserAccountDto {
   id: string;

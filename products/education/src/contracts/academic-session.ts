@@ -1,3 +1,3 @@
-import { AcademicSessionDto } from '@sitehookz/platform-contracts';
+import { AcademicSessionDto } from "@sitehookz/platform-contracts";
 
 export type EducationAcademicSessionDto = AcademicSessionDto;

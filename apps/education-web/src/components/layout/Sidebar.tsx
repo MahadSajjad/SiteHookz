@@ -1,12 +1,12 @@
-import { Link, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function Sidebar() {
   const { t } = useTranslation();
   const location = useLocation();
 
   const navItems = [
-    { name: t('nav.dashboard', 'Dashboard'), href: '/dashboard' },
+    { name: t("nav.dashboard", "Dashboard"), href: "/dashboard" },
   ];
 
   return (
@@ -23,8 +23,8 @@ export function Sidebar() {
               to={item.href}
               className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                 isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-surface-secondary hover:text-foreground'
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-surface-secondary hover:text-foreground"
               }`}
             >
               {item.name}

@@ -1,8 +1,16 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const enrollmentsServicePath = path.join('apps', 'api', 'src', 'products', 'education', 'enrollments', 'enrollments.service.ts');
-let serviceCode = fs.readFileSync(enrollmentsServicePath, 'utf8');
+const enrollmentsServicePath = path.join(
+  "apps",
+  "api",
+  "src",
+  "products",
+  "education",
+  "enrollments",
+  "enrollments.service.ts",
+);
+let serviceCode = fs.readFileSync(enrollmentsServicePath, "utf8");
 
 const tuitionFlows = `
   async createTuitionEnrollment(tenant: TenantContext, studentId: string, dto: any) {
@@ -177,10 +185,18 @@ const tuitionFlows = `
 `;
 
 serviceCode = serviceCode.replace(/}\n$/, tuitionFlows);
-fs.writeFileSync(enrollmentsServicePath, serviceCode, 'utf8');
+fs.writeFileSync(enrollmentsServicePath, serviceCode, "utf8");
 
-const enrollmentsControllerPath = path.join('apps', 'api', 'src', 'products', 'education', 'enrollments', 'enrollments.controller.ts');
-let controllerCode = fs.readFileSync(enrollmentsControllerPath, 'utf8');
+const enrollmentsControllerPath = path.join(
+  "apps",
+  "api",
+  "src",
+  "products",
+  "education",
+  "enrollments",
+  "enrollments.controller.ts",
+);
+let controllerCode = fs.readFileSync(enrollmentsControllerPath, "utf8");
 
 const controllerFlows = `
   @Post('students/:studentId/enrollments/tuition')
@@ -222,6 +238,6 @@ const controllerFlows = `
 `;
 
 controllerCode = controllerCode.replace(/}\n$/, controllerFlows);
-fs.writeFileSync(enrollmentsControllerPath, controllerCode, 'utf8');
+fs.writeFileSync(enrollmentsControllerPath, controllerCode, "utf8");
 
-console.log('Enrollments flows added.');
+console.log("Enrollments flows added.");

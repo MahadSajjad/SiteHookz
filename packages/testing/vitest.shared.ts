@@ -1,9 +1,9 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
-    setupFiles: ['@sitehookz/testing/setup'],
+    environment: "node",
+    setupFiles: ["@sitehookz/testing/setup"],
   },
 });

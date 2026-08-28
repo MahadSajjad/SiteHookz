@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { redactSensitiveData } from './log-redaction.util';
+import { Injectable, Logger } from "@nestjs/common";
+import { redactSensitiveData } from "./log-redaction.util";
 
 @Injectable()
 export class LoggerService {
-  private readonly logger = new Logger('App');
+  private readonly logger = new Logger("App");
 
   log(message: string, context?: string, data?: any) {
     this.logger.log(this.format(message, data), context);

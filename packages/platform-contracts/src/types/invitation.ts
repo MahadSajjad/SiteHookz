@@ -1,4 +1,4 @@
-import { InvitationStatus } from '../enums';
+import { InvitationStatus } from "../enums";
 
 export interface InvitationDto {
   id: string;

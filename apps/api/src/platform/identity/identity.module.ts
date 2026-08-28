@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
-import { UserAccountService } from './user-account.service';
+import { Module } from "@nestjs/common";
+import { UserAccountService } from "./user-account.service";
 
 @Module({
   providers: [UserAccountService],

@@ -1,9 +1,9 @@
-import { P } from '@sitehookz/platform-permissions';
+import { P } from "@sitehookz/platform-permissions";
 
 export interface RoleTemplate {
   name: string;
   key: string;
-  scopeType: 'ORGANIZATION' | 'BRANCH';
+  scopeType: "ORGANIZATION" | "BRANCH";
   isEditable: boolean;
   isDeletable: boolean;
   permissions: string[];
@@ -11,125 +11,140 @@ export interface RoleTemplate {
 
 export const PLATFORM_ROLE_TEMPLATES: RoleTemplate[] = [
   {
-    name: 'Organization Owner',
-    key: 'organization_owner',
-    scopeType: 'ORGANIZATION',
+    name: "Organization Owner",
+    key: "organization_owner",
+    scopeType: "ORGANIZATION",
     isEditable: false,
     isDeletable: false,
     permissions: [
-      P.PLATFORM.ORGANIZATION.READ, P.PLATFORM.ORGANIZATION.UPDATE,
-      P.PLATFORM.BRANCHES.READ, P.PLATFORM.BRANCHES.CREATE, P.PLATFORM.BRANCHES.UPDATE, P.PLATFORM.BRANCHES.ARCHIVE, P.PLATFORM.BRANCHES.RESTORE,
-      P.PLATFORM.MEMBERSHIPS.READ, P.PLATFORM.MEMBERSHIPS.INVITE, P.PLATFORM.MEMBERSHIPS.UPDATE, P.PLATFORM.MEMBERSHIPS.SUSPEND, P.PLATFORM.MEMBERSHIPS.REMOVE,
-      P.PLATFORM.ROLES.READ, P.PLATFORM.ROLES.CREATE, P.PLATFORM.ROLES.UPDATE, P.PLATFORM.ROLES.DELETE, P.PLATFORM.ROLES.ASSIGN,
+      P.PLATFORM.ORGANIZATION.READ,
+      P.PLATFORM.ORGANIZATION.UPDATE,
+      P.PLATFORM.BRANCHES.READ,
+      P.PLATFORM.BRANCHES.CREATE,
+      P.PLATFORM.BRANCHES.UPDATE,
+      P.PLATFORM.BRANCHES.ARCHIVE,
+      P.PLATFORM.BRANCHES.RESTORE,
+      P.PLATFORM.MEMBERSHIPS.READ,
+      P.PLATFORM.MEMBERSHIPS.INVITE,
+      P.PLATFORM.MEMBERSHIPS.UPDATE,
+      P.PLATFORM.MEMBERSHIPS.SUSPEND,
+      P.PLATFORM.MEMBERSHIPS.REMOVE,
+      P.PLATFORM.ROLES.READ,
+      P.PLATFORM.ROLES.CREATE,
+      P.PLATFORM.ROLES.UPDATE,
+      P.PLATFORM.ROLES.DELETE,
+      P.PLATFORM.ROLES.ASSIGN,
       P.PLATFORM.PERMISSIONS.READ,
-      P.PLATFORM.INVITATIONS.READ, P.PLATFORM.INVITATIONS.CREATE, P.PLATFORM.INVITATIONS.REVOKE,
-      P.EDUCATION.ACADEMIC_SESSIONS.READ, P.EDUCATION.ACADEMIC_SESSIONS.CREATE, P.EDUCATION.ACADEMIC_SESSIONS.UPDATE, P.EDUCATION.ACADEMIC_SESSIONS.ARCHIVE
+      P.PLATFORM.INVITATIONS.READ,
+      P.PLATFORM.INVITATIONS.CREATE,
+      P.PLATFORM.INVITATIONS.REVOKE,
+      P.EDUCATION.ACADEMIC_SESSIONS.READ,
+      P.EDUCATION.ACADEMIC_SESSIONS.CREATE,
+      P.EDUCATION.ACADEMIC_SESSIONS.UPDATE,
+      P.EDUCATION.ACADEMIC_SESSIONS.ARCHIVE,
     ],
   },
   {
-    name: 'Organization Administrator',
-    key: 'organization_admin',
-    scopeType: 'ORGANIZATION',
+    name: "Organization Administrator",
+    key: "organization_admin",
+    scopeType: "ORGANIZATION",
     isEditable: true,
     isDeletable: false,
     permissions: [
       P.PLATFORM.ORGANIZATION.READ,
-      P.PLATFORM.BRANCHES.READ, P.PLATFORM.BRANCHES.CREATE, P.PLATFORM.BRANCHES.UPDATE,
-      P.PLATFORM.MEMBERSHIPS.READ, P.PLATFORM.MEMBERSHIPS.INVITE, P.PLATFORM.MEMBERSHIPS.UPDATE,
-      P.PLATFORM.ROLES.READ, P.PLATFORM.ROLES.ASSIGN,
+      P.PLATFORM.BRANCHES.READ,
+      P.PLATFORM.BRANCHES.CREATE,
+      P.PLATFORM.BRANCHES.UPDATE,
+      P.PLATFORM.MEMBERSHIPS.READ,
+      P.PLATFORM.MEMBERSHIPS.INVITE,
+      P.PLATFORM.MEMBERSHIPS.UPDATE,
+      P.PLATFORM.ROLES.READ,
+      P.PLATFORM.ROLES.ASSIGN,
       P.PLATFORM.PERMISSIONS.READ,
-      P.PLATFORM.INVITATIONS.READ, P.PLATFORM.INVITATIONS.CREATE,
-      P.EDUCATION.ACADEMIC_SESSIONS.READ, P.EDUCATION.ACADEMIC_SESSIONS.CREATE, P.EDUCATION.ACADEMIC_SESSIONS.UPDATE
+      P.PLATFORM.INVITATIONS.READ,
+      P.PLATFORM.INVITATIONS.CREATE,
+      P.EDUCATION.ACADEMIC_SESSIONS.READ,
+      P.EDUCATION.ACADEMIC_SESSIONS.CREATE,
+      P.EDUCATION.ACADEMIC_SESSIONS.UPDATE,
     ],
   },
   {
-    name: 'Branch Administrator',
-    key: 'branch_admin',
-    scopeType: 'BRANCH',
+    name: "Branch Administrator",
+    key: "branch_admin",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: false,
     permissions: [
-      P.PLATFORM.BRANCHES.READ, P.PLATFORM.BRANCHES.UPDATE,
+      P.PLATFORM.BRANCHES.READ,
+      P.PLATFORM.BRANCHES.UPDATE,
       P.PLATFORM.MEMBERSHIPS.READ,
       P.PLATFORM.ROLES.READ,
-      P.EDUCATION.ACADEMIC_SESSIONS.READ
+      P.EDUCATION.ACADEMIC_SESSIONS.READ,
     ],
   },
 ];
 
 export const EDUCATION_ROLE_TEMPLATES: RoleTemplate[] = [
   {
-    name: 'Principal',
-    key: 'principal',
-    scopeType: 'BRANCH',
+    name: "Principal",
+    key: "principal",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: true,
     permissions: [
-      P.PLATFORM.BRANCHES.READ, P.PLATFORM.BRANCHES.UPDATE,
+      P.PLATFORM.BRANCHES.READ,
+      P.PLATFORM.BRANCHES.UPDATE,
       P.PLATFORM.MEMBERSHIPS.READ,
-      P.EDUCATION.ACADEMIC_SESSIONS.READ
+      P.EDUCATION.ACADEMIC_SESSIONS.READ,
     ],
   },
   {
-    name: 'Academic Coordinator',
-    key: 'academic_coordinator',
-    scopeType: 'BRANCH',
+    name: "Academic Coordinator",
+    key: "academic_coordinator",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: true,
-    permissions: [
-      P.PLATFORM.BRANCHES.READ,
-      P.EDUCATION.ACADEMIC_SESSIONS.READ
-    ],
+    permissions: [P.PLATFORM.BRANCHES.READ, P.EDUCATION.ACADEMIC_SESSIONS.READ],
   },
   {
-    name: 'Finance Manager',
-    key: 'finance_manager',
-    scopeType: 'ORGANIZATION',
+    name: "Finance Manager",
+    key: "finance_manager",
+    scopeType: "ORGANIZATION",
     isEditable: true,
     isDeletable: true,
-    permissions: [
-      P.PLATFORM.ORGANIZATION.READ, P.PLATFORM.BRANCHES.READ,
-    ],
+    permissions: [P.PLATFORM.ORGANIZATION.READ, P.PLATFORM.BRANCHES.READ],
   },
   {
-    name: 'Accountant',
-    key: 'accountant',
-    scopeType: 'BRANCH',
+    name: "Accountant",
+    key: "accountant",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: true,
-    permissions: [
-      P.PLATFORM.BRANCHES.READ,
-    ],
+    permissions: [P.PLATFORM.BRANCHES.READ],
   },
   {
-    name: 'Instructor',
-    key: 'instructor',
-    scopeType: 'BRANCH',
+    name: "Instructor",
+    key: "instructor",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: true,
-    permissions: [
-      P.EDUCATION.ACADEMIC_SESSIONS.READ
-    ],
+    permissions: [P.EDUCATION.ACADEMIC_SESSIONS.READ],
   },
   {
-    name: 'Receptionist',
-    key: 'receptionist',
-    scopeType: 'BRANCH',
+    name: "Receptionist",
+    key: "receptionist",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: true,
-    permissions: [
-      P.PLATFORM.BRANCHES.READ,
-    ],
+    permissions: [P.PLATFORM.BRANCHES.READ],
   },
   {
-    name: 'Staff',
-    key: 'staff',
-    scopeType: 'BRANCH',
+    name: "Staff",
+    key: "staff",
+    scopeType: "BRANCH",
     isEditable: true,
     isDeletable: true,
-    permissions: [
-      P.PLATFORM.BRANCHES.READ,
-    ],
+    permissions: [P.PLATFORM.BRANCHES.READ],
   },
 ];
 

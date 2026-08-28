@@ -1,4 +1,4 @@
-import { EducationInstitutionType } from '@sitehookz/platform-contracts';
+import { EducationInstitutionType } from "@sitehookz/platform-contracts";
 
 export interface EducationOrganizationProfileDto {
   id: string;

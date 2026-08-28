@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require("fs");
 
 const students = `
 import { apiClient } from './client';
@@ -42,17 +42,25 @@ export const staffApi = {
 };
 `;
 
-fs.writeFileSync('packages/api-client/src/students.ts', students, 'utf8');
-fs.writeFileSync('packages/api-client/src/guardians.ts', guardians, 'utf8');
-fs.writeFileSync('packages/api-client/src/staff.ts', staff, 'utf8');
+fs.writeFileSync("packages/api-client/src/students.ts", students, "utf8");
+fs.writeFileSync("packages/api-client/src/guardians.ts", guardians, "utf8");
+fs.writeFileSync("packages/api-client/src/staff.ts", staff, "utf8");
 
-let clientTs = fs.readFileSync('packages/api-client/src/client.ts', 'utf8');
-clientTs = clientTs.replace(/import \{ StudentsClient \} from '.\/students';\n/g, '');
-clientTs = clientTs.replace(/import \{ GuardiansClient \} from '.\/guardians';\n/g, '');
-clientTs = clientTs.replace(/import \{ StaffClient \} from '.\/staff';\n/g, '');
-fs.writeFileSync('packages/api-client/src/client.ts', clientTs, 'utf8');
+let clientTs = fs.readFileSync("packages/api-client/src/client.ts", "utf8");
+clientTs = clientTs.replace(
+  /import \{ StudentsClient \} from '.\/students';\n/g,
+  "",
+);
+clientTs = clientTs.replace(
+  /import \{ GuardiansClient \} from '.\/guardians';\n/g,
+  "",
+);
+clientTs = clientTs.replace(/import \{ StaffClient \} from '.\/staff';\n/g, "");
+fs.writeFileSync("packages/api-client/src/client.ts", clientTs, "utf8");
 
-fs.writeFileSync('apps/education-web/src/hooks/useApiClient.ts', `
+fs.writeFileSync(
+  "apps/education-web/src/hooks/useApiClient.ts",
+  `
 import { studentsApi, guardiansApi, staffApi, apiClient, setAccessToken } from '@sitehookz/api-client';
 
 export function useApiClient() {
@@ -62,10 +70,21 @@ export function useApiClient() {
     staff: staffApi,
   };
 }
-`, 'utf8');
+`,
+  "utf8",
+);
 
 // Fix StudentsPage.tsx import of React
-let sp = fs.readFileSync('apps/education-web/src/pages/dashboard/students/StudentsPage.tsx', 'utf8');
-sp = sp.replace(/import React, \{ useState \} from 'react';/, `import { useState } from 'react';`);
-fs.writeFileSync('apps/education-web/src/pages/dashboard/students/StudentsPage.tsx', sp, 'utf8');
-
+let sp = fs.readFileSync(
+  "apps/education-web/src/pages/dashboard/students/StudentsPage.tsx",
+  "utf8",
+);
+sp = sp.replace(
+  /import React, \{ useState \} from 'react';/,
+  `import { useState } from 'react';`,
+);
+fs.writeFileSync(
+  "apps/education-web/src/pages/dashboard/students/StudentsPage.tsx",
+  sp,
+  "utf8",
+);

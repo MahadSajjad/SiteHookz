@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
-import { useAuthStore } from '../stores/auth.store';
+import { useMutation } from "@tanstack/react-query";
+import { useAuthStore } from "../stores/auth.store";
 
 // Mock implementations
 export function useAuth() {
@@ -9,7 +9,7 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: async (data: any) => {
       // Mock login
-      return { id: '1', email: data.email, name: 'Test User' };
+      return { id: "1", email: data.email, name: "Test User" };
     },
     onSuccess: (data) => {
       setAuth(data);
@@ -28,7 +28,7 @@ export function useAuth() {
   const registerMutation = useMutation({
     mutationFn: async (data: any) => {
       // Mock register
-      return { id: '1', email: data.email, name: 'Test User' };
+      return { id: "1", email: data.email, name: "Test User" };
     },
     onSuccess: (data) => {
       setAuth(data);

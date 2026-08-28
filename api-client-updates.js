@@ -1,9 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const baseDir = path.join('packages', 'api-client', 'src');
+const baseDir = path.join("packages", "api-client", "src");
 
-fs.writeFileSync(path.join(baseDir, 'courses.ts'), `
+fs.writeFileSync(
+  path.join(baseDir, "courses.ts"),
+  `
 import { apiClient } from './client';
 
 export const coursesApi = {
@@ -12,9 +14,12 @@ export const coursesApi = {
   create: (data: any) => apiClient.post('/education/courses', data).then(res => res.data),
   update: (id: string, data: any) => apiClient.patch(\`/education/courses/\${id}\`, data).then(res => res.data),
 };
-`);
+`,
+);
 
-fs.writeFileSync(path.join(baseDir, 'batches.ts'), `
+fs.writeFileSync(
+  path.join(baseDir, "batches.ts"),
+  `
 import { apiClient } from './client';
 
 export const batchesApi = {
@@ -23,10 +28,13 @@ export const batchesApi = {
   create: (data: any) => apiClient.post('/education/batches', data).then(res => res.data),
   update: (id: string, data: any) => apiClient.patch(\`/education/batches/\${id}\`, data).then(res => res.data),
 };
-`);
+`,
+);
 
-const enrollmentsClientPath = path.join(baseDir, 'enrollments.ts');
-fs.writeFileSync(enrollmentsClientPath, `
+const enrollmentsClientPath = path.join(baseDir, "enrollments.ts");
+fs.writeFileSync(
+  enrollmentsClientPath,
+  `
 import { apiClient } from './client';
 
 export const enrollmentsApi = {
@@ -39,15 +47,27 @@ export const enrollmentsApi = {
   changeSection: (id: string, data: any) => apiClient.post(\`/education/enrollments/\${id}/change-section\`, data).then(res => res.data),
   changeBatch: (id: string, data: any) => apiClient.post(\`/education/enrollments/\${id}/change-batch\`, data).then(res => res.data),
 };
-`);
+`,
+);
 
-let hookPath = path.join('apps', 'education-web', 'src', 'hooks', 'useApiClient.ts');
-let hook = fs.readFileSync(hookPath, 'utf8');
+let hookPath = path.join(
+  "apps",
+  "education-web",
+  "src",
+  "hooks",
+  "useApiClient.ts",
+);
+let hook = fs.readFileSync(hookPath, "utf8");
 
-if (!hook.includes('coursesApi')) {
-  hook = `import { coursesApi } from '@sitehookz/api-client/src/courses';\nimport { batchesApi } from '@sitehookz/api-client/src/batches';\n` + hook;
-  hook = hook.replace('return {', 'return {\n    courses: coursesApi,\n    batches: batchesApi,');
-  fs.writeFileSync(hookPath, hook, 'utf8');
+if (!hook.includes("coursesApi")) {
+  hook =
+    `import { coursesApi } from '@sitehookz/api-client/src/courses';\nimport { batchesApi } from '@sitehookz/api-client/src/batches';\n` +
+    hook;
+  hook = hook.replace(
+    "return {",
+    "return {\n    courses: coursesApi,\n    batches: batchesApi,",
+  );
+  fs.writeFileSync(hookPath, hook, "utf8");
 }
 
-console.log('API clients updated.');
+console.log("API clients updated.");

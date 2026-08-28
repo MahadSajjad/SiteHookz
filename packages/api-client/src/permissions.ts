@@ -1,5 +1,5 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export const permissionsApi = {
-  list: () => apiClient.get('/permissions'),
+  list: () => apiClient.get("/permissions"),
 };

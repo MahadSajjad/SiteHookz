@@ -1,7 +1,7 @@
-import { Global, Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bullmq';
-import { ConfigService } from '@nestjs/config';
-import { QueueService } from './queue.service';
+import { Global, Module } from "@nestjs/common";
+import { BullModule } from "@nestjs/bullmq";
+import { ConfigService } from "@nestjs/config";
+import { QueueService } from "./queue.service";
 
 @Global()
 @Module({
@@ -10,12 +10,12 @@ import { QueueService } from './queue.service';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         connection: {
-          url: config.get('REDIS_URL'),
+          url: config.get("REDIS_URL"),
         },
       }),
     }),
     BullModule.registerQueue({
-      name: 'default',
+      name: "default",
     }),
   ],
   providers: [QueueService],

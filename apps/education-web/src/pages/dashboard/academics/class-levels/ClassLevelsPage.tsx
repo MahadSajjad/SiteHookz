@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { useApiClient } from '../../../../hooks/useApiClient';
+import { useQuery } from "@tanstack/react-query";
+import { useApiClient } from "../../../../hooks/useApiClient";
 
 export function ClassLevelsPage() {
   const api = useApiClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: ['education.classLevels.list'],
-    queryFn: () => api.classLevels.list()
+    queryKey: ["education.classLevels.list"],
+    queryFn: () => api.classLevels.list(),
   });
 
   if (isLoading) return <div>Loading Class Levels...</div>;
@@ -27,7 +27,7 @@ export function ClassLevelsPage() {
             <tr key={cl.id}>
               <td>{cl.name}</td>
               <td>{cl.code}</td>
-              <td>{cl.isActive ? 'Active' : 'Inactive'}</td>
+              <td>{cl.isActive ? "Active" : "Inactive"}</td>
             </tr>
           ))}
         </tbody>

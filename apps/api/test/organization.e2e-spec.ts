@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
 
-describe('OrganizationsController (e2e)', () => {
+describe("OrganizationsController (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -19,10 +19,10 @@ describe('OrganizationsController (e2e)', () => {
     await app.close();
   });
 
-  it('/api/v1/organizations (POST) - unauthenticated fails', () => {
+  it("/api/v1/organizations (POST) - unauthenticated fails", () => {
     return request(app.getHttpServer())
-      .post('/api/v1/organizations')
-      .send({ name: 'My Org', slug: 'my-org', institutionType: 'SCHOOL' })
+      .post("/api/v1/organizations")
+      .send({ name: "My Org", slug: "my-org", institutionType: "SCHOOL" })
       .expect(401);
   });
 });

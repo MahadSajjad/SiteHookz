@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const resetPasswordSchema = z.object({
   token: z.string().min(1),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters long'),
+  newPassword: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
 export type ResetPasswordDto = z.infer<typeof resetPasswordSchema>;

@@ -1,10 +1,10 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let schema = fs.readFileSync('packages/database/prisma/schema.prisma', 'utf8');
+let schema = fs.readFileSync("packages/database/prisma/schema.prisma", "utf8");
 
 // Strip off the Layer 3B section
-const marker = '// ============================================\r\n// LAYER 3B';
-const marker2 = '// ============================================\n// LAYER 3B';
+const marker = "// ============================================\r\n// LAYER 3B";
+const marker2 = "// ============================================\n// LAYER 3B";
 let index = schema.indexOf(marker);
 if (index === -1) index = schema.indexOf(marker2);
 if (index !== -1) {
@@ -14,22 +14,22 @@ if (index !== -1) {
 // Now we need to remove all the garbage we added to Organization, AcademicSession, Branch, Student, UserAccount, etc.
 // Basically, we can just remove these exact string lines:
 const garbageLines = [
-  'classLevels ClassLevel[]',
-  'sections Section[]',
-  'courses Course[]',
-  'batches Batch[]',
-  'studentEnrollments StudentEnrollment[]',
-  'schoolPlacements SchoolEnrollmentPlacement[]',
-  'tuitionPlacements TuitionEnrollmentPlacement[]',
-  'sections                  Section[]',
-  'batches                   Batch[]',
-  'studentEnrollments        StudentEnrollment[]',
-  'sections       Section[]',
-  'batches        Batch[]'
+  "classLevels ClassLevel[]",
+  "sections Section[]",
+  "courses Course[]",
+  "batches Batch[]",
+  "studentEnrollments StudentEnrollment[]",
+  "schoolPlacements SchoolEnrollmentPlacement[]",
+  "tuitionPlacements TuitionEnrollmentPlacement[]",
+  "sections                  Section[]",
+  "batches                   Batch[]",
+  "studentEnrollments        StudentEnrollment[]",
+  "sections       Section[]",
+  "batches        Batch[]",
 ];
 
-let lines = schema.split('\n').map(l => l.replace('\r', ''));
-lines = lines.filter(line => {
+let lines = schema.split("\n").map((l) => l.replace("\r", ""));
+lines = lines.filter((line) => {
   const t = line.trim();
   return !garbageLines.includes(t);
 });
@@ -46,41 +46,36 @@ function insertIntoModel(modelName, relations) {
       continue;
     }
     if (inModel) {
-      if (line.includes('{')) braceDepth++;
-      if (line.includes('}')) braceDepth--;
+      if (line.includes("{")) braceDepth++;
+      if (line.includes("}")) braceDepth--;
       if (braceDepth === 0) {
         // We are at the end of the model. Insert relations here.
-        lines.splice(i, 0, ...relations.map(r => `  ${r}`));
+        lines.splice(i, 0, ...relations.map((r) => `  ${r}`));
         break;
       }
     }
   }
 }
 
-insertIntoModel('Organization', [
-  'classLevels           ClassLevel[]',
-  'sections              Section[]',
-  'courses               Course[]',
-  'batches               Batch[]',
-  'studentEnrollments    StudentEnrollment[]',
-  'schoolPlacements      SchoolEnrollmentPlacement[]',
-  'tuitionPlacements     TuitionEnrollmentPlacement[]'
+insertIntoModel("Organization", [
+  "classLevels           ClassLevel[]",
+  "sections              Section[]",
+  "courses               Course[]",
+  "batches               Batch[]",
+  "studentEnrollments    StudentEnrollment[]",
+  "schoolPlacements      SchoolEnrollmentPlacement[]",
+  "tuitionPlacements     TuitionEnrollmentPlacement[]",
 ]);
 
-insertIntoModel('Student', [
-  'studentEnrollments StudentEnrollment[]'
+insertIntoModel("Student", ["studentEnrollments StudentEnrollment[]"]);
+
+insertIntoModel("Branch", [
+  "sections           Section[]",
+  "batches            Batch[]",
+  "studentEnrollments StudentEnrollment[]",
 ]);
 
-insertIntoModel('Branch', [
-  'sections           Section[]',
-  'batches            Batch[]',
-  'studentEnrollments StudentEnrollment[]'
-]);
-
-insertIntoModel('AcademicSession', [
-  'sections Section[]',
-  'batches  Batch[]'
-]);
+insertIntoModel("AcademicSession", ["sections Section[]", "batches  Batch[]"]);
 
 // Append Layer 3B
 const layer3B = `
@@ -282,4 +277,8 @@ model TuitionEnrollmentPlacement {
 }
 `;
 
-fs.writeFileSync('packages/database/prisma/schema.prisma', lines.join('\n') + layer3B, 'utf8');
+fs.writeFileSync(
+  "packages/database/prisma/schema.prisma",
+  lines.join("\n") + layer3B,
+  "utf8",
+);

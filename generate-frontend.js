@@ -1,7 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const baseDir = path.join('apps', 'education-web', 'src', 'pages', 'dashboard', 'academics');
+const baseDir = path.join(
+  "apps",
+  "education-web",
+  "src",
+  "pages",
+  "dashboard",
+  "academics",
+);
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {
@@ -11,10 +18,12 @@ function ensureDir(dir) {
 
 function writeFile(filePath, content) {
   ensureDir(path.dirname(filePath));
-  fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
+  fs.writeFileSync(filePath, content.trim() + "\n", "utf8");
 }
 
-writeFile(path.join(baseDir, 'class-levels', 'ClassLevelsPage.tsx'), `
+writeFile(
+  path.join(baseDir, "class-levels", "ClassLevelsPage.tsx"),
+  `
 import { useQuery } from '@tanstack/react-query';
 import { useApiClient } from '../../../../hooks/useApiClient';
 
@@ -52,9 +61,12 @@ export function ClassLevelsPage() {
     </div>
   );
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'sections', 'SectionsPage.tsx'), `
+writeFile(
+  path.join(baseDir, "sections", "SectionsPage.tsx"),
+  `
 import { useQuery } from '@tanstack/react-query';
 import { useApiClient } from '../../../../hooks/useApiClient';
 
@@ -92,5 +104,6 @@ export function SectionsPage() {
     </div>
   );
 }
-`);
-console.log('Frontend pages generated');
+`,
+);
+console.log("Frontend pages generated");

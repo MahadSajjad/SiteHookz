@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../infrastructure/database/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
 
 @Injectable()
 export class UserAccountService {
@@ -7,20 +7,20 @@ export class UserAccountService {
 
   async findByEmail(email: string) {
     return this.prisma.userAccount.findUnique({
-      where: { email: email.trim().toLowerCase() }
+      where: { email: email.trim().toLowerCase() },
     });
   }
 
   async findById(id: string) {
     return this.prisma.userAccount.findUnique({
-      where: { id }
+      where: { id },
     });
   }
 
   async updateLastLogin(id: string) {
     return this.prisma.userAccount.update({
       where: { id },
-      data: { lastLoginAt: new Date() }
+      data: { lastLoginAt: new Date() },
     });
   }
 }

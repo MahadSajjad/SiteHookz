@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '../../stores/auth.store';
-import { useAuth } from '../../hooks/useAuth';
+import { useTranslation } from "react-i18next";
+import { useAuthStore } from "../../stores/auth.store";
+import { useAuth } from "../../hooks/useAuth";
 
 export function Topbar() {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ export function Topbar() {
             onClick={() => logout()}
             className="text-sm font-medium text-danger hover:text-danger-foreground hover:bg-danger/10 px-3 py-1 rounded-md transition-colors"
           >
-            {t('auth.logout', 'Logout')}
+            {t("auth.logout", "Logout")}
           </button>
         </div>
       </div>

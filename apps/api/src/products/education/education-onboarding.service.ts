@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../infrastructure/database/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
 
 @Injectable()
 export class EducationOnboardingService {
@@ -12,11 +12,11 @@ export class EducationOnboardingService {
         data: {
           name: dto.name,
           slug: dto.slug,
-          status: 'ACTIVE', // Jump to active for this product
+          status: "ACTIVE", // Jump to active for this product
           defaultLocale: dto.defaultLocale,
           timezone: dto.timezone,
           currency: dto.currency,
-        }
+        },
       });
 
       // Create Education Profile
@@ -24,7 +24,7 @@ export class EducationOnboardingService {
         data: {
           organizationId: org.id,
           institutionType: dto.institutionType,
-        }
+        },
       });
 
       // Create Membership for Creator
@@ -32,26 +32,26 @@ export class EducationOnboardingService {
         data: {
           organizationId: org.id,
           userAccountId: userAccountId,
-          status: 'ACTIVE'
-        }
+          status: "ACTIVE",
+        },
       });
 
       // Assign an Owner role
       const role = await tx.role.create({
         data: {
           organizationId: org.id,
-          name: 'Owner',
-          type: 'SYSTEM',
-          scopeType: 'ORGANIZATION',
-          key: 'education_owner'
-        }
+          name: "Owner",
+          type: "SYSTEM",
+          scopeType: "ORGANIZATION",
+          key: "education_owner",
+        },
       });
 
       await tx.roleAssignment.create({
         data: {
           membershipId: membership.id,
           roleId: role.id,
-        }
+        },
       });
 
       return org;

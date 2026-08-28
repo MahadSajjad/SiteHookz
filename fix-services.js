@@ -1,11 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // 1. Update enrollments.service.ts
-const enrollmentsPath = 'apps/api/src/products/education/enrollments/enrollments.service.ts';
-let enrCode = fs.readFileSync(enrollmentsPath, 'utf8');
+const enrollmentsPath =
+  "apps/api/src/products/education/enrollments/enrollments.service.ts";
+let enrCode = fs.readFileSync(enrollmentsPath, "utf8");
 
-enrCode = enrCode.replace(/async createTuitionEnrollment\([^{]+{/g, `async createTuitionEnrollment(tenant: TenantContext, studentId: string, dto: any) {
+enrCode = enrCode.replace(
+  /async createTuitionEnrollment\([^{]+{/g,
+  `async createTuitionEnrollment(tenant: TenantContext, studentId: string, dto: any) {
     if (tenant['institutionType' as any] === 'SCHOOL') throw new BadRequestException('EDUCATION_INSTITUTION_TYPE_MISMATCH');
     
     return this.prisma.$transaction(async (tx) => {
@@ -50,10 +53,13 @@ enrCode = enrCode.replace(/async createTuitionEnrollment\([^{]+{/g, `async creat
 
        return enrollment;
     });
-`);
+`,
+);
 
 // Also update School Enrollment to lock student
-enrCode = enrCode.replace(/async createSchoolEnrollment\([^{]+{/g, `async createSchoolEnrollment(tenant: TenantContext, studentId: string, dto: any) {
+enrCode = enrCode.replace(
+  /async createSchoolEnrollment\([^{]+{/g,
+  `async createSchoolEnrollment(tenant: TenantContext, studentId: string, dto: any) {
     if (tenant['institutionType' as any] !== 'SCHOOL') throw new BadRequestException('EDUCATION_INSTITUTION_TYPE_MISMATCH');
     
     return this.prisma.$transaction(async (tx) => {
@@ -92,10 +98,13 @@ enrCode = enrCode.replace(/async createSchoolEnrollment\([^{]+{/g, `async create
 
        return enrollment;
     });
-`);
+`,
+);
 
 // Fix transitions locking
-enrCode = enrCode.replace(/async promote\([^{]+{/g, `async promote(tenant: TenantContext, id: string, dto: any) {
+enrCode = enrCode.replace(
+  /async promote\([^{]+{/g,
+  `async promote(tenant: TenantContext, id: string, dto: any) {
     return this.prisma.$transaction(async (tx) => {
        // Lock old enrollment to prevent concurrent transitions
        const lockedRows = await tx.$queryRaw\`SELECT id, "studentId" FROM "StudentEnrollment" WHERE id = \${id}::uuid AND "organizationId" = \${tenant.organizationId}::uuid FOR UPDATE\`;
@@ -135,9 +144,12 @@ enrCode = enrCode.replace(/async promote\([^{]+{/g, `async promote(tenant: Tenan
        });
        return newEnrollment;
     });
-`);
+`,
+);
 
-enrCode = enrCode.replace(/async transfer\([^{]+{/g, `async transfer(tenant: TenantContext, id: string, dto: any) {
+enrCode = enrCode.replace(
+  /async transfer\([^{]+{/g,
+  `async transfer(tenant: TenantContext, id: string, dto: any) {
     return this.prisma.$transaction(async (tx) => {
        const lockedRows = await tx.$queryRaw\`SELECT id, "studentId" FROM "StudentEnrollment" WHERE id = \${id}::uuid AND "organizationId" = \${tenant.organizationId}::uuid FOR UPDATE\`;
        if (!Array.isArray(lockedRows) || lockedRows.length === 0) throw new NotFoundException();
@@ -176,25 +188,46 @@ enrCode = enrCode.replace(/async transfer\([^{]+{/g, `async transfer(tenant: Ten
        });
        return newEnrollment;
     });
-`);
+`,
+);
 
-fs.writeFileSync(enrollmentsPath, enrCode.replace(/async createSchoolEnrollment\([^{]+{/, ''), 'utf8'); // remove dup
-fs.writeFileSync(enrollmentsPath, enrCode.replace(/async createTuitionEnrollment\([^{]+{/, ''), 'utf8'); // remove dup
-fs.writeFileSync(enrollmentsPath, enrCode.replace(/async promote\([^{]+{/, ''), 'utf8'); // remove dup
-fs.writeFileSync(enrollmentsPath, enrCode.replace(/async transfer\([^{]+{/, ''), 'utf8'); // remove dup
+fs.writeFileSync(
+  enrollmentsPath,
+  enrCode.replace(/async createSchoolEnrollment\([^{]+{/, ""),
+  "utf8",
+); // remove dup
+fs.writeFileSync(
+  enrollmentsPath,
+  enrCode.replace(/async createTuitionEnrollment\([^{]+{/, ""),
+  "utf8",
+); // remove dup
+fs.writeFileSync(
+  enrollmentsPath,
+  enrCode.replace(/async promote\([^{]+{/, ""),
+  "utf8",
+); // remove dup
+fs.writeFileSync(
+  enrollmentsPath,
+  enrCode.replace(/async transfer\([^{]+{/, ""),
+  "utf8",
+); // remove dup
 
-fs.writeFileSync(enrollmentsPath, enrCode, 'utf8');
+fs.writeFileSync(enrollmentsPath, enrCode, "utf8");
 
 // Update auth in students.service.ts
-const studentsPath = 'apps/api/src/products/education/students/students.service.ts';
-let stuCode = fs.readFileSync(studentsPath, 'utf8');
-stuCode = stuCode.replace(/const activeEnr[^}]+}/g, `const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
+const studentsPath =
+  "apps/api/src/products/education/students/students.service.ts";
+let stuCode = fs.readFileSync(studentsPath, "utf8");
+stuCode = stuCode.replace(
+  /const activeEnr[^}]+}/g,
+  `const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
     if (!accessibleBranchIds.includes('*')) {
       const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
         where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
       });
       if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
-    }`);
-fs.writeFileSync(studentsPath, stuCode, 'utf8');
+    }`,
+);
+fs.writeFileSync(studentsPath, stuCode, "utf8");
 
-console.log('Fixed services');
+console.log("Fixed services");

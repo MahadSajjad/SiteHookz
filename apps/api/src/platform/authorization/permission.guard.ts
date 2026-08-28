@@ -1,18 +1,24 @@
-import { Injectable, CanActivate, ExecutionContext, SetMetadata } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
-import { BusinessException } from '../../common/exceptions/business.exception';
-import { AuthorizationService } from './authorization.service';
-import { TenantContext } from '../tenancy/tenant.guard';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  SetMetadata,
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { IS_PUBLIC_KEY } from "../../common/decorators/public.decorator";
+import { BusinessException } from "../../common/exceptions/business.exception";
+import { AuthorizationService } from "./authorization.service";
+import { TenantContext } from "../tenancy/tenant.guard";
 
-export const REQUIRE_PERMISSION_KEY = 'requirePermission';
-export const RequirePermission = (permission: string) => SetMetadata(REQUIRE_PERMISSION_KEY, permission);
+export const REQUIRE_PERMISSION_KEY = "requirePermission";
+export const RequirePermission = (permission: string) =>
+  SetMetadata(REQUIRE_PERMISSION_KEY, permission);
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private authorizationService: AuthorizationService
+    private authorizationService: AuthorizationService,
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -25,10 +31,10 @@ export class PermissionGuard implements CanActivate {
       return true;
     }
 
-    const requiredPermission = this.reflector.getAllAndOverride<string>(REQUIRE_PERMISSION_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredPermission = this.reflector.getAllAndOverride<string>(
+      REQUIRE_PERMISSION_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredPermission) {
       return true; // No specific permission required
@@ -38,7 +44,11 @@ export class PermissionGuard implements CanActivate {
     const tenantContext = request.tenantContext as TenantContext;
 
     if (!tenantContext) {
-      throw new BusinessException('PERMISSION_DENIED', 403, 'Tenant context required for permission check');
+      throw new BusinessException(
+        "PERMISSION_DENIED",
+        403,
+        "Tenant context required for permission check",
+      );
     }
 
     // Attempt to extract branchId from headers or params for more granular scope checks at the guard level
@@ -46,8 +56,17 @@ export class PermissionGuard implements CanActivate {
     // In a fully developed app, you might want a custom decorator for branch-aware routes.
     // Branch-scoped authorization must happen explicitly in the Service Layer.
     // At the guard level, we strictly require the user to hold the permission at the ORGANIZATION scope.
-    if (!this.authorizationService.hasPermission(tenantContext, requiredPermission)) {
-      throw new BusinessException('PERMISSION_DENIED', 403, 'Insufficient permissions');
+    if (
+      !this.authorizationService.hasPermission(
+        tenantContext,
+        requiredPermission,
+      )
+    ) {
+      throw new BusinessException(
+        "PERMISSION_DENIED",
+        403,
+        "Insufficient permissions",
+      );
     }
 
     return true;

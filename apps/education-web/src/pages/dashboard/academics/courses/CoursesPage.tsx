@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { useApiClient } from '../../../../hooks/useApiClient';
+import { useQuery } from "@tanstack/react-query";
+import { useApiClient } from "../../../../hooks/useApiClient";
 
 export function CoursesPage() {
   const api = useApiClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: ['education.courses.list'],
-    queryFn: () => api.courses.list()
+    queryKey: ["education.courses.list"],
+    queryFn: () => api.courses.list(),
   });
 
   if (isLoading) return <div>Loading Courses...</div>;
@@ -27,7 +27,7 @@ export function CoursesPage() {
             <tr key={c.id}>
               <td>{c.name}</td>
               <td>{c.code}</td>
-              <td>{c.isActive ? 'Active' : 'Inactive'}</td>
+              <td>{c.isActive ? "Active" : "Inactive"}</td>
             </tr>
           ))}
         </tbody>

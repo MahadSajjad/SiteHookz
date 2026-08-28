@@ -1,9 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const baseDir = path.join('packages', 'api-client', 'src');
+const baseDir = path.join("packages", "api-client", "src");
 
-fs.writeFileSync(path.join(baseDir, 'class-levels.ts'), `
+fs.writeFileSync(
+  path.join(baseDir, "class-levels.ts"),
+  `
 import { apiClient } from './client';
 
 export const classLevelsApi = {
@@ -14,9 +16,12 @@ export const classLevelsApi = {
   archive: (id: string) => apiClient.post(\`/education/class-levels/\${id}/archive\`).then(res => res.data),
   restore: (id: string) => apiClient.post(\`/education/class-levels/\${id}/restore\`).then(res => res.data),
 };
-`);
+`,
+);
 
-fs.writeFileSync(path.join(baseDir, 'sections.ts'), `
+fs.writeFileSync(
+  path.join(baseDir, "sections.ts"),
+  `
 import { apiClient } from './client';
 
 export const sectionsApi = {
@@ -25,27 +30,42 @@ export const sectionsApi = {
   create: (data: any) => apiClient.post('/education/sections', data).then(res => res.data),
   update: (id: string, data: any) => apiClient.patch(\`/education/sections/\${id}\`, data).then(res => res.data),
 };
-`);
+`,
+);
 
-fs.writeFileSync(path.join(baseDir, 'enrollments.ts'), `
+fs.writeFileSync(
+  path.join(baseDir, "enrollments.ts"),
+  `
 import { apiClient } from './client';
 
 export const enrollmentsApi = {
   studentHistory: (studentId: string) => apiClient.get(\`/education/students/\${studentId}/enrollments\`).then(res => res.data),
   createSchool: (studentId: string, data: any) => apiClient.post(\`/education/students/\${studentId}/enrollments/school\`, data).then(res => res.data),
 };
-`);
+`,
+);
 
-let hookPath = path.join('apps', 'education-web', 'src', 'hooks', 'useApiClient.ts');
-let hook = fs.readFileSync(hookPath, 'utf8');
+let hookPath = path.join(
+  "apps",
+  "education-web",
+  "src",
+  "hooks",
+  "useApiClient.ts",
+);
+let hook = fs.readFileSync(hookPath, "utf8");
 
 // Insert imports
-hook = `import { classLevelsApi } from '@sitehookz/api-client/src/class-levels';
+hook =
+  `import { classLevelsApi } from '@sitehookz/api-client/src/class-levels';
 import { sectionsApi } from '@sitehookz/api-client/src/sections';
-import { enrollmentsApi } from '@sitehookz/api-client/src/enrollments';\n` + hook;
+import { enrollmentsApi } from '@sitehookz/api-client/src/enrollments';\n` +
+  hook;
 
 // Insert exports
-hook = hook.replace('return {', 'return {\n    classLevels: classLevelsApi,\n    sections: sectionsApi,\n    enrollments: enrollmentsApi,');
-fs.writeFileSync(hookPath, hook, 'utf8');
+hook = hook.replace(
+  "return {",
+  "return {\n    classLevels: classLevelsApi,\n    sections: sectionsApi,\n    enrollments: enrollmentsApi,",
+);
+fs.writeFileSync(hookPath, hook, "utf8");
 
-console.log('Client generated');
+console.log("Client generated");

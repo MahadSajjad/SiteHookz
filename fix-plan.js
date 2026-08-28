@@ -1,11 +1,11 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let plan = fs.readFileSync('PLAN.md', 'utf8');
+let plan = fs.readFileSync("PLAN.md", "utf8");
 
 const newPlan = `# SiteHookz Project Plan
 
 ## Current Phase
-**Layer 3B Academic Structure & Student Enrollment — COMPLETED**
+**Layer 3B Academic Structure & Student Enrollment ï¿½ COMPLETED**
 
 ## Execution Phase 2: Tenant & Auth Foundation Hardening
 Status: \`[COMPLETED]\`
@@ -34,5 +34,5 @@ Status: \`[COMPLETED (Pending DB Integration)]\`
 - Billing/Subscriptions
 `;
 
-fs.writeFileSync('PLAN.md', newPlan, 'utf8');
-console.log('PLAN.md updated');
+fs.writeFileSync("PLAN.md", newPlan, "utf8");
+console.log("PLAN.md updated");

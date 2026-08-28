@@ -5,7 +5,7 @@ export interface TenantContext {
   membershipId: string;
   roleAssignments: {
     roleId: string;
-    roleScopeType: 'ORGANIZATION' | 'BRANCH';
+    roleScopeType: "ORGANIZATION" | "BRANCH";
     branchId: string | null;
     permissions: string[];
   }[];

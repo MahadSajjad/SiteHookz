@@ -1,6 +1,6 @@
-import { Global, Module } from '@nestjs/common';
-import { MailService } from './mail.service';
-import { ConsoleMailAdapter } from './adapters/console-mail.adapter';
+import { Global, Module } from "@nestjs/common";
+import { MailService } from "./mail.service";
+import { ConsoleMailAdapter } from "./adapters/console-mail.adapter";
 
 @Global()
 @Module({

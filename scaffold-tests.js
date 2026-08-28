@@ -1,9 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const testPath = path.join('apps', 'api', 'test', 'layer3b.e2e-spec.ts');
+const testPath = path.join("apps", "api", "test", "layer3b.e2e-spec.ts");
 
-fs.writeFileSync(testPath, `
+fs.writeFileSync(
+  testPath,
+  `
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
@@ -60,5 +62,6 @@ describe('Layer 3B (e2e)', () => {
     expect(true).toBe(true);
   });
 });
-`);
-console.log('Tests scaffolded');
+`,
+);
+console.log("Tests scaffolded");

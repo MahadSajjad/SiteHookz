@@ -1,1 +1,1 @@
-export * from 'vitest';
+export * from "vitest";

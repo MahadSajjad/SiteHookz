@@ -1,6 +1,5 @@
-
-import { z } from 'zod';
-import { GuardianRelationship } from '@sitehookz/database';
+import { z } from "zod";
+import { GuardianRelationship } from "@sitehookz/database";
 
 export const createGuardianSchema = z.object({
   firstName: z.string().min(1),

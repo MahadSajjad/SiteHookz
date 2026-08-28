@@ -1,4 +1,4 @@
-import { MembershipStatus } from '../enums';
+import { MembershipStatus } from "../enums";
 
 export interface MembershipDto {
   id: string;

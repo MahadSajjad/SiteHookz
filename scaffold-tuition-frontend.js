@@ -1,7 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const baseDir = path.join('apps', 'education-web', 'src', 'pages', 'dashboard', 'academics');
+const baseDir = path.join(
+  "apps",
+  "education-web",
+  "src",
+  "pages",
+  "dashboard",
+  "academics",
+);
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -9,10 +16,12 @@ function ensureDir(dir) {
 
 function writeFile(filePath, content) {
   ensureDir(path.dirname(filePath));
-  fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
+  fs.writeFileSync(filePath, content.trim() + "\n", "utf8");
 }
 
-writeFile(path.join(baseDir, 'courses', 'CoursesPage.tsx'), `
+writeFile(
+  path.join(baseDir, "courses", "CoursesPage.tsx"),
+  `
 import { useQuery } from '@tanstack/react-query';
 import { useApiClient } from '../../../../hooks/useApiClient';
 
@@ -50,9 +59,12 @@ export function CoursesPage() {
     </div>
   );
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'batches', 'BatchesPage.tsx'), `
+writeFile(
+  path.join(baseDir, "batches", "BatchesPage.tsx"),
+  `
 import { useQuery } from '@tanstack/react-query';
 import { useApiClient } from '../../../../hooks/useApiClient';
 
@@ -90,9 +102,12 @@ export function BatchesPage() {
     </div>
   );
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'enrollments', 'StudentEnrollmentsPage.tsx'), `
+writeFile(
+  path.join(baseDir, "enrollments", "StudentEnrollmentsPage.tsx"),
+  `
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useApiClient } from '../../../../hooks/useApiClient';
 
@@ -122,5 +137,6 @@ export function StudentEnrollmentsPage({ studentId }: { studentId: string }) {
     </div>
   );
 }
-`);
-console.log('Tuition Frontend generated');
+`,
+);
+console.log("Tuition Frontend generated");

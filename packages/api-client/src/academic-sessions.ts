@@ -1,5 +1,6 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export const academicSessionsApi = {
-  list: (orgId: string) => apiClient.get(`/organizations/${orgId}/academic-sessions`),
+  list: (orgId: string) =>
+    apiClient.get(`/organizations/${orgId}/academic-sessions`),
 };

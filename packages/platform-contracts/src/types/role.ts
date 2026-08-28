@@ -1,4 +1,4 @@
-import { RoleType, RoleScopeType } from '../enums';
+import { RoleType, RoleScopeType } from "../enums";
 
 export interface RoleDto {
   id: string;

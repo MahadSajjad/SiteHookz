@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query';
-import { useApiClient } from '../../../../hooks/useApiClient';
+import { useQuery } from "@tanstack/react-query";
+import { useApiClient } from "../../../../hooks/useApiClient";
 
 export function BatchesPage() {
   const api = useApiClient();
   const { data, isLoading, error } = useQuery({
-    queryKey: ['education.batches.list'],
-    queryFn: () => api.batches.list()
+    queryKey: ["education.batches.list"],
+    queryFn: () => api.batches.list(),
   });
 
   if (isLoading) return <div>Loading Batches...</div>;

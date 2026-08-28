@@ -1,11 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../infrastructure/database/prisma.service';
-import { CreateOrganizationDto } from './dto/create-organization.dto';
-import { BusinessException } from '../../common/exceptions/business.exception';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
+import { CreateOrganizationDto } from "./dto/create-organization.dto";
+import { BusinessException } from "../../common/exceptions/business.exception";
 
 const RESERVED_SLUGS = new Set([
-  'www', 'api', 'admin', 'app', 'auth', 'mail', 'smtp', 'cdn', 'status', 'help', 
-  'support', 'billing', 'docs', 'static', 'assets', 'system', 'root', 'superadmin', 'platform'
+  "www",
+  "api",
+  "admin",
+  "app",
+  "auth",
+  "mail",
+  "smtp",
+  "cdn",
+  "status",
+  "help",
+  "support",
+  "billing",
+  "docs",
+  "static",
+  "assets",
+  "system",
+  "root",
+  "superadmin",
+  "platform",
 ]);
 
 @Injectable()
@@ -14,23 +31,35 @@ export class OrganizationsService {
 
   async create(userAccountId: string, dto: CreateOrganizationDto) {
     const user = await this.prisma.userAccount.findUnique({
-      where: { id: userAccountId }
+      where: { id: userAccountId },
     });
 
     if (!user || !user.emailVerifiedAt) {
-      throw new BusinessException('ORGANIZATION_CREATION_DENIED', 403, 'Email must be verified to create an organization');
+      throw new BusinessException(
+        "ORGANIZATION_CREATION_DENIED",
+        403,
+        "Email must be verified to create an organization",
+      );
     }
 
     if (RESERVED_SLUGS.has(dto.slug)) {
-      throw new BusinessException('ORGANIZATION_SLUG_RESERVED', 400, 'Slug is reserved');
+      throw new BusinessException(
+        "ORGANIZATION_SLUG_RESERVED",
+        400,
+        "Slug is reserved",
+      );
     }
 
     const existingOrg = await this.prisma.organization.findUnique({
-      where: { slug: dto.slug }
+      where: { slug: dto.slug },
     });
 
     if (existingOrg) {
-      throw new BusinessException('ORGANIZATION_SLUG_TAKEN', 409, 'Slug is already in use');
+      throw new BusinessException(
+        "ORGANIZATION_SLUG_TAKEN",
+        409,
+        "Slug is already in use",
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -39,11 +68,11 @@ export class OrganizationsService {
         data: {
           name: dto.name,
           slug: dto.slug,
-          status: 'ONBOARDING',
+          status: "ONBOARDING",
           defaultLocale: dto.defaultLocale,
           timezone: dto.timezone,
           currency: dto.currency,
-        }
+        },
       });
 
       // Create Membership for Creator
@@ -51,8 +80,8 @@ export class OrganizationsService {
         data: {
           organizationId: org.id,
           userAccountId: userAccountId,
-          status: 'ACTIVE'
-        }
+          status: "ACTIVE",
+        },
       });
 
       return org;
@@ -65,10 +94,10 @@ export class OrganizationsService {
         memberships: {
           some: {
             userAccountId,
-            status: 'ACTIVE'
-          }
-        }
-      }
+            status: "ACTIVE",
+          },
+        },
+      },
     });
   }
 }

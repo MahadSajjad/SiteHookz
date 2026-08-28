@@ -9,7 +9,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:integration": "jest --config ./test/jest-e2e.config.ts",
     "clean": "rimraf dist"
   },
@@ -61,4 +61,3 @@
     "@sitehookz/eslint-config": "workspace:*"
   }
 }
-

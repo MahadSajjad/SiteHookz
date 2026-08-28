@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const baseDir = path.join('apps', 'api', 'src', 'products', 'education');
+const baseDir = path.join("apps", "api", "src", "products", "education");
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -9,11 +9,13 @@ function ensureDir(dir) {
 
 function writeFile(filePath, content) {
   ensureDir(path.dirname(filePath));
-  fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
+  fs.writeFileSync(filePath, content.trim() + "\n", "utf8");
 }
 
 // COURSES
-writeFile(path.join(baseDir, 'courses', 'courses.controller.ts'), `
+writeFile(
+  path.join(baseDir, "courses", "courses.controller.ts"),
+  `
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { RequirePermission, PermissionGuard } from '../../../platform/authorization/permission.guard';
@@ -48,9 +50,12 @@ export class CoursesController {
     return this.service.update(tenant, id, dto);
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'courses', 'courses.service.ts'), `
+writeFile(
+  path.join(baseDir, "courses", "courses.service.ts"),
+  `
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { TenantContext } from '../../../platform/tenancy/tenant.guard';
@@ -77,9 +82,12 @@ export class CoursesService {
     return this.prisma.course.update({ where: { id, organizationId: tenant.organizationId }, data: dto });
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'courses', 'courses.module.ts'), `
+writeFile(
+  path.join(baseDir, "courses", "courses.module.ts"),
+  `
 import { Module } from '@nestjs/common';
 import { CoursesController } from './courses.controller';
 import { CoursesService } from './courses.service';
@@ -90,10 +98,13 @@ import { CoursesService } from './courses.service';
   exports: [CoursesService]
 })
 export class CoursesModule {}
-`);
+`,
+);
 
 // BATCHES
-writeFile(path.join(baseDir, 'batches', 'batches.controller.ts'), `
+writeFile(
+  path.join(baseDir, "batches", "batches.controller.ts"),
+  `
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { RequirePermission, PermissionGuard } from '../../../platform/authorization/permission.guard';
@@ -128,9 +139,12 @@ export class BatchesController {
     return this.service.update(tenant, id, dto);
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'batches', 'batches.service.ts'), `
+writeFile(
+  path.join(baseDir, "batches", "batches.service.ts"),
+  `
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { TenantContext } from '../../../platform/tenancy/tenant.guard';
@@ -157,9 +171,12 @@ export class BatchesService {
     return this.prisma.batch.update({ where: { id, organizationId: tenant.organizationId }, data: dto });
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'batches', 'batches.module.ts'), `
+writeFile(
+  path.join(baseDir, "batches", "batches.module.ts"),
+  `
 import { Module } from '@nestjs/common';
 import { BatchesController } from './batches.controller';
 import { BatchesService } from './batches.service';
@@ -170,12 +187,21 @@ import { BatchesService } from './batches.service';
   exports: [BatchesService]
 })
 export class BatchesModule {}
-`);
+`,
+);
 
 // Add to education.module.ts
-let edModule = fs.readFileSync(path.join(baseDir, 'education.module.ts'), 'utf8');
-edModule = `import { CoursesModule } from './courses/courses.module';\nimport { BatchesModule } from './batches/batches.module';\n` + edModule;
-edModule = edModule.replace('imports: [', 'imports: [\n    CoursesModule,\n    BatchesModule,');
-fs.writeFileSync(path.join(baseDir, 'education.module.ts'), edModule, 'utf8');
+let edModule = fs.readFileSync(
+  path.join(baseDir, "education.module.ts"),
+  "utf8",
+);
+edModule =
+  `import { CoursesModule } from './courses/courses.module';\nimport { BatchesModule } from './batches/batches.module';\n` +
+  edModule;
+edModule = edModule.replace(
+  "imports: [",
+  "imports: [\n    CoursesModule,\n    BatchesModule,",
+);
+fs.writeFileSync(path.join(baseDir, "education.module.ts"), edModule, "utf8");
 
-console.log('Tuition backend generated.');
+console.log("Tuition backend generated.");

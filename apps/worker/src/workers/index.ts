@@ -1,1 +1,1 @@
-export * from './email.worker';
+export * from "./email.worker";

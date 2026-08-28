@@ -1,33 +1,36 @@
-import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
-import { RolesService } from './roles.service';
-import { TenantContext as TenantContextDecorator } from '../../common/decorators/tenant-context.decorator';
-import { RequirePermission } from '../authorization/permission.guard';
-import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
-import { CreateRoleDto, createRoleSchema } from './dto/create-role.dto';
-import { TenantContext } from '../tenancy/tenant.guard';
+import { Controller, Get, Post, Delete, Body, Param } from "@nestjs/common";
+import { RolesService } from "./roles.service";
+import { TenantContext as TenantContextDecorator } from "../../common/decorators/tenant-context.decorator";
+import { RequirePermission } from "../authorization/permission.guard";
+import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { CreateRoleDto, createRoleSchema } from "./dto/create-role.dto";
+import { TenantContext } from "../tenancy/tenant.guard";
 
-@Controller('roles')
+@Controller("roles")
 export class RolesController {
   constructor(private rolesService: RolesService) {}
 
-  @RequirePermission('platform.roles.read')
+  @RequirePermission("platform.roles.read")
   @Get()
   async findAll(@TenantContextDecorator() tenant: TenantContext) {
     return this.rolesService.findAll(tenant.organizationId);
   }
 
-  @RequirePermission('platform.roles.create')
+  @RequirePermission("platform.roles.create")
   @Post()
   async create(
-    @TenantContextDecorator() tenant: TenantContext, 
-    @Body(new ZodValidationPipe(createRoleSchema)) dto: CreateRoleDto
+    @TenantContextDecorator() tenant: TenantContext,
+    @Body(new ZodValidationPipe(createRoleSchema)) dto: CreateRoleDto,
   ) {
     return this.rolesService.create(tenant, dto);
   }
 
-  @RequirePermission('platform.roles.delete')
-  @Delete(':id')
-  async delete(@TenantContextDecorator() tenant: TenantContext, @Param('id') id: string) {
+  @RequirePermission("platform.roles.delete")
+  @Delete(":id")
+  async delete(
+    @TenantContextDecorator() tenant: TenantContext,
+    @Param("id") id: string,
+  ) {
     return this.rolesService.delete(tenant.organizationId, id);
   }
 }

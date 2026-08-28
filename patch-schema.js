@@ -1,6 +1,6 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let schema = fs.readFileSync('packages/database/prisma/schema.prisma', 'utf8');
+let schema = fs.readFileSync("packages/database/prisma/schema.prisma", "utf8");
 
 // Insert models at the bottom
 const models = `
@@ -215,7 +215,7 @@ schema = schema.replace(
   batches Batch[]
   studentEnrollments StudentEnrollment[]
   schoolPlacements SchoolEnrollmentPlacement[]
-  tuitionPlacements TuitionEnrollmentPlacement[]`
+  tuitionPlacements TuitionEnrollmentPlacement[]`,
 );
 
 // Append to AcademicSession
@@ -223,7 +223,7 @@ schema = schema.replace(
   /organization\s+Organization\s+@relation\(fields:\s*\[organizationId\],\s*references:\s*\[id\]\)/g,
   `organization Organization @relation(fields: [organizationId], references: [id])
   sections Section[]
-  batches Batch[]`
+  batches Batch[]`,
 );
 
 // Append to Branch
@@ -232,15 +232,14 @@ schema = schema.replace(
   `studentAdmissionSequences StudentAdmissionSequence[]
   sections Section[]
   batches Batch[]
-  studentEnrollments StudentEnrollment[]`
+  studentEnrollments StudentEnrollment[]`,
 );
 
 // Append to Student
 schema = schema.replace(
   /studentGuardians\s+StudentGuardian\[\]/g,
   `studentGuardians StudentGuardian[]
-  studentEnrollments StudentEnrollment[]`
+  studentEnrollments StudentEnrollment[]`,
 );
 
-fs.writeFileSync('packages/database/prisma/schema.prisma', schema, 'utf8');
-
+fs.writeFileSync("packages/database/prisma/schema.prisma", schema, "utf8");

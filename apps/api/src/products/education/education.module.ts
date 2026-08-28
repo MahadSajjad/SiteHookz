@@ -1,13 +1,13 @@
-import { CoursesModule } from './courses/courses.module';
-import { BatchesModule } from './batches/batches.module';
+import { CoursesModule } from "./courses/courses.module";
+import { BatchesModule } from "./batches/batches.module";
 
-import { ClassLevelsModule } from './class-levels/class-levels.module';
-import { SectionsModule } from './sections/sections.module';
-import { EnrollmentsModule } from './enrollments/enrollments.module';
-import { StudentsModule } from './students/students.module';
-import { GuardiansModule } from './guardians/guardians.module';
-import { StaffModule } from './staff/staff.module';
-import { Module } from '@nestjs/common';
+import { ClassLevelsModule } from "./class-levels/class-levels.module";
+import { SectionsModule } from "./sections/sections.module";
+import { EnrollmentsModule } from "./enrollments/enrollments.module";
+import { StudentsModule } from "./students/students.module";
+import { GuardiansModule } from "./guardians/guardians.module";
+import { StaffModule } from "./staff/staff.module";
+import { Module } from "@nestjs/common";
 // import { AcademicSessionsModule } from './academic-sessions/academic-sessions.module';
 // import { EducationOnboardingService } from './education-onboarding.service';
 
@@ -29,6 +29,6 @@ import { Module } from '@nestjs/common';
   ],
   exports: [
     // EducationOnboardingService
-  ]
+  ],
 })
 export class EducationModule {}

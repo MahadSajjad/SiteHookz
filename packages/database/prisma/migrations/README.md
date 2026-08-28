@@ -4,13 +4,13 @@ After running the initial `prisma migrate dev`, you must add these custom partia
 
 ```sql
 -- Partial unique index for organization-scoped role assignments (branchId IS NULL)
-CREATE UNIQUE INDEX "RoleAssignment_membershipId_roleId_org_scope" 
-  ON "RoleAssignment" ("membershipId", "roleId") 
+CREATE UNIQUE INDEX "RoleAssignment_membershipId_roleId_org_scope"
+  ON "RoleAssignment" ("membershipId", "roleId")
   WHERE "branchId" IS NULL;
 
--- Partial unique index for branch-scoped role assignments (branchId IS NOT NULL)  
-CREATE UNIQUE INDEX "RoleAssignment_membershipId_roleId_branchId_branch_scope" 
-  ON "RoleAssignment" ("membershipId", "roleId", "branchId") 
+-- Partial unique index for branch-scoped role assignments (branchId IS NOT NULL)
+CREATE UNIQUE INDEX "RoleAssignment_membershipId_roleId_branchId_branch_scope"
+  ON "RoleAssignment" ("membershipId", "roleId", "branchId")
   WHERE "branchId" IS NOT NULL;
 
 -- Case-insensitive email uniqueness

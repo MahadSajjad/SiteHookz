@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
 
-describe('AcademicSessionsController (e2e)', () => {
+describe("AcademicSessionsController (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -19,9 +19,9 @@ describe('AcademicSessionsController (e2e)', () => {
     await app.close();
   });
 
-  it('/api/v1/education/academic-sessions (GET) - unauthorized', () => {
+  it("/api/v1/education/academic-sessions (GET) - unauthorized", () => {
     return request(app.getHttpServer())
-      .get('/api/v1/education/academic-sessions')
+      .get("/api/v1/education/academic-sessions")
       .expect(401);
   });
 });

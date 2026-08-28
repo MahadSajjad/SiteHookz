@@ -1,7 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
-import { PrismaService } from '../database/prisma.service';
-import { RedisService } from '../redis/redis.service';
-import { Public } from '../../common/decorators/public.decorator';
+import { Controller, Get } from "@nestjs/common";
+import { PrismaService } from "../database/prisma.service";
+import { RedisService } from "../redis/redis.service";
+import { Public } from "../../common/decorators/public.decorator";
 
 @Controller()
 export class HealthController {
@@ -11,37 +11,37 @@ export class HealthController {
   ) {}
 
   @Public()
-  @Get('health')
+  @Get("health")
   checkHealth() {
-    return { status: 'ok', timestamp: new Date().toISOString() };
+    return { status: "ok", timestamp: new Date().toISOString() };
   }
 
   @Public()
-  @Get('ready')
+  @Get("ready")
   async checkReady() {
-    let dbStatus = 'ok';
-    let redisStatus = 'ok';
+    let dbStatus = "ok";
+    let redisStatus = "ok";
 
     try {
       await this.prisma.$queryRaw`SELECT 1`;
     } catch {
-      dbStatus = 'error';
+      dbStatus = "error";
     }
 
     try {
       await this.redis.getClient().ping();
     } catch {
-      redisStatus = 'error';
+      redisStatus = "error";
     }
 
-    const isOk = dbStatus === 'ok' && redisStatus === 'ok';
+    const isOk = dbStatus === "ok" && redisStatus === "ok";
 
     return {
-      status: isOk ? 'ok' : 'degraded',
+      status: isOk ? "ok" : "degraded",
       checks: {
         database: dbStatus,
         redis: redisStatus,
-      }
+      },
     };
   }
 }

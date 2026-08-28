@@ -1,1 +1,1 @@
-export { EDUCATION_PERMISSIONS } from '@sitehookz/platform-permissions';
+export { EDUCATION_PERMISSIONS } from "@sitehookz/platform-permissions";

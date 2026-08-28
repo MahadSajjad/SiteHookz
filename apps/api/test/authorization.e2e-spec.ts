@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication } from "@nestjs/common";
+import * as request from "supertest";
+import { AppModule } from "../src/app.module";
 
-describe('Authorization (e2e)', () => {
+describe("Authorization (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -19,10 +19,12 @@ describe('Authorization (e2e)', () => {
     await app.close();
   });
 
-  it('/api/v1/permissions (GET) - returns permissions when authorized', () => {
-    return request(app.getHttpServer())
-      .get('/api/v1/permissions')
-      // Needs auth/tenant token context to pass in real scenario
-      .expect(401);
+  it("/api/v1/permissions (GET) - returns permissions when authorized", () => {
+    return (
+      request(app.getHttpServer())
+        .get("/api/v1/permissions")
+        // Needs auth/tenant token context to pass in real scenario
+        .expect(401)
+    );
   });
 });

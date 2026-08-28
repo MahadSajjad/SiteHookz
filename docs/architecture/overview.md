@@ -1,6 +1,7 @@
 # Architecture Overview
 
 ## System Context Diagram
+
 ```mermaid
 C4Context
     title System Context for SiteHookz
@@ -15,6 +16,7 @@ C4Context
 ```
 
 ## Container Diagram
+
 ```mermaid
 C4Container
     title Container Diagram for SiteHookz
@@ -36,6 +38,7 @@ C4Container
 ```
 
 ## Request Flow
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -58,6 +61,7 @@ sequenceDiagram
 ```
 
 ## Auth Flow
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -76,6 +80,7 @@ sequenceDiagram
 ```
 
 ## Organization Creation Flow
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -94,6 +99,7 @@ sequenceDiagram
 ```
 
 ## Invitation Acceptance Flow
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -112,6 +118,7 @@ sequenceDiagram
 ```
 
 ## Database ER Diagram (Simplified)
+
 ```mermaid
 erDiagram
     ORGANIZATION ||--o{ BRANCH : has

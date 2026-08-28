@@ -1,7 +1,7 @@
-import { Outlet } from 'react-router-dom';
-import { Sidebar } from './Sidebar';
-import { Topbar } from './Topbar';
-import { MobileNav } from './MobileNav';
+import { Outlet } from "react-router-dom";
+import { Sidebar } from "./Sidebar";
+import { Topbar } from "./Topbar";
+import { MobileNav } from "./MobileNav";
 
 export function AppLayout() {
   return (
@@ -13,13 +13,13 @@ export function AppLayout() {
 
       <div className="md:pl-64 flex flex-col flex-1 w-full h-full">
         <Topbar />
-        
+
         <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-surface-secondary">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
         </main>
-        
+
         {/* Mobile Navigation */}
         <div className="md:hidden">
           <MobileNav />

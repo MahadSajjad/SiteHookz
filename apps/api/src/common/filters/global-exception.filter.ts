@@ -1,6 +1,13 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { Response, Request } from 'express';
-import { BusinessException } from '../exceptions/business.exception';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from "@nestjs/common";
+import { Response, Request } from "express";
+import { BusinessException } from "../exceptions/business.exception";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -10,11 +17,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const requestId = request.headers['x-request-id'] || 'unknown';
+    const requestId = request.headers["x-request-id"] || "unknown";
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let code = 'INTERNAL_ERROR';
-    let message = 'An unexpected error occurred';
+    let code = "INTERNAL_ERROR";
+    let message = "An unexpected error occurred";
     let details = undefined;
 
     if (exception instanceof BusinessException) {
@@ -25,7 +32,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       message = exception.message;
-      code = 'HTTP_ERROR';
+      code = "HTTP_ERROR";
     } else {
       this.logger.error(`[${requestId}] Unhandled exception: ${exception}`);
     }

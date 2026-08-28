@@ -1,8 +1,13 @@
-const fs = require('fs');
+const fs = require("fs");
 
-let service = fs.readFileSync('apps/api/src/products/education/students/students.service.ts', 'utf8');
+let service = fs.readFileSync(
+  "apps/api/src/products/education/students/students.service.ts",
+  "utf8",
+);
 
-service = service.replace(/admission number generation[\s\S]*?status:\s*dto\.status,\n\s*}\n\s*}\);\n\s*}\);/g, `
+service = service.replace(
+  /admission number generation[\s\S]*?status:\s*dto\.status,\n\s*}\n\s*}\);\n\s*}\);/g,
+  `
       // admission number generation safely within tx
       // We assume branchId is stable. If null, we use a placeholder branchId 'MAIN' or just use organizationId as branchId for the sequence
       const seqBranchId = dto.admissionBranchId || '00000000-0000-0000-0000-000000000000';
@@ -33,6 +38,11 @@ service = service.replace(/admission number generation[\s\S]*?status:\s*dto\.sta
         }
       });
     });
-`);
+`,
+);
 
-fs.writeFileSync('apps/api/src/products/education/students/students.service.ts', service, 'utf8');
+fs.writeFileSync(
+  "apps/api/src/products/education/students/students.service.ts",
+  service,
+  "utf8",
+);

@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const baseDir = path.join('apps', 'api', 'src', 'products', 'education');
+const baseDir = path.join("apps", "api", "src", "products", "education");
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {
@@ -11,11 +11,13 @@ function ensureDir(dir) {
 
 function writeFile(filePath, content) {
   ensureDir(path.dirname(filePath));
-  fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
+  fs.writeFileSync(filePath, content.trim() + "\n", "utf8");
 }
 
 // 1. Class Levels
-writeFile(path.join(baseDir, 'class-levels', 'class-levels.controller.ts'), `
+writeFile(
+  path.join(baseDir, "class-levels", "class-levels.controller.ts"),
+  `
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ClassLevelsService } from './class-levels.service';
 import { RequirePermission, PermissionGuard } from '../../../platform/authorization/permission.guard';
@@ -62,9 +64,12 @@ export class ClassLevelsController {
     return this.service.restore(tenant, id);
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'class-levels', 'class-levels.service.ts'), `
+writeFile(
+  path.join(baseDir, "class-levels", "class-levels.service.ts"),
+  `
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { TenantContext } from '../../../platform/tenancy/tenant.guard';
@@ -100,10 +105,13 @@ export class ClassLevelsService {
     return this.prisma.classLevel.update({ where: { id, organizationId: tenant.organizationId }, data: { archivedAt: null } });
   }
 }
-`);
+`,
+);
 
 // 2. Sections
-writeFile(path.join(baseDir, 'sections', 'sections.controller.ts'), `
+writeFile(
+  path.join(baseDir, "sections", "sections.controller.ts"),
+  `
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { SectionsService } from './sections.service';
 import { RequirePermission, PermissionGuard } from '../../../platform/authorization/permission.guard';
@@ -138,9 +146,12 @@ export class SectionsController {
     return this.service.update(tenant, id, dto);
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'sections', 'sections.service.ts'), `
+writeFile(
+  path.join(baseDir, "sections", "sections.service.ts"),
+  `
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { TenantContext } from '../../../platform/tenancy/tenant.guard';
@@ -168,10 +179,13 @@ export class SectionsService {
     return this.prisma.section.update({ where: { id, organizationId: tenant.organizationId }, data: dto });
   }
 }
-`);
+`,
+);
 
 // Enrollments
-writeFile(path.join(baseDir, 'enrollments', 'enrollments.controller.ts'), `
+writeFile(
+  path.join(baseDir, "enrollments", "enrollments.controller.ts"),
+  `
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { EnrollmentsService } from './enrollments.service';
 import { RequirePermission, PermissionGuard } from '../../../platform/authorization/permission.guard';
@@ -194,9 +208,12 @@ export class EnrollmentsController {
     return this.service.createSchoolEnrollment(tenant, studentId, dto);
   }
 }
-`);
+`,
+);
 
-writeFile(path.join(baseDir, 'enrollments', 'enrollments.service.ts'), `
+writeFile(
+  path.join(baseDir, "enrollments", "enrollments.service.ts"),
+  `
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { TenantContext } from '../../../platform/tenancy/tenant.guard';
@@ -249,6 +266,7 @@ export class EnrollmentsService {
     });
   }
 }
-`);
+`,
+);
 
-console.log('Scaffolding complete.');
+console.log("Scaffolding complete.");

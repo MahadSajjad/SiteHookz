@@ -6,6 +6,6 @@ export class BusinessException extends Error {
     public readonly details?: Record<string, unknown>,
   ) {
     super(message);
-    this.name = 'BusinessException';
+    this.name = "BusinessException";
   }
 }

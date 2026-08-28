@@ -1,4 +1,4 @@
-import { AcademicSessionStatus } from '../enums';
+import { AcademicSessionStatus } from "../enums";
 
 export interface AcademicSessionDto {
   id: string;
