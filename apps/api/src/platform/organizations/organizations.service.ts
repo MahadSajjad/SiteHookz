@@ -13,6 +13,14 @@ export class OrganizationsService {
   constructor(private prisma: PrismaService) {}
 
   async create(userAccountId: string, dto: CreateOrganizationDto) {
+    const user = await this.prisma.userAccount.findUnique({
+      where: { id: userAccountId }
+    });
+
+    if (!user || !user.emailVerifiedAt) {
+      throw new BusinessException('ORGANIZATION_CREATION_DENIED', 403, 'Email must be verified to create an organization');
+    }
+
     if (RESERVED_SLUGS.has(dto.slug)) {
       throw new BusinessException('ORGANIZATION_SLUG_RESERVED', 400, 'Slug is reserved');
     }
@@ -25,7 +33,7 @@ export class OrganizationsService {
       throw new BusinessException('ORGANIZATION_SLUG_TAKEN', 409, 'Slug is already in use');
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.\(async (tx) => {
       // Create Organization
       const org = await tx.organization.create({
         data: {

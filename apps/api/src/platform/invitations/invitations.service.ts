@@ -17,19 +17,61 @@ export class InvitationsService {
     });
     if (member) throw new BusinessException('INVITATION_EMAIL_ALREADY_MEMBER', 400, 'Already a member');
 
+    // Cross-organization integrity check for roles & branches
+    if (dto.roleAssignments && dto.roleAssignments.length > 0) {
+      for (const assignment of dto.roleAssignments) {
+        const role = await this.prisma.role.findFirst({
+          where: { id: assignment.roleId, organizationId }
+        });
+        if (!role) {
+          throw new BusinessException('INVALID_ROLE', 400, 'Role does not exist in this organization');
+        }
+
+        if (role.scopeType === 'BRANCH') {
+          if (!assignment.branchId) {
+            throw new BusinessException('MISSING_BRANCH', 400, 'Branch ID is required for branch-scoped roles');
+          }
+          const branch = await this.prisma.branch.findFirst({
+            where: { id: assignment.branchId, organizationId }
+          });
+          if (!branch) {
+            throw new BusinessException('INVALID_BRANCH', 400, 'Branch does not exist in this organization');
+          }
+        } else {
+          if (assignment.branchId) {
+            throw new BusinessException('INVALID_SCOPE', 400, 'Branch ID must not be provided for organization-scoped roles');
+          }
+        }
+      }
+    }
+
     // Token generation
     const token = crypto.randomBytes(32).toString('hex');
     const hash = crypto.createHash('sha256').update(token).digest('hex');
 
-    const invitation = await this.prisma.organizationInvitation.create({
-      data: {
-        organizationId,
-        email,
-        tokenHash: hash,
-        status: 'PENDING',
-        invitedByMembershipId,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    const invitation = await this.prisma.\(async (tx) => {
+      const inv = await tx.organizationInvitation.create({
+        data: {
+          organizationId,
+          email,
+          tokenHash: hash,
+          status: 'PENDING',
+          invitedByMembershipId,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        }
+      });
+
+      if (dto.roleAssignments && dto.roleAssignments.length > 0) {
+        await tx.organizationInvitationRoleAssignment.createMany({
+          data: dto.roleAssignments.map((a: any) => ({
+            invitationId: inv.id,
+            roleId: a.roleId,
+            branchId: a.branchId || null
+          }))
+        });
       }
+
+      return inv;
     });
 
     await this.mailService.sendInvitationEmail(email, token, 'Organization');
@@ -39,7 +81,7 @@ export class InvitationsService {
   async accept(token: string, userAccountId: string) {
     const hash = crypto.createHash('sha256').update(token).digest('hex');
     
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.\(async (tx) => {
       const invitation = await tx.organizationInvitation.findUnique({
         where: { tokenHash: hash },
         include: { roleAssignments: true }
@@ -77,7 +119,8 @@ export class InvitationsService {
           data: {
             membershipId: membership.id,
             roleId: assignment.roleId,
-            branchId: assignment.branchId
+            branchId: assignment.branchId,
+            assignedByMembershipId: invitation.invitedByMembershipId
           }
         });
       }

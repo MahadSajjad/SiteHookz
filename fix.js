@@ -1,15 +1,36 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
-
-// The file contents to find and replace
-const replaceInFile = (file, search, replacement) => {
-  let content = fs.readFileSync(file, 'utf8');
-  content = content.replace(search, replacement);
-  fs.writeFileSync(file, content);
-};
-
-// Find all controllers and replace raw strings with P.PLATFORM... or P.EDUCATION...
-const glob = require('glob'); // Not installed, I'll use simple FS traversal
-// ... Actually, I can just use a simple regex replace loop.
-
+function walk(dir) {
+  let results = [];
+  const list = fs.readdirSync(dir);
+  list.forEach(file => {
+    file = path.join(dir, file);
+    const stat = fs.statSync(file);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(walk(file));
+    } else if (file.endsWith('.ts')) {
+      results.push(file);
+    }
+  });
+  return results;
+}
+const files = walk('./apps/api/src');
+files.forEach(f => {
+  let content = fs.readFileSync(f, 'utf8');
+  let changed = false;
+  if (content.includes('\\\')) {
+    content = content.split('\\\').join('\');
+    changed = true;
+  }
+  if (content.includes('\\\$')) {
+    content = content.split('\\\$').join('\$');
+    changed = true;
+  }
+  if (content.includes('\\Cannot assign permission \\ as you do not possess it at the organization scope\\')) {
+    content = content.split('\\Cannot assign permission \\ as you do not possess it at the organization scope\\').join('\Cannot assign permission {requestedPerm} as you do not possess it at the organization scope\');
+    changed = true;
+  }
+  if (changed) {
+    fs.writeFileSync(f, content, 'utf8');
+  }
+});

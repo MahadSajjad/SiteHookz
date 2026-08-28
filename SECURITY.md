@@ -81,13 +81,13 @@
 - Access tokens MUST be kept in memory by the client application.
 
 ## Tenant Isolation & Authorization
-- The \X-SiteHookz-Organization\ header is an untrusted tenant selector. 
-- \TenantGuard\ enforces that the authenticated user possesses an \ACTIVE\ \OrganizationMembership\ for the requested tenant.
-- Permissions are strictly namespaced (e.g. \platform.organization.read\) and verified against the user's \RoleAssignments\ in the requested tenant.
-- Branch-scoped permissions must evaluate the \ranchId\ constraint on the \RoleAssignment\.
+- The `X-SiteHookz-Organization` header is an untrusted tenant selector. 
+- `TenantGuard` enforces that the authenticated user possesses an `ACTIVE` `OrganizationMembership` for the requested tenant.
+- Permissions are strictly namespaced (e.g. `platform.organization.read`) and verified against the user's `RoleAssignments` in the requested tenant.
+- Branch-scoped permissions must evaluate the `branchId` constraint on the `RoleAssignment`.
+- **Permission Escalation Ceiling**: A user assigning permissions to a custom role may only grant permissions they themselves possess at an equal or broader scope, unless they hold an explicit privileged grant capability (e.g. `platform.roles.manage_all`). Organization Owners act as the ultimate organization authority.
 
 ## Invitation Security
 - Invitations use opaque, cryptographically random tokens (not JWTs).
 - The raw token is emailed to the user, and only the SHA-256 hash is stored.
 - Invitations are validated transactionally against the user's authenticated email to prevent hijacking.
-
