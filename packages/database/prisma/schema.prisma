@@ -98,21 +98,26 @@ model UserAccount {
 }
 
 model AuthSession {
-  id               String    @id @default(uuid()) @db.Uuid
-  userAccountId    String    @db.Uuid
-  refreshTokenHash String
-  expiresAt        DateTime
-  revokedAt        DateTime?
-  lastUsedAt       DateTime?
-  ipAddress        String?
-  userAgent        String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                  String    @id @default(uuid()) @db.Uuid
+  userAccountId       String    @db.Uuid
+  familyId            String    @db.Uuid
+  refreshTokenHash    String    @unique
+  expiresAt           DateTime
+  revokedAt           DateTime?
+  revokeReason        String?
+  replacedBySessionId String?   @db.Uuid
+  lastUsedAt          DateTime?
+  ipAddress           String?
+  userAgent           String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+  userAccount       UserAccount   @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+  replacedBySession AuthSession?  @relation("SessionReplacement", fields: [replacedBySessionId], references: [id])
+  replacements      AuthSession[] @relation("SessionReplacement")
 
   @@index([userAccountId])
-  @@index([refreshTokenHash])
+  @@index([familyId])
 }
 
 model EmailVerificationToken {
@@ -157,10 +162,11 @@ model OrganizationMembership {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  organization    Organization          @relation(fields: [organizationId], references: [id])
-  userAccount     UserAccount           @relation(fields: [userAccountId], references: [id])
-  roleAssignments RoleAssignment[]
-  sentInvitations OrganizationInvitation[] @relation("InvitedByMembership")
+  organization          Organization             @relation(fields: [organizationId], references: [id])
+  userAccount           UserAccount              @relation(fields: [userAccountId], references: [id])
+  roleAssignments       RoleAssignment[]         @relation("RoleAssignedTo")
+  assignedRoleAssignments RoleAssignment[]       @relation("RoleAssignedBy")
+  sentInvitations       OrganizationInvitation[] @relation("InvitedByMembership")
 
   @@unique([organizationId, userAccountId])
   @@index([organizationId])
@@ -198,11 +204,12 @@ model Role {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  organization                Organization                        @relation(fields: [organizationId], references: [id])
+  organization                Organization                           @relation(fields: [organizationId], references: [id])
   rolePermissions             RolePermission[]
   roleAssignments             RoleAssignment[]
   invitationRoleAssignments   OrganizationInvitationRoleAssignment[]
 
+  @@unique([organizationId, key])
   @@index([organizationId])
 }
 
@@ -227,9 +234,10 @@ model RoleAssignment {
   assignedByMembershipId String?  @db.Uuid
   createdAt              DateTime @default(now())
 
-  membership OrganizationMembership @relation(fields: [membershipId], references: [id])
-  role       Role                   @relation(fields: [roleId], references: [id])
-  branch     Branch?                @relation(fields: [branchId], references: [id])
+  membership           OrganizationMembership  @relation("RoleAssignedTo", fields: [membershipId], references: [id])
+  role                 Role                    @relation(fields: [roleId], references: [id])
+  branch               Branch?                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  assignedByMembership OrganizationMembership? @relation("RoleAssignedBy", fields: [assignedByMembershipId], references: [id])
 
   @@index([membershipId])
   @@index([branchId])
@@ -270,7 +278,7 @@ model OrganizationInvitationRoleAssignment {
 
   invitation OrganizationInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   role       Role                   @relation(fields: [roleId], references: [id])
-  branch     Branch?                @relation(fields: [branchId], references: [id])
+  branch     Branch?                @relation(fields: [branchId], references: [id], onDelete: Restrict)
 
   @@index([invitationId])
 }
