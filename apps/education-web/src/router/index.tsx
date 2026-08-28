@@ -1,3 +1,7 @@
+
+import StudentsPage from '../pages/dashboard/students/StudentsPage';
+import GuardiansPage from '../pages/dashboard/guardians/GuardiansPage';
+import StaffPage from '../pages/dashboard/staff/StaffPage';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { RegisterPage } from '../pages/auth/RegisterPage';

@@ -33,12 +33,20 @@ model Organization {
   updatedAt     DateTime           @updatedAt
   archivedAt    DateTime?
 
-  branches           Branch[]
-  memberships        OrganizationMembership[]
-  roles              Role[]
-  invitations        OrganizationInvitation[]
-  academicSessions   AcademicSession[]
-  educationProfile   EducationOrganizationProfile?
+  branches         Branch[]
+  memberships      OrganizationMembership[]
+  roles            Role[]
+  invitations      OrganizationInvitation[]
+  academicSessions AcademicSession[]
+  educationProfile EducationOrganizationProfile?
+
+  students                  Student[]
+  guardians                 Guardian[]
+  studentGuardians          StudentGuardian[]
+  staffMembers              StaffMember[]
+  staffPositions            StaffPosition[]
+  staffBranchAssignments    StaffBranchAssignment[]
+  studentAdmissionSequences StudentAdmissionSequence[]
 
   @@index([status])
 }
@@ -67,9 +75,11 @@ model Branch {
   updatedAt      DateTime     @updatedAt
   archivedAt     DateTime?
 
-  organization                Organization                        @relation(fields: [organizationId], references: [id])
-  roleAssignments             RoleAssignment[]
-  invitationRoleAssignments   OrganizationInvitationRoleAssignment[]
+  organization              Organization                           @relation(fields: [organizationId], references: [id])
+  roleAssignments           RoleAssignment[]
+  invitationRoleAssignments OrganizationInvitationRoleAssignment[]
+  students                  Student[]
+  staffBranchAssignments    StaffBranchAssignment[]
 
   @@unique([organizationId, code])
   @@index([organizationId])
@@ -91,10 +101,18 @@ model UserAccount {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
-  memberships              OrganizationMembership[]
-  authSessions             AuthSession[]
-  emailVerificationTokens  EmailVerificationToken[]
-  passwordResetTokens      PasswordResetToken[]
+  memberships             OrganizationMembership[]
+  authSessions            AuthSession[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+
+  students                  Student[]
+  guardians                 Guardian[]
+  studentGuardians          StudentGuardian[]
+  staffMembers              StaffMember[]
+  staffPositions            StaffPosition[]
+  staffBranchAssignments    StaffBranchAssignment[]
+  studentAdmissionSequences StudentAdmissionSequence[]
 }
 
 enum RevokeReason {
@@ -107,19 +125,19 @@ enum RevokeReason {
 }
 
 model AuthSession {
-  id                  String    @id @default(uuid()) @db.Uuid
-  userAccountId       String    @db.Uuid
-  familyId            String    @db.Uuid
-  refreshTokenHash    String    @unique
+  id                  String        @id @default(uuid()) @db.Uuid
+  userAccountId       String        @db.Uuid
+  familyId            String        @db.Uuid
+  refreshTokenHash    String        @unique
   expiresAt           DateTime
   revokedAt           DateTime?
   revokeReason        RevokeReason?
-  replacedBySessionId String?   @db.Uuid
+  replacedBySessionId String?       @db.Uuid
   lastUsedAt          DateTime?
   ipAddress           String?
   userAgent           String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   userAccount       UserAccount   @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
   replacedBySession AuthSession?  @relation("SessionReplacement", fields: [replacedBySessionId], references: [id])
@@ -171,11 +189,11 @@ model OrganizationMembership {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  organization          Organization             @relation(fields: [organizationId], references: [id])
-  userAccount           UserAccount              @relation(fields: [userAccountId], references: [id])
-  roleAssignments       RoleAssignment[]         @relation("RoleAssignedTo")
-  assignedRoleAssignments RoleAssignment[]       @relation("RoleAssignedBy")
-  sentInvitations       OrganizationInvitation[] @relation("InvitedByMembership")
+  organization            Organization             @relation(fields: [organizationId], references: [id])
+  userAccount             UserAccount              @relation(fields: [userAccountId], references: [id])
+  roleAssignments         RoleAssignment[]         @relation("RoleAssignedTo")
+  assignedRoleAssignments RoleAssignment[]         @relation("RoleAssignedBy")
+  sentInvitations         OrganizationInvitation[] @relation("InvitedByMembership")
 
   @@unique([organizationId, userAccountId])
   @@index([organizationId])
@@ -213,10 +231,10 @@ model Role {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  organization                Organization                           @relation(fields: [organizationId], references: [id])
-  rolePermissions             RolePermission[]
-  roleAssignments             RoleAssignment[]
-  invitationRoleAssignments   OrganizationInvitationRoleAssignment[]
+  organization              Organization                           @relation(fields: [organizationId], references: [id])
+  rolePermissions           RolePermission[]
+  roleAssignments           RoleAssignment[]
+  invitationRoleAssignments OrganizationInvitationRoleAssignment[]
 
   @@unique([organizationId, key])
   @@index([organizationId])
@@ -271,8 +289,8 @@ model OrganizationInvitation {
   acceptedAt            DateTime?
   createdAt             DateTime         @default(now())
 
-  organization        Organization           @relation(fields: [organizationId], references: [id])
-  invitedByMembership OrganizationMembership @relation("InvitedByMembership", fields: [invitedByMembershipId], references: [id])
+  organization        Organization                           @relation(fields: [organizationId], references: [id])
+  invitedByMembership OrganizationMembership                 @relation("InvitedByMembership", fields: [invitedByMembershipId], references: [id])
   roleAssignments     OrganizationInvitationRoleAssignment[]
 
   @@index([organizationId])
@@ -334,4 +352,254 @@ model AcademicSession {
 
   @@unique([organizationId, code])
   @@index([organizationId])
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+  WITHDRAWN
+  ARCHIVED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  UNSPECIFIED
+}
+
+model StudentAdmissionSequence {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  branchPrefix   String
+  nextValue      Int    @default(1)
+
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  userAccount   UserAccount? @relation(fields: [userAccountId], references: [id])
+  userAccountId String?      @db.Uuid
+
+  @@unique([organizationId, branchPrefix])
+}
+
+model Student {
+  id              String @id @default(uuid()) @db.Uuid
+  organizationId  String @db.Uuid
+  admissionNumber String
+
+  firstName  String
+  middleName String?
+  lastName   String?
+
+  dateOfBirth DateTime? @db.Date
+  gender      Gender?
+
+  phone String?
+  email String?
+
+  admissionDate     DateTime? @db.Date
+  admissionBranchId String?   @db.Uuid
+
+  status StudentStatus @default(ACTIVE)
+
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  admissionBranch  Branch?           @relation(fields: [admissionBranchId], references: [id], onDelete: Restrict)
+  studentGuardians StudentGuardian[]
+  userAccount      UserAccount?      @relation(fields: [userAccountId], references: [id])
+  userAccountId    String?           @db.Uuid
+
+  @@unique([organizationId, admissionNumber])
+  @@index([organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, admissionBranchId])
+}
+
+model Guardian {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  firstName  String
+  middleName String?
+  lastName   String?
+
+  phone          String?
+  alternatePhone String?
+  email          String?
+
+  nationalId String?
+
+  occupation String?
+  employer   String?
+
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  region       String?
+  postalCode   String?
+  countryCode  String?
+
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  studentGuardians StudentGuardian[]
+  userAccount      UserAccount?      @relation(fields: [userAccountId], references: [id])
+  userAccountId    String?           @db.Uuid
+
+  @@index([organizationId])
+  @@index([organizationId, archivedAt])
+}
+
+enum GuardianRelationship {
+  MOTHER
+  FATHER
+  LEGAL_GUARDIAN
+  GRANDPARENT
+  SIBLING
+  RELATIVE
+  OTHER
+}
+
+model StudentGuardian {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  studentId      String @db.Uuid
+  guardianId     String @db.Uuid
+
+  relationship GuardianRelationship
+
+  isPrimary          Boolean @default(false)
+  isBillingContact   Boolean @default(false)
+  isEmergencyContact Boolean @default(false)
+
+  receivesSms         Boolean @default(true)
+  receivesEmail       Boolean @default(true)
+  canPickupStudent    Boolean @default(false)
+  portalAccessEnabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  student       Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  guardian      Guardian     @relation(fields: [guardianId], references: [id], onDelete: Restrict)
+  userAccount   UserAccount? @relation(fields: [userAccountId], references: [id])
+  userAccountId String?      @db.Uuid
+
+  @@unique([studentId, guardianId])
+  @@index([organizationId])
+  @@index([guardianId])
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  ON_LEAVE
+  SUSPENDED
+  TERMINATED
+  RESIGNED
+  RETIRED
+  ARCHIVED
+}
+
+model StaffMember {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  employeeNumber String?
+
+  firstName  String
+  middleName String?
+  lastName   String?
+
+  email String?
+  phone String?
+
+  dateOfBirth DateTime? @db.Date
+  gender      Gender?
+
+  hireDate        DateTime? @db.Date
+  terminationDate DateTime? @db.Date
+
+  employmentStatus EmploymentStatus @default(ACTIVE)
+
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  organization  Organization            @relation(fields: [organizationId], references: [id])
+  assignments   StaffBranchAssignment[]
+  userAccount   UserAccount?            @relation(fields: [userAccountId], references: [id])
+  userAccountId String?                 @db.Uuid
+
+  @@unique([organizationId, employeeNumber])
+  @@index([organizationId])
+  @@index([organizationId, employmentStatus])
+}
+
+enum StaffPositionCategory {
+  ACADEMIC
+  ADMINISTRATION
+  FINANCE
+  OPERATIONS
+  SUPPORT
+  OTHER
+}
+
+model StaffPosition {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  name String
+  code String
+
+  category    StaffPositionCategory?
+  description String?
+
+  isActive Boolean @default(true)
+
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  organization  Organization            @relation(fields: [organizationId], references: [id])
+  assignments   StaffBranchAssignment[]
+  userAccount   UserAccount?            @relation(fields: [userAccountId], references: [id])
+  userAccountId String?                 @db.Uuid
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
+
+model StaffBranchAssignment {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  staffMemberId String @db.Uuid
+  branchId      String @db.Uuid
+  positionId    String @db.Uuid
+
+  startDate DateTime  @db.Date
+  endDate   DateTime? @db.Date
+
+  isPrimary Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization  Organization  @relation(fields: [organizationId], references: [id])
+  staffMember   StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict)
+  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  position      StaffPosition @relation(fields: [positionId], references: [id], onDelete: Restrict)
+  userAccount   UserAccount?  @relation(fields: [userAccountId], references: [id])
+  userAccountId String?       @db.Uuid
+
+  @@index([organizationId])
+  @@index([staffMemberId])
+  @@index([branchId])
+  @@index([positionId])
 }

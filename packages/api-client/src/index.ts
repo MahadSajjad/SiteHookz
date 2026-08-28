@@ -7,3 +7,7 @@ export * from './roles';
 export * from './invitations';
 export * from './academic-sessions';
 export * from './permissions';
+
+export * from './students';
+export * from './guardians';
+export * from './staff';

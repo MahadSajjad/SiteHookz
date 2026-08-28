@@ -1,3 +1,6 @@
+import { StudentsClient } from './students';
+import { GuardiansClient } from './guardians';
+import { StaffClient } from './staff';
 import axios from 'axios';
 
 export const apiClient = axios.create({

@@ -1,0 +1,1 @@
+export default function StudentDetailPage() { return <div className="p-6"><h1>Student Detail</h1></div>; }

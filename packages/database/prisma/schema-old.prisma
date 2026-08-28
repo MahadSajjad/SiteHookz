@@ -1,0 +1,337 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// PLATFORM CORE MODELS
+// ============================================
+
+enum OrganizationStatus {
+  ONBOARDING
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+  ARCHIVED
+}
+
+model Organization {
+  id            String             @id @default(uuid()) @db.Uuid
+  name          String
+  slug          String             @unique
+  status        OrganizationStatus @default(ONBOARDING)
+  defaultLocale String             @default("en")
+  timezone      String             @default("UTC")
+  currency      String             @default("USD")
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  archivedAt    DateTime?
+
+  branches           Branch[]
+  memberships        OrganizationMembership[]
+  roles              Role[]
+  invitations        OrganizationInvitation[]
+  academicSessions   AcademicSession[]
+  educationProfile   EducationOrganizationProfile?
+
+  @@index([status])
+}
+
+enum BranchStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model Branch {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  name           String
+  code           String
+  status         BranchStatus @default(ACTIVE)
+  phone          String?
+  email          String?
+  addressLine1   String?
+  addressLine2   String?
+  city           String?
+  region         String?
+  postalCode     String?
+  countryCode    String?
+  timezone       String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  archivedAt     DateTime?
+
+  organization                Organization                        @relation(fields: [organizationId], references: [id])
+  roleAssignments             RoleAssignment[]
+  invitationRoleAssignments   OrganizationInvitationRoleAssignment[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
+
+enum UserAccountStatus {
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+model UserAccount {
+  id              String            @id @default(uuid()) @db.Uuid
+  email           String            @unique
+  passwordHash    String
+  status          UserAccountStatus @default(ACTIVE)
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  memberships              OrganizationMembership[]
+  authSessions             AuthSession[]
+  emailVerificationTokens  EmailVerificationToken[]
+  passwordResetTokens      PasswordResetToken[]
+}
+
+enum RevokeReason {
+  LOGOUT
+  LOGOUT_ALL
+  PASSWORD_RESET
+  ROTATED
+  REPLAY_DETECTED
+  ADMIN_REVOKED
+}
+
+model AuthSession {
+  id                  String    @id @default(uuid()) @db.Uuid
+  userAccountId       String    @db.Uuid
+  familyId            String    @db.Uuid
+  refreshTokenHash    String    @unique
+  expiresAt           DateTime
+  revokedAt           DateTime?
+  revokeReason        RevokeReason?
+  replacedBySessionId String?   @db.Uuid
+  lastUsedAt          DateTime?
+  ipAddress           String?
+  userAgent           String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  userAccount       UserAccount   @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+  replacedBySession AuthSession?  @relation("SessionReplacement", fields: [replacedBySessionId], references: [id])
+  replacements      AuthSession[] @relation("SessionReplacement")
+
+  @@index([userAccountId])
+  @@index([familyId])
+}
+
+model EmailVerificationToken {
+  id            String    @id @default(uuid()) @db.Uuid
+  userAccountId String    @db.Uuid
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+
+  @@index([userAccountId])
+}
+
+model PasswordResetToken {
+  id            String    @id @default(uuid()) @db.Uuid
+  userAccountId String    @db.Uuid
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  usedAt        DateTime?
+  createdAt     DateTime  @default(now())
+
+  userAccount UserAccount @relation(fields: [userAccountId], references: [id], onDelete: Cascade)
+
+  @@index([userAccountId])
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+  LEFT
+}
+
+model OrganizationMembership {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  userAccountId  String           @db.Uuid
+  status         MembershipStatus @default(ACTIVE)
+  joinedAt       DateTime         @default(now())
+  suspendedAt    DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organization          Organization             @relation(fields: [organizationId], references: [id])
+  userAccount           UserAccount              @relation(fields: [userAccountId], references: [id])
+  roleAssignments       RoleAssignment[]         @relation("RoleAssignedTo")
+  assignedRoleAssignments RoleAssignment[]       @relation("RoleAssignedBy")
+  sentInvitations       OrganizationInvitation[] @relation("InvitedByMembership")
+
+  @@unique([organizationId, userAccountId])
+  @@index([organizationId])
+  @@index([userAccountId])
+}
+
+model Permission {
+  id          String @id @default(uuid()) @db.Uuid
+  key         String @unique
+  description String
+  category    String
+
+  rolePermissions RolePermission[]
+}
+
+enum RoleType {
+  SYSTEM
+  CUSTOM
+}
+
+enum RoleScopeType {
+  ORGANIZATION
+  BRANCH
+}
+
+model Role {
+  id             String        @id @default(uuid()) @db.Uuid
+  organizationId String        @db.Uuid
+  name           String
+  key            String
+  type           RoleType
+  scopeType      RoleScopeType
+  isEditable     Boolean       @default(true)
+  isDeletable    Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  organization                Organization                           @relation(fields: [organizationId], references: [id])
+  rolePermissions             RolePermission[]
+  roleAssignments             RoleAssignment[]
+  invitationRoleAssignments   OrganizationInvitationRoleAssignment[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+}
+
+model RolePermission {
+  id           String @id @default(uuid()) @db.Uuid
+  roleId       String @db.Uuid
+  permissionId String @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+// RoleAssignment uses partial unique indexes via custom migration
+// because Prisma @@unique cannot handle nullable column uniqueness correctly
+model RoleAssignment {
+  id                     String   @id @default(uuid()) @db.Uuid
+  membershipId           String   @db.Uuid
+  roleId                 String   @db.Uuid
+  branchId               String?  @db.Uuid
+  assignedByMembershipId String?  @db.Uuid
+  createdAt              DateTime @default(now())
+
+  membership           OrganizationMembership  @relation("RoleAssignedTo", fields: [membershipId], references: [id])
+  role                 Role                    @relation(fields: [roleId], references: [id])
+  branch               Branch?                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  assignedByMembership OrganizationMembership? @relation("RoleAssignedBy", fields: [assignedByMembershipId], references: [id])
+
+  @@index([membershipId])
+  @@index([branchId])
+  @@index([roleId])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+model OrganizationInvitation {
+  id                    String           @id @default(uuid()) @db.Uuid
+  organizationId        String           @db.Uuid
+  email                 String
+  tokenHash             String           @unique
+  status                InvitationStatus @default(PENDING)
+  invitedByMembershipId String           @db.Uuid
+  expiresAt             DateTime
+  acceptedAt            DateTime?
+  createdAt             DateTime         @default(now())
+
+  organization        Organization           @relation(fields: [organizationId], references: [id])
+  invitedByMembership OrganizationMembership @relation("InvitedByMembership", fields: [invitedByMembershipId], references: [id])
+  roleAssignments     OrganizationInvitationRoleAssignment[]
+
+  @@index([organizationId])
+  @@index([organizationId, email, status])
+}
+
+model OrganizationInvitationRoleAssignment {
+  id           String  @id @default(uuid()) @db.Uuid
+  invitationId String  @db.Uuid
+  roleId       String  @db.Uuid
+  branchId     String? @db.Uuid
+
+  invitation OrganizationInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  role       Role                   @relation(fields: [roleId], references: [id])
+  branch     Branch?                @relation(fields: [branchId], references: [id], onDelete: Restrict)
+
+  @@index([invitationId])
+}
+
+// ============================================
+// EDUCATION PRODUCT MODELS
+// ============================================
+
+enum EducationInstitutionType {
+  SCHOOL
+  TUITION_CENTER
+}
+
+model EducationOrganizationProfile {
+  id              String                   @id @default(uuid()) @db.Uuid
+  organizationId  String                   @unique @db.Uuid
+  institutionType EducationInstitutionType
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+enum AcademicSessionStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+model AcademicSession {
+  id             String                @id @default(uuid()) @db.Uuid
+  organizationId String                @db.Uuid
+  name           String
+  code           String
+  startDate      DateTime              @db.Date
+  endDate        DateTime              @db.Date
+  status         AcademicSessionStatus @default(PLANNED)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  archivedAt     DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
