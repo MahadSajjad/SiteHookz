@@ -19,11 +19,11 @@ export class StudentsService {
     const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
     if (accessibleBranches.length === 0) return { items: [], total: 0, page: 1, limit: 20 };
 
-    if (!accessibleBranches.includes('*')) {
+    if (!accessibleBranches === 'ALL') {
       where.enrollments = {
         some: {
           status: 'ACTIVE',
-          branchId: { in: accessibleBranches }
+          branchId: { in: accessibleBranches as string[] }
         }
       };
     }
@@ -67,9 +67,9 @@ export class StudentsService {
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
     
     const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
-    if (!accessibleBranchIds.includes('*')) {
+    if (!accessibleBranchIds === 'ALL') {
       const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
-        where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
+        where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds as string[] } }
       });
       if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
     }
@@ -120,9 +120,9 @@ export class StudentsService {
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
     
     const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.update');
-    if (!accessibleBranchIds.includes('*')) {
+    if (!accessibleBranchIds === 'ALL') {
       const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
-        where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
+        where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds as string[] } }
       });
       if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
     }

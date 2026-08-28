@@ -16,20 +16,20 @@ export class GuardiansService {
 
     let targetBranches = accessibleBranches;
     if (query.branchId) {
-      if (!accessibleBranches.includes('*') && !accessibleBranches.includes(query.branchId)) {
+      if (!accessibleBranches === 'ALL' && !accessibleBranches.includes(query.branchId)) {
         return { items: [], total: 0, page: 1, limit: 20 };
       }
       targetBranches = [query.branchId];
     }
 
-    if (!targetBranches.includes('*')) {
+    if (!targetBranches === 'ALL') {
       where.studentGuardians = {
         some: {
           student: {
             enrollments: {
               some: {
                 status: 'ACTIVE',
-                branchId: { in: targetBranches }
+                branchId: { in: targetBranches as string[] }
               }
             }
           }
@@ -46,14 +46,14 @@ export class GuardiansService {
     
     const where: any = { id, organizationId: tenant.organizationId };
     
-    if (!accessibleBranches.includes('*')) {
+    if (!accessibleBranches === 'ALL') {
       where.studentGuardians = {
         some: {
           student: {
             enrollments: {
               some: {
                 status: 'ACTIVE',
-                branchId: { in: accessibleBranches }
+                branchId: { in: accessibleBranches as string[] }
               }
             }
           }
