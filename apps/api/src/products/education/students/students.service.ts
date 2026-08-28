@@ -66,13 +66,16 @@ export class StudentsService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      // admission number generation
-      const prefix = dto.admissionBranchId ? 'B' + dto.admissionBranchId.substring(0,4).toUpperCase() : 'MAIN';
-      
+      // 
+      // admission number generation safely within tx
+      // We assume branchId is stable. If null, we use a placeholder branchId 'MAIN' or just use organizationId as branchId for the sequence
+      const seqBranchId = dto.admissionBranchId || '00000000-0000-0000-0000-000000000000';
+      const prefix = dto.admissionBranchId ? 'B' + dto.admissionBranchId.substring(0, 4).toUpperCase() : 'MAIN';
+
       const seq = await tx.studentAdmissionSequence.upsert({
-        where: { organizationId_branchPrefix: { organizationId: tenant.organizationId, branchPrefix: prefix } },
+        where: { organizationId_branchId: { organizationId: tenant.organizationId, branchId: seqBranchId } },
         update: { nextValue: { increment: 1 } },
-        create: { organizationId: tenant.organizationId, branchPrefix: prefix, nextValue: 2 },
+        create: { organizationId: tenant.organizationId, branchId: seqBranchId, prefix, nextValue: 2 },
       });
 
       const admissionNumber = `${prefix}-${String(seq.nextValue - 1).padStart(6, '0')}`;
@@ -94,6 +97,7 @@ export class StudentsService {
         }
       });
     });
+
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateStudentDto) {
