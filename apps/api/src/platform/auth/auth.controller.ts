@@ -5,6 +5,8 @@ import { AuthService } from './auth.service';
 import { RegisterDto, registerSchema } from './dto/register.dto';
 import { LoginDto, loginSchema } from './dto/login.dto';
 import { VerifyEmailDto, verifyEmailSchema } from './dto/verify-email.dto';
+import { ForgotPasswordDto, forgotPasswordSchema } from './dto/forgot-password.dto';
+import { ResetPasswordDto, resetPasswordSchema } from './dto/reset-password.dto';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { Public } from '../../common/decorators/public.decorator';
 
@@ -82,7 +84,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(
-    @Req() req: any,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ) {
     const refreshToken = req.cookies?.refreshToken;
@@ -96,9 +98,25 @@ export class AuthController {
 
   @Post('logout-all')
   @HttpCode(HttpStatus.OK)
-  async logoutAll(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+  async logoutAll(@Req() req: Request & { user: { userAccountId: string } }, @Res({ passthrough: true }) res: Response) {
     await this.authService.logoutAll(req.user.userAccountId);
     res.clearCookie('refreshToken', { path: '/api/v1/auth' });
+    return { success: true };
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body(new ZodValidationPipe(forgotPasswordSchema)) dto: ForgotPasswordDto) {
+    await this.authService.forgotPassword(dto.email);
+    return { success: true, message: 'If an account exists, a reset link has been sent.' };
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body(new ZodValidationPipe(resetPasswordSchema)) dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto);
     return { success: true };
   }
 }

@@ -62,27 +62,28 @@ export class AuthService {
     const hash = crypto.createHash('sha256').update(dto.token).digest('hex');
 
     await this.prisma.$transaction(async (tx) => {
+      // Find user account ID first to update the user
       const tokenRecord = await tx.emailVerificationToken.findUnique({
-        where: { tokenHash: hash },
-        include: { userAccount: true }
+        where: { tokenHash: hash }
       });
 
       if (!tokenRecord) {
         throw new BusinessException('AUTH_INVALID_TOKEN', 400, 'Invalid verification token');
       }
 
-      if (tokenRecord.usedAt) {
-        throw new BusinessException('AUTH_TOKEN_USED', 400, 'Token has already been used');
-      }
-
-      if (tokenRecord.expiresAt < new Date()) {
-        throw new BusinessException('AUTH_TOKEN_EXPIRED', 400, 'Verification token has expired');
-      }
-
-      await tx.emailVerificationToken.update({
-        where: { id: tokenRecord.id },
+      // Atomic claim
+      const claimResult = await tx.emailVerificationToken.updateMany({
+        where: { 
+          id: tokenRecord.id, 
+          usedAt: null, 
+          expiresAt: { gt: new Date() } 
+        },
         data: { usedAt: new Date() }
       });
+
+      if (claimResult.count !== 1) {
+        throw new BusinessException('AUTH_TOKEN_USED_OR_EXPIRED', 400, 'Token has already been used or has expired');
+      }
 
       await tx.userAccount.update({
         where: { id: tokenRecord.userAccountId },
@@ -143,6 +144,7 @@ export class AuthService {
   async refresh(refreshToken: string, ipAddress?: string, userAgent?: string) {
     const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
     
+    // Read session to get familyId and userAccount, outside transaction
     const session = await this.prisma.authSession.findUnique({
       where: { refreshTokenHash: hashedRefreshToken },
       include: { userAccount: true }
@@ -150,18 +152,6 @@ export class AuthService {
 
     if (!session || session.expiresAt < new Date()) {
       throw new BusinessException('AUTH_INVALID_TOKEN', 401, 'Invalid or expired refresh token');
-    }
-
-    if (session.revokedAt) {
-      // Replay of a revoked or rotated token! Revoke entire family.
-      await this.prisma.authSession.updateMany({
-        where: { familyId: session.familyId, revokedAt: null },
-        data: { 
-          revokedAt: new Date(), 
-          revokeReason: 'REPLAY_DETECTED' 
-        }
-      });
-      throw new BusinessException('AUTH_INVALID_TOKEN', 401, 'Session revoked');
     }
 
     const user = session.userAccount;
@@ -174,7 +164,33 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     const newSession = await this.prisma.$transaction(async (tx) => {
-      // Create new session in the same family
+      // Atomically claim the active session
+      const updateResult = await tx.authSession.updateMany({
+        where: { 
+          id: session.id,
+          refreshTokenHash: hashedRefreshToken,
+          revokedAt: null
+        },
+        data: {
+          revokedAt: new Date(),
+          revokeReason: 'ROTATED'
+        }
+      });
+
+      // If we couldn't claim it, it means a concurrent request already rotated it or it was revoked
+      if (updateResult.count !== 1) {
+        // Treat as replay and revoke the whole family
+        await tx.authSession.updateMany({
+          where: { familyId: session.familyId, revokedAt: null },
+          data: { 
+            revokedAt: new Date(), 
+            revokeReason: 'REPLAY_DETECTED' 
+          }
+        });
+        throw new BusinessException('AUTH_INVALID_TOKEN', 401, 'Session compromised and revoked');
+      }
+
+      // Claim successful, create the replacement session
       const created = await tx.authSession.create({
         data: {
           userAccountId: user.id,
@@ -187,14 +203,10 @@ export class AuthService {
         }
       });
 
-      // Mark the old session as replaced (revoked)
+      // Link the old session to the new one
       await tx.authSession.update({
         where: { id: session.id },
-        data: {
-          revokedAt: new Date(),
-          revokeReason: 'ROTATED',
-          replacedBySessionId: created.id
-        }
+        data: { replacedBySessionId: created.id }
       });
 
       return created;
@@ -249,7 +261,7 @@ export class AuthService {
     }
   }
 
-  async resetPassword(dto: any) {
+  async resetPassword(dto: import('./dto/reset-password.dto').ResetPasswordDto) {
     const hash = crypto.createHash('sha256').update(dto.token).digest('hex');
     
     return this.prisma.$transaction(async (tx) => {
@@ -257,8 +269,22 @@ export class AuthService {
         where: { tokenHash: hash }
       });
 
-      if (!resetToken || resetToken.usedAt || resetToken.expiresAt < new Date()) {
-        throw new BusinessException('AUTH_INVALID_TOKEN', 400, 'Invalid or expired token');
+      if (!resetToken) {
+        throw new BusinessException('AUTH_INVALID_TOKEN', 400, 'Invalid token');
+      }
+
+      // Atomic claim
+      const claimResult = await tx.passwordResetToken.updateMany({
+        where: {
+          id: resetToken.id,
+          usedAt: null,
+          expiresAt: { gt: new Date() }
+        },
+        data: { usedAt: new Date() }
+      });
+
+      if (claimResult.count !== 1) {
+        throw new BusinessException('AUTH_INVALID_TOKEN', 400, 'Invalid, used, or expired token');
       }
 
       const passwordHash = await argon2.hash(dto.newPassword);
@@ -266,11 +292,6 @@ export class AuthService {
       await tx.userAccount.update({
         where: { id: resetToken.userAccountId },
         data: { passwordHash }
-      });
-
-      await tx.passwordResetToken.update({
-        where: { id: resetToken.id },
-        data: { usedAt: new Date() }
       });
 
       // Revoke all active AuthSessions

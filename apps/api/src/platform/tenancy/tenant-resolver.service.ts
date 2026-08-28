@@ -13,7 +13,7 @@ export class TenantResolverService {
     private configService: ConfigService
   ) {}
 
-  async resolveTenant(req: Request): Promise<any> {
+  async resolveTenant(req: Request): Promise<import('@sitehookz/database').Organization> {
     const isProd = process.env.NODE_ENV === 'production';
     
     // Strict usage of x-sitehookz-organization

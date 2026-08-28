@@ -44,9 +44,9 @@ export class PermissionGuard implements CanActivate {
     // Attempt to extract branchId from headers or params for more granular scope checks at the guard level
     // Fallback to basic hasPermission which will only pass if they have ORGANIZATION scope or no branch is needed
     // In a fully developed app, you might want a custom decorator for branch-aware routes.
-    const branchId = request.headers['x-sitehookz-branch'] || request.params?.branchId || request.body?.branchId;
-
-    if (!this.authorizationService.hasPermission(tenantContext, requiredPermission, branchId)) {
+    // Branch-scoped authorization must happen explicitly in the Service Layer.
+    // At the guard level, we strictly require the user to hold the permission at the ORGANIZATION scope.
+    if (!this.authorizationService.hasPermission(tenantContext, requiredPermission)) {
       throw new BusinessException('PERMISSION_DENIED', 403, 'Insufficient permissions');
     }
 

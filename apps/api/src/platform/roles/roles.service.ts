@@ -90,14 +90,28 @@ export class RolesService {
   }
 
   async delete(organizationId: string, roleId: string) {
-    const role = await this.prisma.role.findFirst({ where: { id: roleId, organizationId } });
+    const role = await this.prisma.role.findFirst({ 
+      where: { id: roleId, organizationId },
+      include: {
+        _count: {
+          select: {
+            roleAssignments: true,
+            invitationRoleAssignments: true
+          }
+        }
+      }
+    });
     
     if (!role) {
       throw new BusinessException('ROLE_NOT_FOUND', 404, 'Role not found');
     }
     
-    if (role.type === 'SYSTEM') {
-      throw new BusinessException('ROLE_SYSTEM_PROTECTED', 403, 'Cannot delete system role');
+    if (role.type === 'SYSTEM' || !role.isDeletable) {
+      throw new BusinessException('ROLE_SYSTEM_PROTECTED', 403, 'Cannot delete system or protected role');
+    }
+
+    if (role._count.roleAssignments > 0 || role._count.invitationRoleAssignments > 0) {
+      throw new BusinessException('ROLE_IN_USE', 409, 'Role is currently in use by active members or pending invitations');
     }
 
     await this.prisma.role.delete({ where: { id: roleId } });

@@ -19,7 +19,11 @@ import { MailModule } from '../../infrastructure/mail/mail.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('ACCESS_TOKEN_SECRET'),
-        signOptions: { expiresIn: '15m' },
+        signOptions: { 
+          expiresIn: config.getOrThrow<string>('ACCESS_TOKEN_TTL'),
+          issuer: config.getOrThrow<string>('JWT_ISSUER'),
+          audience: config.getOrThrow<string>('JWT_AUDIENCE'),
+        },
       }),
     }),
   ],

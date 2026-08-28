@@ -97,6 +97,15 @@ model UserAccount {
   passwordResetTokens      PasswordResetToken[]
 }
 
+enum RevokeReason {
+  LOGOUT
+  LOGOUT_ALL
+  PASSWORD_RESET
+  ROTATED
+  REPLAY_DETECTED
+  ADMIN_REVOKED
+}
+
 model AuthSession {
   id                  String    @id @default(uuid()) @db.Uuid
   userAccountId       String    @db.Uuid
@@ -104,7 +113,7 @@ model AuthSession {
   refreshTokenHash    String    @unique
   expiresAt           DateTime
   revokedAt           DateTime?
-  revokeReason        String?
+  revokeReason        RevokeReason?
   replacedBySessionId String?   @db.Uuid
   lastUsedAt          DateTime?
   ipAddress           String?
