@@ -1,10 +1,10 @@
-import { StudentsClient } from './students';
-import { GuardiansClient } from './guardians';
-import { StaffClient } from './staff';
 import axios from 'axios';
 
+// @ts-ignore
+const baseURL = typeof process !== 'undefined' && process.env && process.env.API_URL ? process.env.API_URL : 'http://localhost:3000/api/v1';
+
 export const apiClient = axios.create({
-  baseURL: process.env.API_URL || 'http://localhost:3000/api/v1',
+  baseURL,
   withCredentials: true,
 });
 
@@ -24,7 +24,6 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Basic 401 refresh logic would go here
     return Promise.reject(error.response?.data || error);
   }
 );

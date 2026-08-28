@@ -1,13 +1,13 @@
 
-import { AxiosInstance } from 'axios';
-export class StaffClient {
-  constructor(private client: AxiosInstance) {}
-  async list(params: any) { const res = await this.client.get('/education/staff', { params }); return res.data; }
-  async get(id: string) { const res = await this.client.get(`/education/staff/${id}`); return res.data; }
-  async create(data: any) { const res = await this.client.post('/education/staff', data); return res.data; }
-  async listPositions() { const res = await this.client.get('/education/staff-positions'); return res.data; }
-  async createPosition(data: any) { const res = await this.client.post('/education/staff-positions', data); return res.data; }
-  async listAssignments(staffId: string) { const res = await this.client.get(`/education/staff/${staffId}/assignments`); return res.data; }
-  async createAssignment(staffId: string, data: any) { const res = await this.client.post(`/education/staff/${staffId}/assignments`, data); return res.data; }
-  async endAssignment(staffId: string, assignmentId: string) { const res = await this.client.post(`/education/staff/${staffId}/assignments/${assignmentId}/end`); return res.data; }
-}
+import { apiClient } from './client';
+
+export const staffApi = {
+  list: (params?: any) => apiClient.get('/education/staff', { params }).then(res => res.data),
+  get: (id: string) => apiClient.get(`/education/staff/${id}`).then(res => res.data),
+  create: (data: any) => apiClient.post('/education/staff', data).then(res => res.data),
+  listPositions: () => apiClient.get('/education/staff-positions').then(res => res.data),
+  createPosition: (data: any) => apiClient.post('/education/staff-positions', data).then(res => res.data),
+  listAssignments: (staffId: string) => apiClient.get(`/education/staff/${staffId}/assignments`).then(res => res.data),
+  createAssignment: (staffId: string, data: any) => apiClient.post(`/education/staff/${staffId}/assignments`, data).then(res => res.data),
+  endAssignment: (staffId: string, assignmentId: string) => apiClient.post(`/education/staff/${staffId}/assignments/${assignmentId}/end`).then(res => res.data),
+};

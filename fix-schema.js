@@ -1,21 +1,52 @@
 const fs = require('fs');
+
 let schema = fs.readFileSync('packages/database/prisma/schema.prisma', 'utf8');
 
-schema = schema.replace(/model StudentAdmissionSequence \{[\s\S]*?@@unique\(\[organizationId, branchPrefix\]\)[\s\S]*?\}/, 
-`model StudentAdmissionSequence {
-  id             String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  branchId       String? @db.Uuid
-  prefix         String
-  nextValue      Int    @default(1)
+// I want to remove the duplicate definitions
+let lines = schema.split('\n');
 
-  organization  Organization @relation(fields: [organizationId], references: [id])
-  branch        Branch?      @relation(fields: [branchId], references: [id])
+const count = {};
+const newLines = [];
 
-  @@unique([organizationId, branchId])
-}`);
+// Very hacky but safe way: remove all newly added duplicate relations
+// The duplicates are: studentEnrollments StudentEnrollment[], sections Section[], batches Batch[]
+// Let's just filter out the second occurrence in each block. Or just use a block parser.
 
-// Also fix userAccountId if it's there
-schema = schema.replace(/userAccount\s+UserAccount\?\s+@relation\(fields:\s*\[userAccountId\],\s*references:\s*\[id\]\)\n\s*userAccountId\s+String\?\s+@db\.Uuid/g, '');
+let currentModel = null;
+let seenInModel = new Set();
 
-fs.writeFileSync('packages/database/prisma/schema.prisma', schema, 'utf8');
+for (let line of lines) {
+  const match = line.match(/^model\s+(\w+)\s+\{/);
+  if (match) {
+    currentModel = match[1];
+    seenInModel.clear();
+    newLines.push(line);
+    continue;
+  }
+  if (line.trim() === '}') {
+    currentModel = null;
+    newLines.push(line);
+    continue;
+  }
+  
+  if (currentModel) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('studentEnrollments StudentEnrollment[]')) {
+      if (seenInModel.has('studentEnrollments')) continue;
+      seenInModel.add('studentEnrollments');
+    }
+    if (trimmed.startsWith('sections Section[]') || trimmed.startsWith('sections                  Section[]')) {
+      if (seenInModel.has('sections')) continue;
+      seenInModel.add('sections');
+    }
+    if (trimmed.startsWith('batches Batch[]') || trimmed.startsWith('batches                   Batch[]')) {
+      if (seenInModel.has('batches')) continue;
+      seenInModel.add('batches');
+    }
+  }
+  
+  newLines.push(line);
+}
+
+fs.writeFileSync('packages/database/prisma/schema.prisma', newLines.join('\n'), 'utf8');
+
