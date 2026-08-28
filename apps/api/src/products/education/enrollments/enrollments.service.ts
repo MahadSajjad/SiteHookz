@@ -22,7 +22,7 @@ export class EnrollmentsService {
     studentId: string,
     dto: any,
   ) {
-    if (tenant["institutionType" as any] !== "SCHOOL")
+    if ((tenant as any).institutionType !== "SCHOOL")
       throw new BadRequestException("EDUCATION_INSTITUTION_TYPE_MISMATCH");
 
     return this.prisma.$transaction(async (tx) => {
@@ -74,9 +74,7 @@ export class EnrollmentsService {
     });
 
     if (
-      tenant[
-        "institutionType" as any
-      ] /* TEMP: TenantContext should include institutionType */ !== "SCHOOL"
+      (tenant as any).institutionType /* TEMP: TenantContext should include institutionType */ !== "SCHOOL"
     )
       throw new BadRequestException("EDUCATION_INSTITUTION_TYPE_MISMATCH");
 
@@ -128,7 +126,7 @@ export class EnrollmentsService {
     studentId: string,
     dto: any,
   ) {
-    if (tenant["institutionType" as any] === "SCHOOL")
+    if ((tenant as any).institutionType === "SCHOOL")
       throw new BadRequestException("EDUCATION_INSTITUTION_TYPE_MISMATCH");
 
     return this.prisma.$transaction(async (tx) => {
@@ -177,7 +175,7 @@ export class EnrollmentsService {
       return enrollment;
     });
 
-    if (tenant["institutionType" as any] === "SCHOOL")
+    if ((tenant as any).institutionType === "SCHOOL")
       throw new BadRequestException("EDUCATION_INSTITUTION_TYPE_MISMATCH");
 
     return this.prisma.$transaction(async (tx) => {

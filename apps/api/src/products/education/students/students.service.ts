@@ -19,7 +19,7 @@ export class StudentsService {
     const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
     if (accessibleBranches.length === 0) return { items: [], total: 0, page: 1, limit: 20 };
 
-    if (!accessibleBranches === 'ALL') {
+    if (accessibleBranches !== 'ALL') {
       where.enrollments = {
         some: {
           status: 'ACTIVE',
@@ -67,7 +67,7 @@ export class StudentsService {
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
     
     const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
-    if (!accessibleBranchIds === 'ALL') {
+    if (accessibleBranchIds !== 'ALL') {
       const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
         where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds as string[] } }
       });
@@ -120,7 +120,7 @@ export class StudentsService {
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
     
     const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.update');
-    if (!accessibleBranchIds === 'ALL') {
+    if (accessibleBranchIds !== 'ALL') {
       const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
         where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds as string[] } }
       });

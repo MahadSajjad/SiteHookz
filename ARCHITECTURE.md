@@ -122,3 +122,10 @@ Uses the `X-Organization-Slug` header **only in development mode**. This allows 
 - The refresh token is transmitted to the client strictly via a \HttpOnly\, \Secure\, \SameSite=lax\ cookie bound to the API domain path (\/api/v1/auth\).
 - Access tokens are kept in memory by the client application and used as Bearer tokens.
 - Password resets revoke all active \AuthSession\s for the user.
+
+### Layer 3B Academic Structure & Student Enrollment Invariants
+- **Placement Uniqueness**: The database constraints (e.g. `UNIQUE(enrollmentId)`) enforce a 1:1 mapping at the table level.
+- **Polymorphic Exclusivity**: The exclusivity between `SCHOOL` and `TUITION` (a StudentEnrollment cannot have both) is a **transactional application invariant** maintained exclusively by `EnrollmentsService`.
+- **Tuition Concurrency**: A student can have multiple active `TUITION` enrollments across different branches or batches simultaneously. Same-batch concurrency is prevented via `SELECT ... FOR UPDATE` serialization.
+- **Student Authorization**: Read/update authorization for students uses **ANY** accessible active Enrollment rather than one arbitrary "current" branch.
+- **Guardian Visibility**: Guardian listing visibility resolves strictly through authorized active Enrollment Branches of linked students.

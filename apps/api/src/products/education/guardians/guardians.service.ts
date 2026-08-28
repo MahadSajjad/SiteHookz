@@ -16,13 +16,13 @@ export class GuardiansService {
 
     let targetBranches = accessibleBranches;
     if (query.branchId) {
-      if (!accessibleBranches === 'ALL' && !accessibleBranches.includes(query.branchId)) {
+      if (accessibleBranches !== 'ALL' && !accessibleBranches.includes(query.branchId)) {
         return { items: [], total: 0, page: 1, limit: 20 };
       }
       targetBranches = [query.branchId];
     }
 
-    if (!targetBranches === 'ALL') {
+    if (targetBranches !== 'ALL') {
       where.studentGuardians = {
         some: {
           student: {
@@ -46,7 +46,7 @@ export class GuardiansService {
     
     const where: any = { id, organizationId: tenant.organizationId };
     
-    if (!accessibleBranches === 'ALL') {
+    if (accessibleBranches !== 'ALL') {
       where.studentGuardians = {
         some: {
           student: {
