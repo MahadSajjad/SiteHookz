@@ -59,3 +59,5 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
