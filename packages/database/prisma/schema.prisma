@@ -372,14 +372,14 @@ enum Gender {
 model StudentAdmissionSequence {
   id             String @id @default(uuid()) @db.Uuid
   organizationId String @db.Uuid
-  branchPrefix   String
+  branchId       String? @db.Uuid
+  prefix         String
   nextValue      Int    @default(1)
 
   organization  Organization @relation(fields: [organizationId], references: [id])
-  userAccount   UserAccount? @relation(fields: [userAccountId], references: [id])
-  userAccountId String?      @db.Uuid
+  branch        Branch?      @relation(fields: [branchId], references: [id])
 
-  @@unique([organizationId, branchPrefix])
+  @@unique([organizationId, branchId])
 }
 
 model Student {
@@ -409,8 +409,7 @@ model Student {
   organization     Organization      @relation(fields: [organizationId], references: [id])
   admissionBranch  Branch?           @relation(fields: [admissionBranchId], references: [id], onDelete: Restrict)
   studentGuardians StudentGuardian[]
-  userAccount      UserAccount?      @relation(fields: [userAccountId], references: [id])
-  userAccountId    String?           @db.Uuid
+  
 
   @@unique([organizationId, admissionNumber])
   @@index([organizationId])
@@ -448,8 +447,7 @@ model Guardian {
 
   organization     Organization      @relation(fields: [organizationId], references: [id])
   studentGuardians StudentGuardian[]
-  userAccount      UserAccount?      @relation(fields: [userAccountId], references: [id])
-  userAccountId    String?           @db.Uuid
+  
 
   @@index([organizationId])
   @@index([organizationId, archivedAt])
@@ -488,8 +486,7 @@ model StudentGuardian {
   organization  Organization @relation(fields: [organizationId], references: [id])
   student       Student      @relation(fields: [studentId], references: [id], onDelete: Restrict)
   guardian      Guardian     @relation(fields: [guardianId], references: [id], onDelete: Restrict)
-  userAccount   UserAccount? @relation(fields: [userAccountId], references: [id])
-  userAccountId String?      @db.Uuid
+  
 
   @@unique([studentId, guardianId])
   @@index([organizationId])
@@ -533,8 +530,7 @@ model StaffMember {
 
   organization  Organization            @relation(fields: [organizationId], references: [id])
   assignments   StaffBranchAssignment[]
-  userAccount   UserAccount?            @relation(fields: [userAccountId], references: [id])
-  userAccountId String?                 @db.Uuid
+  
 
   @@unique([organizationId, employeeNumber])
   @@index([organizationId])
@@ -568,8 +564,7 @@ model StaffPosition {
 
   organization  Organization            @relation(fields: [organizationId], references: [id])
   assignments   StaffBranchAssignment[]
-  userAccount   UserAccount?            @relation(fields: [userAccountId], references: [id])
-  userAccountId String?                 @db.Uuid
+  
 
   @@unique([organizationId, code])
   @@index([organizationId])
@@ -595,8 +590,7 @@ model StaffBranchAssignment {
   staffMember   StaffMember   @relation(fields: [staffMemberId], references: [id], onDelete: Restrict)
   branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
   position      StaffPosition @relation(fields: [positionId], references: [id], onDelete: Restrict)
-  userAccount   UserAccount?  @relation(fields: [userAccountId], references: [id])
-  userAccountId String?       @db.Uuid
+  
 
   @@index([organizationId])
   @@index([staffMemberId])
