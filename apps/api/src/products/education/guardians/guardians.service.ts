@@ -1,4 +1,3 @@
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { TenantContext } from '../../../platform/tenancy/tenant.guard';
@@ -18,7 +17,7 @@ export class GuardiansService {
     let targetBranches = accessibleBranches;
     if (query.branchId) {
       if (!accessibleBranches.includes('*') && !accessibleBranches.includes(query.branchId)) {
-        return { items: [], total: 0, page: 1, limit: 20 }; // Forbidden requested branch
+        return { items: [], total: 0, page: 1, limit: 20 };
       }
       targetBranches = [query.branchId];
     }
@@ -38,14 +37,6 @@ export class GuardiansService {
       };
     }
 
-    const items = await this.prisma.guardian.findMany({ where, take: 20 });
-    return { items, total: items.length, page: 1, limit: 20 };
-  }
-            }
-          }
-        }
-      };
-    }
     const items = await this.prisma.guardian.findMany({ where, take: 20 });
     return { items, total: items.length, page: 1, limit: 20 };
   }
@@ -71,9 +62,6 @@ export class GuardiansService {
     }
 
     const item = await this.prisma.guardian.findUnique({ where, include: { studentGuardians: { include: { student: true } } } });
-    if (!item) throw new NotFoundException('GUARDIAN_NOT_FOUND');
-    return item;
-  } } } });
     if (!item) throw new NotFoundException('GUARDIAN_NOT_FOUND');
     return item;
   }

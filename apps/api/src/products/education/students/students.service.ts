@@ -1,4 +1,3 @@
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/database/prisma.service';
 import { CreateStudentDto, UpdateStudentDto } from './dto/create-student.dto';
@@ -52,23 +51,6 @@ export class StudentsService {
     ]);
 
     return { items, total, page, limit };
-  } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { admissionNumber: { contains: search, mode: 'insensitive' } },
-      ];
-    }
-
-    const [items, total] = await Promise.all([
-      this.prisma.student.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { [sort]: dir },
-      }),
-      this.prisma.student.count({ where }),
-    ]);
-
-    return { items, total, page, limit };
   }
 
   async findOne(tenant: TenantContext, id: string) {
@@ -90,12 +72,8 @@ export class StudentsService {
         where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
       });
       if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
-    }});
-    if (activeEnr) {
-      this.auth.assertPermission(tenant, 'education.students.read', activeEnr.branchId);
-    } else {
-      // Fallback or org-level
     }
+    
     return student;
   }
 
@@ -105,9 +83,6 @@ export class StudentsService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      // 
-      // admission number generation safely within tx
-      // We assume branchId is stable. If null, we use a placeholder branchId 'MAIN' or just use organizationId as branchId for the sequence
       const seqBranchId = dto.admissionBranchId || '00000000-0000-0000-0000-000000000000';
       const prefix = dto.admissionBranchId ? 'B' + dto.admissionBranchId.substring(0, 4).toUpperCase() : 'MAIN';
 
@@ -136,7 +111,6 @@ export class StudentsService {
         }
       });
     });
-
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateStudentDto) {
@@ -144,15 +118,13 @@ export class StudentsService {
       where: { id, organizationId: tenant.organizationId }
     });
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
-    const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
+    
+    const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.update');
     if (!accessibleBranchIds.includes('*')) {
       const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
         where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
       });
       if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
-    }});
-    if (activeEnr) {
-      this.auth.assertPermission(tenant, 'education.students.update', activeEnr.branchId);
     }
 
     return this.prisma.student.update({
