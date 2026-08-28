@@ -1,3 +1,4 @@
+import { createParamDecorator } from '@nestjs/common';
 import { Injectable, CanActivate, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
@@ -106,3 +107,10 @@ export class TenantGuard implements CanActivate {
     return true;
   }
 }
+
+export const CurrentTenant = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.tenantContext as TenantContext;
+  },
+);

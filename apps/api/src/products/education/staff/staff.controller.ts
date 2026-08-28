@@ -1,7 +1,7 @@
 
 import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { StaffService } from './staff.service';
-import { RequirePermission } from '../../../platform/authorization/require-permission.decorator';
+import { RequirePermission } from '../../../platform/authorization/permission.guard';
 import { PermissionGuard } from '../../../platform/authorization/permission.guard';
 import { CurrentTenant, TenantContext } from '../../../platform/tenancy/tenant.guard';
 import { ZodValidationPipe } from '../../../common/pipes/zod-validation.pipe';
