@@ -4,6 +4,7 @@ import { BusinessException } from '../../common/exceptions/business.exception';
 import { AuthService } from './auth.service';
 import { RegisterDto, registerSchema } from './dto/register.dto';
 import { LoginDto, loginSchema } from './dto/login.dto';
+import { VerifyEmailDto, verifyEmailSchema } from './dto/verify-email.dto';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { Public } from '../../common/decorators/public.decorator';
 
@@ -16,6 +17,14 @@ export class AuthController {
   async register(@Body(new ZodValidationPipe(registerSchema)) dto: RegisterDto) {
     const result = await this.authService.register(dto);
     return { success: true, data: result };
+  }
+
+  @Public()
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmail(@Body(new ZodValidationPipe(verifyEmailSchema)) dto: VerifyEmailDto) {
+    const result = await this.authService.verifyEmail(dto);
+    return result;
   }
 
   @Public()
@@ -34,9 +43,9 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Must work across subdomains or explicit path if 'strict'
+      sameSite: 'lax',
       path: '/api/v1/auth',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
     return { success: true, data: { accessToken, user } };

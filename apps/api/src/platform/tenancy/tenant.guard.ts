@@ -4,9 +4,24 @@ import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { TenantResolverService } from './tenant-resolver.service';
 import { BusinessException } from '../../common/exceptions/business.exception';
+import { RoleScopeType } from '@prisma/client';
 
 export const SKIP_TENANT_KEY = 'skipTenant';
 export const SkipTenant = () => SetMetadata(SKIP_TENANT_KEY, true);
+
+export type TenantContext = {
+  organizationId: string;
+  organizationSlug: string;
+  userAccountId: string;
+  membershipId: string;
+  assignments: Array<{
+    roleId: string;
+    roleKey: string;
+    scopeType: RoleScopeType;
+    branchId: string | null;
+    permissions: string[];
+  }>;
+};
 
 @Injectable()
 export class TenantGuard implements CanActivate {
@@ -33,9 +48,9 @@ export class TenantGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     
-    // Skip if no user is authenticated (public routes)
+    // Fail closed if no user is authenticated
     if (!request.user) {
-      return true; 
+      throw new BusinessException('AUTH_REQUIRED', 401, 'Unauthorized');
     }
 
     // Resolve Organization
@@ -51,7 +66,17 @@ export class TenantGuard implements CanActivate {
       },
       include: {
         roleAssignments: {
-          include: { role: true }
+          include: { 
+            role: {
+              include: {
+                rolePermissions: {
+                  include: {
+                    permission: true
+                  }
+                }
+              }
+            }
+          }
         }
       }
     });
@@ -60,12 +85,23 @@ export class TenantGuard implements CanActivate {
       throw new BusinessException('TENANT_ACCESS_DENIED', 403, 'User does not have active membership in this organization');
     }
 
-    // Attach to request
-    request.tenantContext = {
-      organization,
-      membership,
-      // branch context could be resolved here if x-sitehookz-branch header is provided
+    // Build the normalized TenantContext
+    const tenantContext: TenantContext = {
+      organizationId: organization.id,
+      organizationSlug: organization.slug,
+      userAccountId: request.user.userAccountId,
+      membershipId: membership.id,
+      assignments: membership.roleAssignments.map(assignment => ({
+        roleId: assignment.role.id,
+        roleKey: assignment.role.key,
+        scopeType: assignment.role.scopeType,
+        branchId: assignment.branchId,
+        permissions: assignment.role.rolePermissions.map(rp => rp.permission.key)
+      }))
     };
+
+    // Attach to request
+    request.tenantContext = tenantContext;
     
     return true;
   }

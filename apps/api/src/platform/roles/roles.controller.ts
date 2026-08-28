@@ -1,7 +1,10 @@
 import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
 import { RolesService } from './roles.service';
-import { TenantContext } from '../../common/decorators/tenant-context.decorator';
+import { TenantContext as TenantContextDecorator } from '../../common/decorators/tenant-context.decorator';
 import { RequirePermission } from '../authorization/permission.guard';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+import { CreateRoleDto, createRoleSchema } from './dto/create-role.dto';
+import { TenantContext } from '../tenancy/tenant.guard';
 
 @Controller('roles')
 export class RolesController {
@@ -9,19 +12,22 @@ export class RolesController {
 
   @RequirePermission('platform.roles.read')
   @Get()
-  async findAll(@TenantContext() tenant: any) {
+  async findAll(@TenantContextDecorator() tenant: TenantContext) {
     return this.rolesService.findAll(tenant.organizationId);
   }
 
   @RequirePermission('platform.roles.create')
   @Post()
-  async create(@TenantContext() tenant: any, @Body() dto: any) {
-    return this.rolesService.create(tenant.organizationId, dto);
+  async create(
+    @TenantContextDecorator() tenant: TenantContext, 
+    @Body(new ZodValidationPipe(createRoleSchema)) dto: CreateRoleDto
+  ) {
+    return this.rolesService.create(tenant, dto);
   }
 
   @RequirePermission('platform.roles.delete')
   @Delete(':id')
-  async delete(@TenantContext() tenant: any, @Param('id') id: string) {
+  async delete(@TenantContextDecorator() tenant: TenantContext, @Param('id') id: string) {
     return this.rolesService.delete(tenant.organizationId, id);
   }
 }
