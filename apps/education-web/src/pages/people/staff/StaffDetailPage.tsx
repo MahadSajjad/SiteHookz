@@ -19,7 +19,7 @@ export default function StaffDetailPage() {
 
   const { data: assignmentsData, isLoading: isAssignmentsLoading } = useQuery({
     queryKey: ["education.teachingAssignments.list", { staffId: id }],
-    queryFn: () => api.teachingAssignments.list({ staffId: id }),
+    queryFn: () => api.teachingAssignments.getByStaffMemberId(id as string, { staffId: id }),
     enabled: activeTab === "assignments" && !!id,
   });
 
@@ -113,15 +113,15 @@ export default function StaffDetailPage() {
                   ))}
                   {(!assignmentsData ||
                     assignmentsData.length === 0) && (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="p-4 text-center text-sm text-gray-500"
-                      >
-                        No teaching assignments found.
-                      </td>
-                    </tr>
-                  )}
+                      <tr>
+                        <td
+                          colSpan={4}
+                          className="p-4 text-center text-sm text-gray-500"
+                        >
+                          No teaching assignments found.
+                        </td>
+                      </tr>
+                    )}
                 </tbody>
               </table>
             </div>
