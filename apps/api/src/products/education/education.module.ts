@@ -8,6 +8,9 @@ import { StudentsModule } from "./students/students.module";
 import { GuardiansModule } from "./guardians/guardians.module";
 import { StaffModule } from "./staff/staff.module";
 import { Module } from "@nestjs/common";
+import { SubjectsModule } from "./subjects/subjects.module";
+import { SubjectOfferingsModule } from "./subject-offerings/subject-offerings.module";
+import { TeachingAssignmentsModule } from "./teaching-assignments/teaching-assignments.module";
 // import { AcademicSessionsModule } from './academic-sessions/academic-sessions.module';
 // import { EducationOnboardingService } from './education-onboarding.service';
 
@@ -21,6 +24,9 @@ import { Module } from "@nestjs/common";
     StudentsModule,
     GuardiansModule,
     StaffModule,
+    SubjectsModule,
+    SubjectOfferingsModule,
+    TeachingAssignmentsModule,
 
     // AcademicSessionsModule
   ],

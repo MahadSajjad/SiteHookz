@@ -5,6 +5,10 @@ import { sectionsApi } from "@sitehookz/api-client/src/sections";
 import { enrollmentsApi } from "@sitehookz/api-client/src/enrollments";
 import { studentsApi, guardiansApi, staffApi } from "@sitehookz/api-client";
 
+import { subjectsApi } from "@sitehookz/api-client/src/subjects";
+import { subjectOfferingsApi } from "@sitehookz/api-client/src/subject-offerings";
+import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
+
 export function useApiClient() {
   return {
     courses: coursesApi,
@@ -15,5 +19,8 @@ export function useApiClient() {
     students: studentsApi,
     guardians: guardiansApi,
     staff: staffApi,
+    subjects: subjectsApi,
+    subjectOfferings: subjectOfferingsApi,
+    teachingAssignments: teachingAssignmentsApi,
   };
 }

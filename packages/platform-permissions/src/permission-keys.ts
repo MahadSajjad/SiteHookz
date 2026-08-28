@@ -41,5 +41,23 @@ export const P = {
       UPDATE: "education.academic_sessions.update",
       ARCHIVE: "education.academic_sessions.archive",
     },
+    SUBJECTS: {
+      READ: "education.subjects.read",
+      CREATE: "education.subjects.create",
+      UPDATE: "education.subjects.update",
+      ARCHIVE: "education.subjects.archive",
+    },
+    SUBJECT_OFFERINGS: {
+      READ: "education.subject_offerings.read",
+      CREATE: "education.subject_offerings.create",
+      UPDATE: "education.subject_offerings.update",
+      ARCHIVE: "education.subject_offerings.archive",
+    },
+    TEACHING_ASSIGNMENTS: {
+      READ: "education.teaching_assignments.read",
+      CREATE: "education.teaching_assignments.create",
+      UPDATE: "education.teaching_assignments.update",
+      ARCHIVE: "education.teaching_assignments.archive",
+    },
   },
 } as const;
