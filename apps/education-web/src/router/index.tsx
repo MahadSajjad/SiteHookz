@@ -41,10 +41,10 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute><AppLayout /></ProtectedRoute>,
     children: [
-      {
-        path: '/dashboard',
-        element: <DashboardPage />
-      }
+      { path: '/dashboard', element: <DashboardPage /> },
+      { path: '/dashboard/students', element: <StudentsPage /> },
+      { path: '/dashboard/guardians', element: <GuardiansPage /> },
+      { path: '/dashboard/staff', element: <StaffPage /> }
     ]
   }
 ]);
