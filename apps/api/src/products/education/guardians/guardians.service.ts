@@ -11,6 +11,20 @@ export class GuardiansService {
 
   async findAll(tenant: TenantContext, query: any) {
     const where: any = { organizationId: tenant.organizationId, archivedAt: null };
+    if (query.branchId) {
+      where.studentGuardians = {
+        some: {
+          student: {
+            enrollments: {
+              some: {
+                status: 'ACTIVE',
+                branchId: query.branchId
+              }
+            }
+          }
+        }
+      };
+    }
     const items = await this.prisma.guardian.findMany({ where, take: 20 });
     return { items, total: items.length, page: 1, limit: 20 };
   }

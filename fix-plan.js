@@ -1,19 +1,23 @@
-# SiteHookz Project Plan
+const fs = require('fs');
+
+let plan = fs.readFileSync('PLAN.md', 'utf8');
+
+const newPlan = `# SiteHookz Project Plan
 
 ## Current Phase
-**Layer 3B Academic Structure & Student Enrollment ï¿½ COMPLETED**
+**Layer 3B Academic Structure & Student Enrollment — COMPLETED**
 
 ## Execution Phase 2: Tenant & Auth Foundation Hardening
-Status: `[COMPLETED]`
+Status: \`[COMPLETED]\`
 
 ## Layer 3A People Domain
-Status: `[COMPLETED]`
+Status: \`[COMPLETED]\`
 - Student, Guardian, StudentGuardian
 - StaffMember, StaffPosition, StaffBranchAssignment
 - Education-specific dashboard
 
 ## Layer 3B Academic Structure & Student Enrollment
-Status: `[COMPLETED (Pending DB Integration)]`
+Status: \`[COMPLETED (Pending DB Integration)]\`
 **Architecture LOCKED.**
 - **School Structure**: ClassLevel, Section, SchoolEnrollmentPlacement
 - **Tuition Structure**: Course, Batch, TuitionEnrollmentPlacement
@@ -28,3 +32,7 @@ Status: `[COMPLETED (Pending DB Integration)]`
 - Timetable
 - Reports
 - Billing/Subscriptions
+`;
+
+fs.writeFileSync('PLAN.md', newPlan, 'utf8');
+console.log('PLAN.md updated');

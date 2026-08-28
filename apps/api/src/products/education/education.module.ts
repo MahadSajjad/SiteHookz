@@ -1,3 +1,9 @@
+import { CoursesModule } from './courses/courses.module';
+import { BatchesModule } from './batches/batches.module';
+
+import { ClassLevelsModule } from './class-levels/class-levels.module';
+import { SectionsModule } from './sections/sections.module';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { StudentsModule } from './students/students.module';
 import { GuardiansModule } from './guardians/guardians.module';
 import { StaffModule } from './staff/staff.module';
@@ -7,6 +13,11 @@ import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
+    CoursesModule,
+    BatchesModule,
+    ClassLevelsModule,
+    SectionsModule,
+    EnrollmentsModule,
     StudentsModule,
     GuardiansModule,
     StaffModule,

@@ -54,8 +54,17 @@ export class StudentsService {
     
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
     
-    if (student.admissionBranchId) {
-      this.auth.assertPermission(tenant, 'education.students.read', student.admissionBranchId);
+    const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
+    if (!accessibleBranchIds.includes('*')) {
+      const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
+        where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
+      });
+      if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
+    }});
+    if (activeEnr) {
+      this.auth.assertPermission(tenant, 'education.students.read', activeEnr.branchId);
+    } else {
+      // Fallback or org-level
     }
     return student;
   }
@@ -105,8 +114,15 @@ export class StudentsService {
       where: { id, organizationId: tenant.organizationId }
     });
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
-    if (student.admissionBranchId) {
-      this.auth.assertPermission(tenant, 'education.students.update', student.admissionBranchId);
+    const accessibleBranchIds = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.students.read');
+    if (!accessibleBranchIds.includes('*')) {
+      const activeEnr = await this.prisma.studentEnrollment.findFirst({ 
+        where: { organizationId: tenant.organizationId, studentId: id, status: 'ACTIVE', branchId: { in: accessibleBranchIds } }
+      });
+      if (!activeEnr) throw new NotFoundException('STUDENT_NOT_FOUND');
+    }});
+    if (activeEnr) {
+      this.auth.assertPermission(tenant, 'education.students.update', activeEnr.branchId);
     }
 
     return this.prisma.student.update({
@@ -122,9 +138,7 @@ export class StudentsService {
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
     if (student.archivedAt) throw new BusinessException('STUDENT_ALREADY_ARCHIVED', 400, 'Already archived');
 
-    if (student.admissionBranchId) {
-      this.auth.assertPermission(tenant, 'education.students.archive', student.admissionBranchId);
-    }
+    this.auth.assertPermission(tenant, 'education.students.archive');
 
     return this.prisma.student.update({
       where: { id },
@@ -137,9 +151,7 @@ export class StudentsService {
       where: { id, organizationId: tenant.organizationId }
     });
     if (!student) throw new NotFoundException('STUDENT_NOT_FOUND');
-    if (student.admissionBranchId) {
-      this.auth.assertPermission(tenant, 'education.students.restore', student.admissionBranchId);
-    }
+    this.auth.assertPermission(tenant, 'education.students.restore');
 
     return this.prisma.student.update({
       where: { id },
