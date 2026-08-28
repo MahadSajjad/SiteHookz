@@ -2,32 +2,34 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useApiClient } from "../../../hooks/useApiClient";
-import { CustomButton } from "@sitehookz/ui"; // Will verify package name
+import { CustomButton } from "@sitehookz/ui";
 
-export default function SectionDetailPage() {
+export default function StaffDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
-  const [activeTab, setActiveTab] = useState<"details" | "subjects">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "assignments">(
+    "details",
+  );
 
-  const { data: section, isLoading } = useQuery({
-    queryKey: ["education.sections.get", id],
-    queryFn: () => api.sections.get(id as string),
+  const { data: staff, isLoading } = useQuery({
+    queryKey: ["education.staff.get", id],
+    queryFn: () => api.staff.get(id as string),
     enabled: !!id,
   });
 
-  const { data: subjectsData, isLoading: isSubjectsLoading } = useQuery({
-    queryKey: ["education.subjectOfferings.list", { sectionId: id }],
-    queryFn: () => api.subjectOfferings.getBySectionId(id as string),
-    enabled: activeTab === "subjects" && !!id,
+  const { data: assignmentsData, isLoading: isAssignmentsLoading } = useQuery({
+    queryKey: ["education.teachingAssignments.list", { staffId: id }],
+    queryFn: () => api.teachingAssignments.list({ staffId: id }),
+    enabled: activeTab === "assignments" && !!id,
   });
 
-  if (isLoading) return <div className="p-6">Loading Section...</div>;
-  if (!section) return <div className="p-6">Section not found.</div>;
+  if (isLoading) return <div className="p-6">Loading Staff...</div>;
+  if (!staff) return <div className="p-6">Staff not found.</div>;
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{section.name} Details</h1>
+        <h1 className="text-2xl font-bold">{staff.name} Details</h1>
       </div>
 
       <div className="flex space-x-4 border-b mb-6">
@@ -38,44 +40,47 @@ export default function SectionDetailPage() {
           Details
         </button>
         <button
-          className={`pb-2 px-1 ${activeTab === "subjects" ? "border-b-2 border-primary font-semibold text-primary" : "text-gray-500"}`}
-          onClick={() => setActiveTab("subjects")}
+          className={`pb-2 px-1 ${activeTab === "assignments" ? "border-b-2 border-primary font-semibold text-primary" : "text-gray-500"}`}
+          onClick={() => setActiveTab("assignments")}
         >
-          Subjects
+          Teaching Assignments
         </button>
       </div>
 
       {activeTab === "details" && (
         <div className="bg-white p-6 rounded-lg shadow">
           <p>
-            <strong>Name:</strong> {section.name}
+            <strong>Name:</strong> {staff.name}
           </p>
           <p>
-            <strong>Capacity:</strong> {section.capacity}
+            <strong>Email:</strong> {staff.email}
+          </p>
+          <p>
+            <strong>Role:</strong> {staff.role}
           </p>
         </div>
       )}
 
-      {activeTab === "subjects" && (
+      {activeTab === "assignments" && (
         <div>
           <div className="flex justify-end mb-4">
-            <CustomButton variant="default">Add Subject</CustomButton>
+            <CustomButton variant="default">Assign Subject</CustomButton>
           </div>
-          {isSubjectsLoading ? (
-            <p>Loading subjects...</p>
+          {isAssignmentsLoading ? (
+            <p>Loading assignments...</p>
           ) : (
             <div className="overflow-x-auto bg-white rounded-lg shadow">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b">
                     <th className="p-4 font-semibold text-sm text-gray-600">
-                      Subject Name
+                      Subject
                     </th>
                     <th className="p-4 font-semibold text-sm text-gray-600">
-                      Code
+                      Section/Batch
                     </th>
                     <th className="p-4 font-semibold text-sm text-gray-600">
-                      Teacher
+                      Status
                     </th>
                     <th className="p-4 font-semibold text-sm text-gray-600">
                       Actions
@@ -83,16 +88,21 @@ export default function SectionDetailPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {subjectsData?.map((offering: any) => (
-                    <tr key={offering.id} className="border-b hover:bg-gray-50">
+                  {assignmentsData?.map((assignment: any) => (
+                    <tr
+                      key={assignment.id}
+                      className="border-b hover:bg-gray-50"
+                    >
                       <td className="p-4 text-sm">
-                        {offering.subject?.name || "N/A"}
+                        {assignment.subjectOffering?.subject?.name || "N/A"}
                       </td>
                       <td className="p-4 text-sm">
-                        {offering.subject?.code || "N/A"}
+                        {assignment.subjectOffering?.section?.name ||
+                          assignment.subjectOffering?.batch?.name ||
+                          "N/A"}
                       </td>
                       <td className="p-4 text-sm">
-                        {offering.teacher?.name || "Unassigned"}
+                        {assignment.status || "Active"}
                       </td>
                       <td className="p-4 text-sm">
                         <CustomButton variant="ghost" size="sm">
@@ -101,14 +111,14 @@ export default function SectionDetailPage() {
                       </td>
                     </tr>
                   ))}
-                  {(!subjectsData ||
-                    subjectsData.length === 0) && (
+                  {(!assignmentsData ||
+                    assignmentsData.length === 0) && (
                     <tr>
                       <td
                         colSpan={4}
                         className="p-4 text-center text-sm text-gray-500"
                       >
-                        No subjects offered for this section yet.
+                        No teaching assignments found.
                       </td>
                     </tr>
                   )}

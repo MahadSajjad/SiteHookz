@@ -74,7 +74,9 @@ export class EnrollmentsService {
     });
 
     if (
-      (tenant as any).institutionType /* TEMP: TenantContext should include institutionType */ !== "SCHOOL"
+      (tenant as any)
+        .institutionType /* TEMP: TenantContext should include institutionType */ !==
+      "SCHOOL"
     )
       throw new BadRequestException("EDUCATION_INSTITUTION_TYPE_MISMATCH");
 

@@ -2,5 +2,17 @@
   "academicSession": {
     "title": "تعلیمی سیشن",
     "plural": "تعلیمی سیشنز"
+  },
+  "subject": {
+    "title": "مضمون",
+    "plural": "مضامین"
+  },
+  "subjectOffering": {
+    "title": "مضمون کی پیشکش",
+    "plural": "مضمون کی پیشکشیں"
+  },
+  "teachingAssignment": {
+    "title": "تدریسی ذمہ داری",
+    "plural": "تدریسی ذمہ داریاں"
   }
 }

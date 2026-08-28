@@ -1,5 +1,9 @@
 import { P } from "@sitehookz/platform-permissions";
-import { EDUCATION_SUBJECTS_PERMISSIONS, EDUCATION_SUBJECT_OFFERINGS_PERMISSIONS, EDUCATION_TEACHING_ASSIGNMENTS_PERMISSIONS } from "../permissions/education-permissions";
+import {
+  EDUCATION_SUBJECTS_PERMISSIONS,
+  EDUCATION_SUBJECT_OFFERINGS_PERMISSIONS,
+  EDUCATION_TEACHING_ASSIGNMENTS_PERMISSIONS,
+} from "../permissions/education-permissions";
 
 export interface RoleTemplate {
   name: string;
@@ -109,7 +113,7 @@ export const EDUCATION_ROLE_TEMPLATES: RoleTemplate[] = [
     isEditable: true,
     isDeletable: true,
     permissions: [
-      P.PLATFORM.BRANCHES.READ, 
+      P.PLATFORM.BRANCHES.READ,
       P.EDUCATION.ACADEMIC_SESSIONS.READ,
       EDUCATION_SUBJECTS_PERMISSIONS.READ,
       EDUCATION_SUBJECT_OFFERINGS_PERMISSIONS.READ,

@@ -2,5 +2,17 @@
   "academicSession": {
     "title": "Academic Session",
     "plural": "Academic Sessions"
+  },
+  "subject": {
+    "title": "Subject",
+    "plural": "Subjects"
+  },
+  "subjectOffering": {
+    "title": "Subject Offering",
+    "plural": "Subject Offerings"
+  },
+  "teachingAssignment": {
+    "title": "Teaching Assignment",
+    "plural": "Teaching Assignments"
   }
 }

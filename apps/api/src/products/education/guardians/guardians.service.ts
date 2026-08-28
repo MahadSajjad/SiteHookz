@@ -1,39 +1,56 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/database/prisma.service';
-import { TenantContext } from '../../../platform/tenancy/tenant.guard';
-import { AuthorizationService } from '../../../platform/authorization/authorization.service';
-import { CreateGuardianDto, UpdateGuardianDto, LinkGuardianDto } from './dto/create-guardian.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
+import { AuthorizationService } from "../../../platform/authorization/authorization.service";
+import {
+  CreateGuardianDto,
+  UpdateGuardianDto,
+  LinkGuardianDto,
+} from "./dto/create-guardian.dto";
 
 @Injectable()
 export class GuardiansService {
-  constructor(private prisma: PrismaService, private auth: AuthorizationService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auth: AuthorizationService,
+  ) {}
 
   async findAll(tenant: TenantContext, query: any) {
-    const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.guardians.read');
-    if (accessibleBranches.length === 0) return { items: [], total: 0, page: 1, limit: 20 };
+    const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(
+      tenant,
+      "education.guardians.read",
+    );
+    if (accessibleBranches.length === 0)
+      return { items: [], total: 0, page: 1, limit: 20 };
 
-    const where: any = { organizationId: tenant.organizationId, archivedAt: null };
+    const where: any = {
+      organizationId: tenant.organizationId,
+      archivedAt: null,
+    };
 
     let targetBranches = accessibleBranches;
     if (query.branchId) {
-      if (accessibleBranches !== 'ALL' && !accessibleBranches.includes(query.branchId)) {
+      if (
+        accessibleBranches !== "ALL" &&
+        !accessibleBranches.includes(query.branchId)
+      ) {
         return { items: [], total: 0, page: 1, limit: 20 };
       }
       targetBranches = [query.branchId];
     }
 
-    if (targetBranches !== 'ALL') {
+    if (targetBranches !== "ALL") {
       where.studentGuardians = {
         some: {
           student: {
             enrollments: {
               some: {
-                status: 'ACTIVE',
-                branchId: { in: targetBranches as string[] }
-              }
-            }
-          }
-        }
+                status: "ACTIVE",
+                branchId: { in: targetBranches as string[] },
+              },
+            },
+          },
+        },
       };
     }
 
@@ -42,54 +59,85 @@ export class GuardiansService {
   }
 
   async findOne(tenant: TenantContext, id: string) {
-    const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(tenant, 'education.guardians.read');
-    
+    const accessibleBranches = this.auth.getAccessibleBranchIdsForPermission(
+      tenant,
+      "education.guardians.read",
+    );
+
     const where: any = { id, organizationId: tenant.organizationId };
-    
-    if (accessibleBranches !== 'ALL') {
+
+    if (accessibleBranches !== "ALL") {
       where.studentGuardians = {
         some: {
           student: {
             enrollments: {
               some: {
-                status: 'ACTIVE',
-                branchId: { in: accessibleBranches as string[] }
-              }
-            }
-          }
-        }
+                status: "ACTIVE",
+                branchId: { in: accessibleBranches as string[] },
+              },
+            },
+          },
+        },
       };
     }
 
-    const item = await this.prisma.guardian.findUnique({ where, include: { studentGuardians: { include: { student: true } } } });
-    if (!item) throw new NotFoundException('GUARDIAN_NOT_FOUND');
+    const item = await this.prisma.guardian.findUnique({
+      where,
+      include: { studentGuardians: { include: { student: true } } },
+    });
+    if (!item) throw new NotFoundException("GUARDIAN_NOT_FOUND");
     return item;
   }
 
   async create(tenant: TenantContext, dto: CreateGuardianDto) {
-    return this.prisma.guardian.create({ data: { organizationId: tenant.organizationId, ...dto } });
+    return this.prisma.guardian.create({
+      data: { organizationId: tenant.organizationId, ...dto },
+    });
   }
 
   async update(tenant: TenantContext, id: string, dto: UpdateGuardianDto) {
-    return this.prisma.guardian.update({ where: { id, organizationId: tenant.organizationId }, data: dto });
+    return this.prisma.guardian.update({
+      where: { id, organizationId: tenant.organizationId },
+      data: dto,
+    });
   }
 
   async archive(tenant: TenantContext, id: string) {
-    return this.prisma.guardian.update({ where: { id, organizationId: tenant.organizationId }, data: { archivedAt: new Date() } });
+    return this.prisma.guardian.update({
+      where: { id, organizationId: tenant.organizationId },
+      data: { archivedAt: new Date() },
+    });
   }
 
   async restore(tenant: TenantContext, id: string) {
-    return this.prisma.guardian.update({ where: { id, organizationId: tenant.organizationId }, data: { archivedAt: null } });
+    return this.prisma.guardian.update({
+      where: { id, organizationId: tenant.organizationId },
+      data: { archivedAt: null },
+    });
   }
 
   async getStudentGuardians(tenant: TenantContext, studentId: string) {
-    return this.prisma.studentGuardian.findMany({ where: { studentId, organizationId: tenant.organizationId }, include: { guardian: true } });
+    return this.prisma.studentGuardian.findMany({
+      where: { studentId, organizationId: tenant.organizationId },
+      include: { guardian: true },
+    });
   }
 
-  async linkGuardian(tenant: TenantContext, studentId: string, dto: LinkGuardianDto) {
+  async linkGuardian(
+    tenant: TenantContext,
+    studentId: string,
+    dto: LinkGuardianDto,
+  ) {
     return this.prisma.$transaction(async (tx) => {
       if (dto.isPrimary) {
-        await tx.studentGuardian.updateMany({ where: { studentId, organizationId: tenant.organizationId, isPrimary: true }, data: { isPrimary: false } });
+        await tx.studentGuardian.updateMany({
+          where: {
+            studentId,
+            organizationId: tenant.organizationId,
+            isPrimary: true,
+          },
+          data: { isPrimary: false },
+        });
       }
       return tx.studentGuardian.create({
         data: {
@@ -98,12 +146,22 @@ export class GuardiansService {
           guardianId: dto.guardianId,
           relationship: dto.relationship,
           isPrimary: dto.isPrimary,
-        }
+        },
       });
     });
   }
 
-  async unlinkGuardian(tenant: TenantContext, studentId: string, relationshipId: string) {
-    return this.prisma.studentGuardian.delete({ where: { id: relationshipId, studentId, organizationId: tenant.organizationId } });
+  async unlinkGuardian(
+    tenant: TenantContext,
+    studentId: string,
+    relationshipId: string,
+  ) {
+    return this.prisma.studentGuardian.delete({
+      where: {
+        id: relationshipId,
+        studentId,
+        organizationId: tenant.organizationId,
+      },
+    });
   }
 }

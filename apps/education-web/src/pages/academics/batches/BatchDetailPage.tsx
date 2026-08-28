@@ -2,32 +2,32 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useApiClient } from "../../../hooks/useApiClient";
-import { CustomButton } from "@sitehookz/ui"; // Will verify package name
+import { CustomButton } from "@sitehookz/ui";
 
-export default function SectionDetailPage() {
+export default function BatchDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
   const [activeTab, setActiveTab] = useState<"details" | "subjects">("details");
 
-  const { data: section, isLoading } = useQuery({
-    queryKey: ["education.sections.get", id],
-    queryFn: () => api.sections.get(id as string),
+  const { data: batch, isLoading } = useQuery({
+    queryKey: ["education.batches.get", id],
+    queryFn: () => api.batches.get(id as string),
     enabled: !!id,
   });
 
   const { data: subjectsData, isLoading: isSubjectsLoading } = useQuery({
-    queryKey: ["education.subjectOfferings.list", { sectionId: id }],
-    queryFn: () => api.subjectOfferings.getBySectionId(id as string),
+    queryKey: ["education.subjectOfferings.list", { batchId: id }],
+    queryFn: () => api.subjectOfferings.getByBatchId(id as string),
     enabled: activeTab === "subjects" && !!id,
   });
 
-  if (isLoading) return <div className="p-6">Loading Section...</div>;
-  if (!section) return <div className="p-6">Section not found.</div>;
+  if (isLoading) return <div className="p-6">Loading Batch...</div>;
+  if (!batch) return <div className="p-6">Batch not found.</div>;
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{section.name} Details</h1>
+        <h1 className="text-2xl font-bold">{batch.name} Details</h1>
       </div>
 
       <div className="flex space-x-4 border-b mb-6">
@@ -48,10 +48,13 @@ export default function SectionDetailPage() {
       {activeTab === "details" && (
         <div className="bg-white p-6 rounded-lg shadow">
           <p>
-            <strong>Name:</strong> {section.name}
+            <strong>Name:</strong> {batch.name}
           </p>
           <p>
-            <strong>Capacity:</strong> {section.capacity}
+            <strong>Code:</strong> {batch.code}
+          </p>
+          <p>
+            <strong>Capacity:</strong> {batch.capacity}
           </p>
         </div>
       )}
@@ -108,7 +111,7 @@ export default function SectionDetailPage() {
                         colSpan={4}
                         className="p-4 text-center text-sm text-gray-500"
                       >
-                        No subjects offered for this section yet.
+                        No subjects offered for this batch yet.
                       </td>
                     </tr>
                   )}

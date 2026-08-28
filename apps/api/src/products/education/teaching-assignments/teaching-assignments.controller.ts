@@ -1,44 +1,55 @@
 import { Controller, Get, Post, Body, Param } from "@nestjs/common";
 import { TeachingAssignmentsService } from "./teaching-assignments.service";
-import { AssignTeacherDto, EndTeachingAssignmentDto } from "@sitehookz/education";
-import { RequireAuth } from "../../../core/auth/decorators/require-auth.decorator";
-import { GetTenant } from "../../../core/auth/decorators/get-tenant.decorator";
-import { TenantContext } from "../../../core/auth/tenant-context";
+import {
+  AssignTeacherDto,
+  EndTeachingAssignmentDto,
+} from "@sitehookz/education";
+import {
+  CurrentTenant,
+  TenantContext,
+} from "../../../platform/tenancy/tenant.guard";
 
 @Controller("education/teaching-assignments")
-@RequireAuth()
 export class TeachingAssignmentsController {
-  constructor(private readonly teachingAssignmentsService: TeachingAssignmentsService) {}
+  constructor(
+    private readonly teachingAssignmentsService: TeachingAssignmentsService,
+  ) {}
 
   @Post()
   assign(
-    @GetTenant() tenant: TenantContext,
-    @Body() assignTeacherDto: AssignTeacherDto
+    @CurrentTenant() tenant: TenantContext,
+    @Body() assignTeacherDto: AssignTeacherDto,
   ) {
     return this.teachingAssignmentsService.assign(tenant, assignTeacherDto);
   }
 
   @Get("offering/:subjectOfferingId")
   findBySubjectOfferingId(
-    @GetTenant() tenant: TenantContext,
-    @Param("subjectOfferingId") subjectOfferingId: string
+    @CurrentTenant() tenant: TenantContext,
+    @Param("subjectOfferingId") subjectOfferingId: string,
   ) {
-    return this.teachingAssignmentsService.findBySubjectOfferingId(tenant, subjectOfferingId);
+    return this.teachingAssignmentsService.findBySubjectOfferingId(
+      tenant,
+      subjectOfferingId,
+    );
   }
 
   @Get("staff/:staffMemberId")
   findByStaffMemberId(
-    @GetTenant() tenant: TenantContext,
-    @Param("staffMemberId") staffMemberId: string
+    @CurrentTenant() tenant: TenantContext,
+    @Param("staffMemberId") staffMemberId: string,
   ) {
-    return this.teachingAssignmentsService.findByStaffMemberId(tenant, staffMemberId);
+    return this.teachingAssignmentsService.findByStaffMemberId(
+      tenant,
+      staffMemberId,
+    );
   }
 
   @Post(":id/end")
   endAssignment(
-    @GetTenant() tenant: TenantContext,
+    @CurrentTenant() tenant: TenantContext,
     @Param("id") id: string,
-    @Body() endDto: EndTeachingAssignmentDto
+    @Body() endDto: EndTeachingAssignmentDto,
   ) {
     return this.teachingAssignmentsService.endAssignment(tenant, id, endDto);
   }

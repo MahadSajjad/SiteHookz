@@ -124,6 +124,7 @@ Uses the `X-Organization-Slug` header **only in development mode**. This allows 
 - Password resets revoke all active \AuthSession\s for the user.
 
 ### Layer 3B Academic Structure & Student Enrollment Invariants
+
 - **Placement Uniqueness**: The database constraints (e.g. `UNIQUE(enrollmentId)`) enforce a 1:1 mapping at the table level.
 - **Polymorphic Exclusivity**: The exclusivity between `SCHOOL` and `TUITION` (a StudentEnrollment cannot have both) is a **transactional application invariant** maintained exclusively by `EnrollmentsService`.
 - **Tuition Concurrency**: A student can have multiple active `TUITION` enrollments across different branches or batches simultaneously. Same-batch concurrency is prevented via `SELECT ... FOR UPDATE` serialization.

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../core/database/prisma.service";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { CreateSubjectDto, UpdateSubjectDto } from "@sitehookz/education";
-import { TenantContext } from "../../../core/auth/tenant-context";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
 @Injectable()
 export class SubjectsRepository {
@@ -12,7 +12,7 @@ export class SubjectsRepository {
       data: {
         organizationId: tenant.organizationId,
         name: data.name,
-        code: data.code || '',
+        code: data.code || "",
         description: data.description,
       },
     });
@@ -24,7 +24,7 @@ export class SubjectsRepository {
         organizationId: tenant.organizationId,
         isActive: true,
       },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
   }
 

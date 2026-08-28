@@ -1,13 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../core/database/prisma.service";
-import { CreateSchoolSubjectOfferingDto, CreateTuitionSubjectOfferingDto } from "@sitehookz/education";
-import { TenantContext } from "../../../core/auth/tenant-context";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import {
+  CreateSchoolSubjectOfferingDto,
+  CreateTuitionSubjectOfferingDto,
+} from "@sitehookz/education";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
 @Injectable()
 export class SubjectOfferingsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createSchoolOffering(tenant: TenantContext, data: CreateSchoolSubjectOfferingDto) {
+  async createSchoolOffering(
+    tenant: TenantContext,
+    data: CreateSchoolSubjectOfferingDto,
+  ) {
     return this.prisma.$transaction(async (tx) => {
       // Lock the section
       await tx.$queryRaw`SELECT id FROM "Section" WHERE id = ${data.sectionId}::uuid FOR UPDATE`;
@@ -28,21 +34,24 @@ export class SubjectOfferingsRepository {
         data: {
           organizationId: tenant.organizationId,
           subjectId: data.subjectId,
-          offeringType: 'SCHOOL',
+          offeringType: "SCHOOL",
           schoolOffering: {
             create: {
               organizationId: tenant.organizationId,
               sectionId: data.sectionId,
-            }
-          }
+            },
+          },
         },
-        include: { schoolOffering: true }
+        include: { schoolOffering: true },
       });
       return offering;
     });
   }
 
-  async createTuitionOffering(tenant: TenantContext, data: CreateTuitionSubjectOfferingDto) {
+  async createTuitionOffering(
+    tenant: TenantContext,
+    data: CreateTuitionSubjectOfferingDto,
+  ) {
     return this.prisma.$transaction(async (tx) => {
       // Lock the batch
       await tx.$queryRaw`SELECT id FROM "Batch" WHERE id = ${data.batchId}::uuid FOR UPDATE`;
@@ -63,15 +72,15 @@ export class SubjectOfferingsRepository {
         data: {
           organizationId: tenant.organizationId,
           subjectId: data.subjectId,
-          offeringType: 'TUITION',
+          offeringType: "TUITION",
           tuitionOffering: {
             create: {
               organizationId: tenant.organizationId,
               batchId: data.batchId,
-            }
-          }
+            },
+          },
         },
-        include: { tuitionOffering: true }
+        include: { tuitionOffering: true },
       });
       return offering;
     });
@@ -82,9 +91,9 @@ export class SubjectOfferingsRepository {
       where: {
         organizationId: tenant.organizationId,
         schoolOffering: { sectionId },
-        status: 'ACTIVE'
+        status: "ACTIVE",
       },
-      include: { schoolOffering: true }
+      include: { schoolOffering: true },
     });
   }
 
@@ -93,9 +102,9 @@ export class SubjectOfferingsRepository {
       where: {
         organizationId: tenant.organizationId,
         tuitionOffering: { batchId },
-        status: 'ACTIVE'
+        status: "ACTIVE",
       },
-      include: { tuitionOffering: true }
+      include: { tuitionOffering: true },
     });
   }
 
@@ -105,7 +114,7 @@ export class SubjectOfferingsRepository {
         id,
         organizationId: tenant.organizationId,
       },
-      include: { schoolOffering: true, tuitionOffering: true }
+      include: { schoolOffering: true, tuitionOffering: true },
     });
   }
 
@@ -116,7 +125,7 @@ export class SubjectOfferingsRepository {
         organizationId: tenant.organizationId,
       },
       data: {
-        status: 'ARCHIVED',
+        status: "ARCHIVED",
         archivedAt: new Date(),
       },
     });

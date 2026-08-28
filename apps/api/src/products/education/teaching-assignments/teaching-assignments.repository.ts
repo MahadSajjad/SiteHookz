@@ -1,7 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../core/database/prisma.service";
-import { AssignTeacherDto, EndTeachingAssignmentDto } from "@sitehookz/education";
-import { TenantContext } from "../../../core/auth/tenant-context";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import {
+  AssignTeacherDto,
+  EndTeachingAssignmentDto,
+} from "@sitehookz/education";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
 @Injectable()
 export class TeachingAssignmentsRepository {
@@ -18,7 +21,11 @@ export class TeachingAssignmentsRepository {
     });
   }
 
-  async findActiveAssignment(tenant: TenantContext, subjectOfferingId: string, staffMemberId: string) {
+  async findActiveAssignment(
+    tenant: TenantContext,
+    subjectOfferingId: string,
+    staffMemberId: string,
+  ) {
     return this.prisma.teachingAssignment.findFirst({
       where: {
         organizationId: tenant.organizationId,
@@ -29,13 +36,16 @@ export class TeachingAssignmentsRepository {
     });
   }
 
-  async findBySubjectOfferingId(tenant: TenantContext, subjectOfferingId: string) {
+  async findBySubjectOfferingId(
+    tenant: TenantContext,
+    subjectOfferingId: string,
+  ) {
     return this.prisma.teachingAssignment.findMany({
       where: {
         organizationId: tenant.organizationId,
         subjectOfferingId,
       },
-      orderBy: { startDate: 'desc' },
+      orderBy: { startDate: "desc" },
     });
   }
 
@@ -45,7 +55,7 @@ export class TeachingAssignmentsRepository {
         organizationId: tenant.organizationId,
         staffMemberId,
       },
-      orderBy: { startDate: 'desc' },
+      orderBy: { startDate: "desc" },
       include: {
         subjectOffering: {
           include: {
@@ -67,7 +77,11 @@ export class TeachingAssignmentsRepository {
     });
   }
 
-  async endAssignment(tenant: TenantContext, id: string, data: EndTeachingAssignmentDto) {
+  async endAssignment(
+    tenant: TenantContext,
+    id: string,
+    data: EndTeachingAssignmentDto,
+  ) {
     return this.prisma.teachingAssignment.update({
       where: {
         id,

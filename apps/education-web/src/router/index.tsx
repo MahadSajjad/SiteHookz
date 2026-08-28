@@ -11,6 +11,10 @@ import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { AppLayout } from "../components/layout/AppLayout";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicOnlyRoute } from "./PublicOnlyRoute";
+import SubjectsPage from "../pages/academics/subjects/SubjectsPage";
+import SectionDetailPage from "../pages/academics/sections/SectionDetailPage";
+import BatchDetailPage from "../pages/academics/batches/BatchDetailPage";
+import StaffDetailPage from "../pages/people/staff/StaffDetailPage";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +72,17 @@ export const router = createBrowserRouter([
       { path: "/dashboard/students", element: <StudentsPage /> },
       { path: "/dashboard/guardians", element: <GuardiansPage /> },
       { path: "/dashboard/staff", element: <StaffPage /> },
+      { path: "/dashboard/academics/subjects", element: <SubjectsPage /> },
+      {
+        path: "/dashboard/academics/sections/:id",
+        element: <SectionDetailPage />,
+      },
+      {
+        path: "/dashboard/academics/batches/:id",
+        element: <BatchDetailPage />,
+      },
+      { path: "/dashboard/staff/:id", element: <StaffDetailPage /> },
+      { path: "subjects", element: <SubjectsPage /> },
     ],
   },
 ]);
