@@ -32,7 +32,7 @@ export class AuthService {
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
 
-    const user = await this.prisma.\(async (tx) => {
+    const user = await this.prisma.$transaction(async (tx) => {
       const newUser = await tx.userAccount.create({
         data: {
           email: normalizedEmail,
@@ -61,7 +61,7 @@ export class AuthService {
   async verifyEmail(dto: VerifyEmailDto) {
     const hash = crypto.createHash('sha256').update(dto.token).digest('hex');
 
-    await this.prisma.\(async (tx) => {
+    await this.prisma.$transaction(async (tx) => {
       const tokenRecord = await tx.emailVerificationToken.findUnique({
         where: { tokenHash: hash },
         include: { userAccount: true }
@@ -119,7 +119,7 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const familyId = crypto.randomUUID();
 
-    await this.prisma.\([
+    await this.prisma.$transaction([
       this.prisma.userAccount.update({
         where: { id: user.id },
         data: { lastLoginAt: new Date() }
@@ -173,7 +173,7 @@ export class AuthService {
     const newHashedRefreshToken = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-    const newSession = await this.prisma.\(async (tx) => {
+    const newSession = await this.prisma.$transaction(async (tx) => {
       // Create new session in the same family
       const created = await tx.authSession.create({
         data: {
@@ -230,7 +230,7 @@ export class AuthService {
       const token = crypto.randomBytes(32).toString('hex');
       const hash = crypto.createHash('sha256').update(token).digest('hex');
       
-      await this.prisma.\(async (tx) => {
+      await this.prisma.$transaction(async (tx) => {
         // Invalidate unused reset tokens
         await tx.passwordResetToken.updateMany({
           where: { userAccountId: user.id, usedAt: null },
@@ -252,7 +252,7 @@ export class AuthService {
   async resetPassword(dto: any) {
     const hash = crypto.createHash('sha256').update(dto.token).digest('hex');
     
-    return this.prisma.\(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const resetToken = await tx.passwordResetToken.findUnique({
         where: { tokenHash: hash }
       });

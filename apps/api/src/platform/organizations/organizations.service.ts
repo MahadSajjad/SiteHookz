@@ -33,7 +33,7 @@ export class OrganizationsService {
       throw new BusinessException('ORGANIZATION_SLUG_TAKEN', 409, 'Slug is already in use');
     }
 
-    return this.prisma.\(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       // Create Organization
       const org = await tx.organization.create({
         data: {

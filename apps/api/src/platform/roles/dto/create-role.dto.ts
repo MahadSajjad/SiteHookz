@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RoleScopeType } from '@prisma/client';
+import { RoleScopeType } from '@sitehookz/database';
 
 export const createRoleSchema = z.object({
   name: z.string().min(1, 'Role name is required'),

@@ -53,7 +53,7 @@ export class RolesService {
             throw new BusinessException(
               'PERMISSION_ESCALATION', 
               403, 
-              `Cannot assign permission ${requestedPerm} as you do not possess it at the organization scope\
+              `Cannot assign permission ${requestedPerm} as you do not possess it at the organization scope`
             );
           }
         }

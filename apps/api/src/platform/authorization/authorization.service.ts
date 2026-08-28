@@ -21,7 +21,7 @@ export class AuthorizationService {
 
   assertPermission(tenantContext: TenantContext, permission: string, branchId?: string): void {
     if (!this.hasPermission(tenantContext, permission, branchId)) {
-      throw new BusinessException('PERMISSION_DENIED', 403, \Insufficient permissions for \\);
+      throw new BusinessException('PERMISSION_DENIED', 403, `Insufficient permissions for ${permission}`);
     }
   }
 

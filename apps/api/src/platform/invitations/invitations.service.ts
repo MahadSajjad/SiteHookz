@@ -49,7 +49,7 @@ export class InvitationsService {
     const token = crypto.randomBytes(32).toString('hex');
     const hash = crypto.createHash('sha256').update(token).digest('hex');
 
-    const invitation = await this.prisma.\(async (tx) => {
+    const invitation = await this.prisma.$transaction(async (tx) => {
       const inv = await tx.organizationInvitation.create({
         data: {
           organizationId,
@@ -81,7 +81,7 @@ export class InvitationsService {
   async accept(token: string, userAccountId: string) {
     const hash = crypto.createHash('sha256').update(token).digest('hex');
     
-    return this.prisma.\(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const invitation = await tx.organizationInvitation.findUnique({
         where: { tokenHash: hash },
         include: { roleAssignments: true }
