@@ -14,7 +14,7 @@ describe("TimetablesService & TimetableEntriesService", () => {
   let timetablesService: TimetablesService;
   let entriesService: TimetableEntriesService;
 
-  const mockTenant = { organizationId: "org-1", membershipId: "mem-1" } as any;
+  const mockTenant = ({ organizationId: "org-1", membershipId: "mem-1" } as any) as any;
   const mockTenant2 = { organizationId: "org-2", membershipId: "mem-2" };
 
   const mockAuthService = {

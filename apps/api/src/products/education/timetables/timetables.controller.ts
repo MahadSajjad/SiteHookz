@@ -83,7 +83,7 @@ export class TimetablesController {
 
   @Put("timetables/:id/archive")
   async archiveSchedule(
-    @TenantContextDecor() tenant: TenantContext,
+    @Tenant() tenant: TenantContext,
     @Param("id") id: string,
   ) {
     return this.timetablesService.archiveSchedule(tenant, id);
