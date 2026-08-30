@@ -1,20 +1,23 @@
-import StudentsPage from "../pages/dashboard/students/StudentsPage";
-import GuardiansPage from "../pages/dashboard/guardians/GuardiansPage";
-import StaffPage from "../pages/dashboard/staff/StaffPage";
 import { createBrowserRouter, Navigate } from "react-router-dom";
+
+import { AppLayout } from "../components/layout/AppLayout";
+import BatchDetailPage from "../pages/academics/batches/BatchDetailPage";
+import SectionDetailPage from "../pages/academics/sections/SectionDetailPage";
+import SubjectsPage from "../pages/academics/subjects/SubjectsPage";
+import { ForgotPasswordPage } from "../pages/auth/ForgotPasswordPage";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { RegisterPage } from "../pages/auth/RegisterPage";
-import { ForgotPasswordPage } from "../pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "../pages/auth/ResetPasswordPage";
-import { CreateOrganizationPage } from "../pages/onboarding/CreateOrganizationPage";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
-import { AppLayout } from "../components/layout/AppLayout";
+import GuardiansPage from "../pages/dashboard/guardians/GuardiansPage";
+import StaffPage from "../pages/dashboard/staff/StaffPage";
+import StudentsPage from "../pages/dashboard/students/StudentsPage";
+import { CreateOrganizationPage } from "../pages/onboarding/CreateOrganizationPage";
+import StaffDetailPage from "../pages/people/staff/StaffDetailPage";
+
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicOnlyRoute } from "./PublicOnlyRoute";
-import SubjectsPage from "../pages/academics/subjects/SubjectsPage";
-import SectionDetailPage from "../pages/academics/sections/SectionDetailPage";
-import BatchDetailPage from "../pages/academics/batches/BatchDetailPage";
-import StaffDetailPage from "../pages/people/staff/StaffDetailPage";
+
 
 export const router = createBrowserRouter([
   {

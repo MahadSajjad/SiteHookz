@@ -1,8 +1,10 @@
+import { CustomButton } from "@sitehookz/ui"; // Will verify package name
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+
 import { useApiClient } from "../../../hooks/useApiClient";
-import { CustomButton } from "@sitehookz/ui"; // Will verify package name
+
 
 export default function SectionDetailPage() {
   const { id } = useParams<{ id: string }>();

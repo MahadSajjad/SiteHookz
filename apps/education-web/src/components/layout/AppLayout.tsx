@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
+
+import { MobileNav } from "./MobileNav";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
-import { MobileNav } from "./MobileNav";
 
 export function AppLayout() {
   return (

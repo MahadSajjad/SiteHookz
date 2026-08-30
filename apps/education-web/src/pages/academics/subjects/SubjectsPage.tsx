@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { useApiClient } from "../../../hooks/useApiClient";
 import { CustomButton } from "@sitehookz/ui";
+import { useQuery } from "@tanstack/react-query";
+
+import { useApiClient } from "../../../hooks/useApiClient";
 
 export default function SubjectsPage() {
   const api = useApiClient();

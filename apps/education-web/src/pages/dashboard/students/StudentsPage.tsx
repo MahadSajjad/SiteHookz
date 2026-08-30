@@ -1,8 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
-import { useApiClient } from "../../../hooks/useApiClient";
 import { Link } from "react-router-dom";
+
+import { useApiClient } from "../../../hooks/useApiClient";
+
 
 export default function StudentsPage() {
   const { t } = useTranslation();

@@ -1,9 +1,11 @@
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
+import { z } from "zod";
+
+import { useAuth } from "../../hooks/useAuth";
+
 
 const registerSchema = z
   .object({

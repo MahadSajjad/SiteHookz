@@ -1,4 +1,5 @@
 import React from "react";
+
 import { usePermission } from "../../hooks/usePermission";
 
 interface CanProps {

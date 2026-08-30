@@ -1,4 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
+
 import { useApiClient } from "../../../../hooks/useApiClient";
 
 export function StudentEnrollmentsPage({ studentId }: { studentId: string }) {

@@ -1,8 +1,10 @@
+import { CustomButton } from "@sitehookz/ui";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+
 import { useApiClient } from "../../../hooks/useApiClient";
-import { CustomButton } from "@sitehookz/ui";
+
 
 export default function StaffDetailPage() {
   const { id } = useParams<{ id: string }>();
