@@ -1,6 +1,4 @@
-import { PermissionDefinition } from "./platform-permissions";
-
-export const EDUCATION_PERMISSIONS: PermissionDefinition[] = [
+export const EDUCATION_PERMISSIONS_REGISTRY = [
   {
     key: "education.academic_sessions.read",
     description: "Read academic sessions",
@@ -79,6 +77,41 @@ export const EDUCATION_PERMISSIONS: PermissionDefinition[] = [
   {
     key: "education.teaching_assignments.archive",
     description: "Archive teaching assignments",
+    category: "Education",
+  },
+  {
+    key: "education.attendance_sessions.read",
+    description: "Read attendance sessions",
+    category: "Education",
+  },
+  {
+    key: "education.attendance_sessions.create",
+    description: "Create attendance sessions",
+    category: "Education",
+  },
+  {
+    key: "education.attendance_sessions.update",
+    description: "Update attendance sessions",
+    category: "Education",
+  },
+  {
+    key: "education.attendance_sessions.finalize",
+    description: "Finalize attendance sessions",
+    category: "Education",
+  },
+  {
+    key: "education.attendance_sessions.cancel",
+    description: "Cancel attendance sessions",
+    category: "Education",
+  },
+  {
+    key: "education.student_attendance.read",
+    description: "Read student attendance",
+    category: "Education",
+  },
+  {
+    key: "education.student_attendance.mark",
+    description: "Mark student attendance",
     category: "Education",
   },
 ];

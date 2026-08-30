@@ -61,6 +61,14 @@ model Organization {
   teachingAssignments       TeachingAssignment[]
 
   @@index([status])
+  timetableSchedules        TimetableSchedule[]
+  schoolTimetableContexts   SchoolTimetableContext[]
+  tuitionTimetableContexts  TuitionTimetableContext[]
+  timetableEntries          TimetableEntry[]
+  attendanceSessions AttendanceSession[]
+  schoolAttendanceContexts SchoolAttendanceContext[]
+  tuitionAttendanceContexts TuitionAttendanceContext[]
+  studentAttendanceRecords StudentAttendanceRecord[]
 }
 
 enum BranchStatus {
@@ -99,6 +107,8 @@ model Branch {
 
   @@unique([organizationId, code])
   @@index([organizationId])
+  timetableSchedules TimetableSchedule[]
+  attendanceSessions AttendanceSession[]
 }
 
 enum UserAccountStatus {
@@ -711,6 +721,8 @@ model Section {
   schoolSubjectOfferings SchoolSubjectOffering[]
 
   @@unique([organizationId, academicSessionId, branchId, classLevelId, code])
+  schoolTimetableContexts SchoolTimetableContext[]
+  schoolAttendanceContexts SchoolAttendanceContext[]
 }
 
 model Course {
@@ -760,6 +772,8 @@ model Batch {
   tuitionSubjectOfferings TuitionSubjectOffering[]
 
   @@unique([organizationId, courseId, branchId, academicSessionId, code])
+  tuitionTimetableContexts TuitionTimetableContext[]
+  tuitionAttendanceContexts TuitionAttendanceContext[]
 }
 
 model StudentEnrollment {
@@ -788,6 +802,7 @@ model StudentEnrollment {
   @@index([organizationId])
   @@index([studentId, status])
   @@index([organizationId, branchId])
+  attendanceRecords StudentAttendanceRecord[]
 }
 
 model SchoolEnrollmentPlacement {
@@ -884,6 +899,9 @@ model SubjectOffering {
 
   @@index([organizationId])
   @@index([subjectId])
+  timetableEntries TimetableEntry[]
+  schoolAttendanceContexts SchoolAttendanceContext[]
+  tuitionAttendanceContexts TuitionAttendanceContext[]
 }
 
 model SchoolSubjectOffering {
@@ -942,4 +960,227 @@ model TeachingAssignment {
   @@index([organizationId])
   @@index([subjectOfferingId])
   @@index([staffMemberId])
+  timetableEntries TimetableEntry[]
+}
+
+// ============================================
+// LAYER 5: TIMETABLE & ACADEMIC SCHEDULING
+// ============================================
+
+enum TimetableScheduleType {
+  SCHOOL
+  TUITION
+}
+
+enum TimetableScheduleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model TimetableSchedule {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  branchId       String @db.Uuid
+
+  scheduleType TimetableScheduleType
+
+  name String
+
+  effectiveFrom DateTime  @db.Date
+  effectiveTo   DateTime? @db.Date
+
+  status TimetableScheduleStatus @default(DRAFT)
+
+  publishedAt             DateTime?
+  publishedByMembershipId String?   @db.Uuid
+
+  archivedAt             DateTime?
+  archivedByMembershipId String?   @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  branch       Branch       @relation(fields: [branchId], references: [id])
+
+  schoolContext  SchoolTimetableContext?
+  tuitionContext TuitionTimetableContext?
+  entries        TimetableEntry[]
+
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([status])
+  @@index([effectiveFrom])
+  @@index([effectiveTo])
+}
+
+model SchoolTimetableContext {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  timetableScheduleId String @unique @db.Uuid
+  sectionId           String @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization      Organization      @relation(fields: [organizationId], references: [id])
+  timetableSchedule TimetableSchedule @relation(fields: [timetableScheduleId], references: [id])
+  section           Section           @relation(fields: [sectionId], references: [id])
+
+  @@index([organizationId])
+  @@index([sectionId])
+}
+
+model TuitionTimetableContext {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  timetableScheduleId String @unique @db.Uuid
+  batchId             String @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization      Organization      @relation(fields: [organizationId], references: [id])
+  timetableSchedule TimetableSchedule @relation(fields: [timetableScheduleId], references: [id])
+  batch             Batch             @relation(fields: [batchId], references: [id])
+
+  @@index([organizationId])
+  @@index([batchId])
+}
+
+enum TimetableDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model TimetableEntry {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+
+  timetableScheduleId String @db.Uuid
+
+  subjectOfferingId    String  @db.Uuid
+  teachingAssignmentId String? @db.Uuid
+
+  dayOfWeek TimetableDay
+
+  startMinute Int
+  endMinute   Int
+
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization       Organization       @relation(fields: [organizationId], references: [id])
+  timetableSchedule  TimetableSchedule  @relation(fields: [timetableScheduleId], references: [id])
+  subjectOffering    SubjectOffering    @relation(fields: [subjectOfferingId], references: [id])
+  teachingAssignment TeachingAssignment? @relation(fields: [teachingAssignmentId], references: [id])
+
+  @@index([organizationId])
+  @@index([timetableScheduleId])
+  @@index([dayOfWeek])
+  @@index([subjectOfferingId])
+  @@index([teachingAssignmentId])
+}
+
+// ============================================
+// LAYER 4: STUDENT ATTENDANCE
+// ============================================
+
+enum AttendanceMode {
+  SCHOOL
+  TUITION
+}
+enum AttendanceSessionStatus {
+  DRAFT
+  FINALIZED
+  CANCELLED
+}
+enum StudentAttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+model AttendanceSession {
+  id String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  branchId String @db.Uuid
+  mode AttendanceMode
+  attendanceDate DateTime @db.Date
+  occurrenceNumber Int @default(1)
+  note String?
+  status AttendanceSessionStatus @default(DRAFT)
+  finalizedAt DateTime?
+  finalizedByMembershipId String? @db.Uuid
+  cancelledAt DateTime?
+  cancelledByMembershipId String? @db.Uuid
+  createdByMembershipId String @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields: [organizationId], references: [id])
+  branch Branch @relation(fields: [branchId], references: [id])
+  schoolContext SchoolAttendanceContext?
+  tuitionContext TuitionAttendanceContext?
+  records StudentAttendanceRecord[]
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([attendanceDate])
+  @@index([status])
+}
+model SchoolAttendanceContext {
+  id String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  attendanceSessionId String @unique @db.Uuid
+  sectionId String @db.Uuid
+  subjectOfferingId String? @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields: [organizationId], references: [id])
+  attendanceSession AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
+  section Section @relation(fields: [sectionId], references: [id])
+  subjectOffering SubjectOffering? @relation(fields: [subjectOfferingId], references: [id])
+  @@index([organizationId])
+  @@index([sectionId])
+}
+model TuitionAttendanceContext {
+  id String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  attendanceSessionId String @unique @db.Uuid
+  batchId String @db.Uuid
+  subjectOfferingId String? @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields: [organizationId], references: [id])
+  attendanceSession AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
+  batch Batch @relation(fields: [batchId], references: [id])
+  subjectOffering SubjectOffering? @relation(fields: [subjectOfferingId], references: [id])
+  @@index([organizationId])
+  @@index([batchId])
+}
+model StudentAttendanceRecord {
+  id String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  attendanceSessionId String @db.Uuid
+  studentEnrollmentId String @db.Uuid
+  status StudentAttendanceStatus
+  note String?
+  markedByMembershipId String @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  organization Organization @relation(fields: [organizationId], references: [id])
+  attendanceSession AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
+  studentEnrollment StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
+  @@unique([attendanceSessionId, studentEnrollmentId])
+  @@index([organizationId])
+  @@index([studentEnrollmentId])
 }

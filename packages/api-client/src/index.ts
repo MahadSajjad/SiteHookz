@@ -14,3 +14,8 @@ export * from "./staff";
 export * from "./subjects";
 export * from "./subject-offerings";
 export * from "./teaching-assignments";
+
+export * from "./attendance-sessions";
+export * from "./student-attendance";
+
+export * from "./timetables";

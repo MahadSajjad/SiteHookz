@@ -28,7 +28,7 @@ export class SectionsController {
   @Get()
   @RequirePermission("education.sections.read")
   async findAll(@CurrentTenant() tenant: TenantContext, @Query() query: any) {
-    return this.service.findAll(tenant, query);
+    return this.service.findAll(tenant);
   }
 
   @Get(":id")

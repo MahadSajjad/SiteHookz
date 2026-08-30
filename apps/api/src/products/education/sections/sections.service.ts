@@ -11,7 +11,7 @@ import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 export class SectionsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(tenant: TenantContext, ) {
+  async findAll(tenant: TenantContext) {
     return this.prisma.section.findMany({
       where: { organizationId: tenant.organizationId },
     });

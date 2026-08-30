@@ -12,7 +12,6 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
 
-
 @Injectable()
 export class AuthService {
   constructor(

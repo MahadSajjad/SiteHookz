@@ -6,7 +6,6 @@ import { TenantContext } from "../tenancy/tenant.guard";
 
 import { CreateRoleDto } from "./dto/create-role.dto";
 
-
 @Injectable()
 export class RolesService {
   constructor(private prisma: PrismaService) {}

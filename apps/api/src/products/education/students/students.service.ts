@@ -7,7 +7,6 @@ import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
 import { CreateStudentDto, UpdateStudentDto } from "./dto/create-student.dto";
 
-
 @Injectable()
 export class StudentsService {
   constructor(

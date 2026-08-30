@@ -7,7 +7,12 @@ import {
   Param,
   UseGuards,
 } from "@nestjs/common";
-import { CreateSubjectDto, UpdateSubjectDto, createSubjectSchema, updateSubjectSchema } from "@sitehookz/education";
+import {
+  CreateSubjectDto,
+  UpdateSubjectDto,
+  createSubjectSchema,
+  updateSubjectSchema,
+} from "@sitehookz/education";
 
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import {
@@ -24,7 +29,8 @@ export class SubjectsController {
   @Post()
   create(
     @CurrentTenant() tenant: TenantContext,
-    @Body(new ZodValidationPipe(createSubjectSchema)) createSubjectDto: CreateSubjectDto,
+    @Body(new ZodValidationPipe(createSubjectSchema))
+    createSubjectDto: CreateSubjectDto,
   ) {
     return this.subjectsService.create(tenant, createSubjectDto);
   }
@@ -43,7 +49,8 @@ export class SubjectsController {
   update(
     @CurrentTenant() tenant: TenantContext,
     @Param("id") id: string,
-    @Body(new ZodValidationPipe(updateSubjectSchema)) updateSubjectDto: UpdateSubjectDto,
+    @Body(new ZodValidationPipe(updateSubjectSchema))
+    updateSubjectDto: UpdateSubjectDto,
   ) {
     return this.subjectsService.update(tenant, id, updateSubjectDto);
   }

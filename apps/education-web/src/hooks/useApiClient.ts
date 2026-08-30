@@ -7,6 +7,9 @@ import { sectionsApi } from "@sitehookz/api-client/src/sections";
 import { subjectOfferingsApi } from "@sitehookz/api-client/src/subject-offerings";
 import { subjectsApi } from "@sitehookz/api-client/src/subjects";
 import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
+import { AttendanceSessionsApi } from "@sitehookz/api-client/src/attendance-sessions";
+import { StudentAttendanceApi } from "@sitehookz/api-client/src/student-attendance";
+import { apiClient } from "@sitehookz/api-client/src/client";
 
 const api = {
   courses: coursesApi,
@@ -20,6 +23,8 @@ const api = {
   subjects: subjectsApi,
   subjectOfferings: subjectOfferingsApi,
   teachingAssignments: teachingAssignmentsApi,
+  attendanceSessions: new AttendanceSessionsApi(apiClient),
+  studentAttendance: new StudentAttendanceApi(apiClient),
 };
 
 export type ApiClientType = any;

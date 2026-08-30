@@ -14,6 +14,27 @@ export const EDUCATION_SUBJECT_OFFERINGS_PERMISSIONS = {
   RESTORE: "education.subject_offerings.restore",
 } as const;
 
+export const EDUCATION_ATTENDANCE_SESSIONS_PERMISSIONS = {
+  READ: "education.attendance_sessions.read",
+  CREATE: "education.attendance_sessions.create",
+  UPDATE: "education.attendance_sessions.update",
+  FINALIZE: "education.attendance_sessions.finalize",
+  CANCEL: "education.attendance_sessions.cancel",
+} as const;
+
+export const EDUCATION_STUDENT_ATTENDANCE_PERMISSIONS = {
+  READ: "education.student_attendance.read",
+  MARK: "education.student_attendance.mark",
+} as const;
+
+export const EDUCATION_TIMETABLES_PERMISSIONS = {
+  READ: "education.timetables.read",
+  CREATE: "education.timetables.create",
+  UPDATE: "education.timetables.update",
+  PUBLISH: "education.timetables.publish",
+  ARCHIVE: "education.timetables.archive",
+} as const;
+
 export const EDUCATION_TEACHING_ASSIGNMENTS_PERMISSIONS = {
   READ: "education.teaching_assignments.read",
   CREATE: "education.teaching_assignments.create",
@@ -22,4 +43,4 @@ export const EDUCATION_TEACHING_ASSIGNMENTS_PERMISSIONS = {
 } as const;
 
 // Re-export old ones for compatibility until they are moved over.
-export { EDUCATION_PERMISSIONS as OLD_EDUCATION_PERMISSIONS } from "@sitehookz/platform-permissions";
+

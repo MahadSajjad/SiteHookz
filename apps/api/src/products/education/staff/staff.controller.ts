@@ -32,7 +32,7 @@ export class StaffController {
   @Get("staff")
   @RequirePermission("education.staff.read")
   async findAll(@CurrentTenant() tenant: TenantContext, @Query() query: any) {
-    return this.staffService.findAll(tenant, query);
+    return this.staffService.findAll(tenant);
   }
 
   @Get("staff/:id")

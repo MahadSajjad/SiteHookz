@@ -1,14 +1,17 @@
-import { CustomButton } from "@sitehookz/ui"; // Will verify package name
+import { CustomButton } from "@sitehookz/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
+import { SectionTimetablesTab } from "./SectionTimetablesTab";
 
 export default function SectionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
-  const [activeTab, setActiveTab] = useState<"details" | "subjects">("details");
+  const [activeTab, setActiveTab] = useState<
+    "details" | "subjects" | "timetables"
+  >("details");
 
   const { data: section, isLoading } = useQuery({
     queryKey: ["education.sections.get", id],
@@ -43,6 +46,12 @@ export default function SectionDetailPage() {
           onClick={() => setActiveTab("subjects")}
         >
           Subjects
+        </button>
+        <button
+          className={`pb-2 px-1 ${activeTab === "timetables" ? "border-b-2 border-primary font-semibold text-primary" : "text-gray-500"}`}
+          onClick={() => setActiveTab("timetables")}
+        >
+          Timetables
         </button>
       </div>
 
@@ -117,6 +126,10 @@ export default function SectionDetailPage() {
             </div>
           )}
         </div>
+      )}
+
+      {activeTab === "timetables" && (
+        <SectionTimetablesTab sectionId={id as string} />
       )}
     </div>
   );

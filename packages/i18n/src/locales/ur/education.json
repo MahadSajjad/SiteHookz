@@ -18,5 +18,63 @@
     "createdAt": "????? ?? ?????",
     "emptyState": "???? ?????? ???? ????",
     "errorState": "?????? ??? ???? ??? ???????"
+  },
+  "attendance": {
+    "markAllPresent": "Mark All Present",
+    "saveDraft": "Save Draft",
+    "finalize": "Finalize",
+    "cancelSession": "Cancel Session",
+    "status": {
+      "title": "Status",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "excused": "Excused"
+    },
+    "selectDate": "Select Date",
+    "selectSection": "Select Section",
+    "selectBatch": "Select Batch",
+    "selectSubject": "Select Subject",
+    "summary": "Attendance Summary",
+    "schoolAttendance": "School Attendance",
+    "tuitionAttendance": "Tuition Attendance",
+    "roster": "Roster",
+    "noStudents": "No students found in this roster.",
+    "history": "Attendance History",
+    "noHistory": "No attendance history found.",
+    "context": "Context",
+    "startSession": "Start Session",
+    "noSession": "No attendance session started for this date."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "profile": "Profile",
+    "attendance": "Attendance"
+  },
+  "timetable": {
+    "title": "ٹائم ٹیبل",
+    "draft": "ڈرافٹ",
+    "published": "شائع شدہ",
+    "archived": "آرکائیو شدہ",
+    "addEntry": "اندراج شامل کریں",
+    "publish": "شائع کریں",
+    "day": "دن",
+    "timeRange": "وقت کی حد",
+    "subjectOffering": "مضمون کی پیشکش",
+    "teacher": "استاد",
+    "selectDay": "دن منتخب کریں",
+    "selectTime": "وقت منتخب کریں",
+    "selectSubject": "مضمون منتخب کریں",
+    "selectTeacher": "استاد منتخب کریں",
+    "emptyState": "کوئی ٹائم ٹیبل اندراج نہیں ملا۔",
+    "createTimetable": "ٹائم ٹیبل بنائیں",
+    "monday": "پیر",
+    "tuesday": "منگل",
+    "wednesday": "بدھ",
+    "thursday": "جمعرات",
+    "friday": "جمعہ",
+    "saturday": "ہفتہ",
+    "sunday": "اتوار"
   }
 }

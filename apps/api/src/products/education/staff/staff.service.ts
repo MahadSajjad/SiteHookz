@@ -11,7 +11,7 @@ export class StaffService {
     private auth: AuthorizationService,
   ) {}
 
-  async findAll(tenant: TenantContext, ) {
+  async findAll(tenant: TenantContext) {
     return {
       items: await this.prisma.staffMember.findMany({
         where: { organizationId: tenant.organizationId, archivedAt: null },

@@ -4,13 +4,14 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
+import { StaffTimetablesTab } from "./StaffTimetablesTab";
 
 export default function StaffDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
-  const [activeTab, setActiveTab] = useState<"details" | "assignments">(
-    "details",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "details" | "assignments" | "timetable"
+  >("details");
 
   const { data: staff, isLoading } = useQuery({
     queryKey: ["education.staff.get", id],
@@ -45,6 +46,12 @@ export default function StaffDetailPage() {
           onClick={() => setActiveTab("assignments")}
         >
           Teaching Assignments
+        </button>
+        <button
+          className={`pb-2 px-1 ${activeTab === "timetable" ? "border-b-2 border-primary font-semibold text-primary" : "text-gray-500"}`}
+          onClick={() => setActiveTab("timetable")}
+        >
+          Timetable
         </button>
       </div>
 
@@ -127,6 +134,10 @@ export default function StaffDetailPage() {
             </div>
           )}
         </div>
+      )}
+
+      {activeTab === "timetable" && (
+        <StaffTimetablesTab staffId={id as string} />
       )}
     </div>
   );

@@ -26,7 +26,6 @@ import {
 } from "./dto/create-student.dto";
 import { StudentsService } from "./students.service";
 
-
 const querySchema = z.object({
   search: z.string().optional(),
   status: z.string().optional(),

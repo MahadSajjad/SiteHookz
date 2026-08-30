@@ -17,6 +17,7 @@
     "@sitehookz/api-client": "workspace:*",
     "@sitehookz/design-tokens": "workspace:*",
     "@sitehookz/i18n": "workspace:*",
+    "@sitehookz/education": "workspace:*",
     "@sitehookz/platform-contracts": "workspace:*",
     "@sitehookz/ui": "workspace:*",
     "@tanstack/react-query": "^5.0.0",

@@ -7,6 +7,15 @@ export function Sidebar() {
 
   const navItems = [
     { name: t("nav.dashboard", "Dashboard"), href: "/dashboard" },
+    { name: t("nav.students", "Students"), href: "/dashboard/students" },
+    {
+      name: t("attendance.schoolAttendance", "School Attendance"),
+      href: "/dashboard/attendance/school",
+    },
+    {
+      name: t("attendance.tuitionAttendance", "Tuition Attendance"),
+      href: "/dashboard/attendance/tuition",
+    },
   ];
 
   return (
