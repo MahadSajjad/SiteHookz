@@ -141,7 +141,7 @@ export class TeachingAssignmentsService {
     );
     await this.authorizationService.assertPermission(
       tenant,
-      P.EDUCATION.TEACHING_ASSIGNMENTS.UPDATE,
+      P.EDUCATION.TEACHING_ASSIGNMENTS.END,
       branchId,
     );
 

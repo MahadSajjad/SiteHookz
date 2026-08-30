@@ -30,9 +30,7 @@ export default function SubjectsPage() {
                 <th className="p-4 font-semibold text-sm text-gray-600">
                   Code
                 </th>
-                <th className="p-4 font-semibold text-sm text-gray-600">
-                  Credits
-                </th>
+                
                 <th className="p-4 font-semibold text-sm text-gray-600">
                   Actions
                 </th>
@@ -43,7 +41,7 @@ export default function SubjectsPage() {
                 <tr key={subject.id} className="border-b hover:bg-gray-50">
                   <td className="p-4 text-sm">{subject.name}</td>
                   <td className="p-4 text-sm">{subject.code}</td>
-                  <td className="p-4 text-sm">{subject.credits}</td>
+                  
                   <td className="p-4 text-sm">
                     <CustomButton variant="ghost" size="sm">
                       Edit

@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const assignTeacherSchema = z.object({
   staffMemberId: z.string().uuid(),
-  subjectOfferingId: z.string().uuid(),
   startDate: z.string().datetime().optional().nullable(),
 });
 

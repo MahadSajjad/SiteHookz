@@ -16,7 +16,7 @@ export class SubjectOfferingsRepository {
   ) {
     return this.prisma.$transaction(async (tx) => {
       // Lock the section
-      await tx.$queryRaw`SELECT id FROM "Section" WHERE id = ${data.sectionId}::uuid FOR UPDATE`;
+      await tx.$queryRaw`SELECT id FROM "Section" WHERE id = ${data.sectionId}::uuid AND "organizationId" = ${tenant.organizationId}::uuid FOR UPDATE`;
 
       // Check if offering already exists for this section and subject
       const existing = await tx.schoolSubjectOffering.findFirst({
@@ -54,7 +54,7 @@ export class SubjectOfferingsRepository {
   ) {
     return this.prisma.$transaction(async (tx) => {
       // Lock the batch
-      await tx.$queryRaw`SELECT id FROM "Batch" WHERE id = ${data.batchId}::uuid FOR UPDATE`;
+      await tx.$queryRaw`SELECT id FROM "Batch" WHERE id = ${data.batchId}::uuid AND "organizationId" = ${tenant.organizationId}::uuid FOR UPDATE`;
 
       // Check if offering already exists for this batch and subject
       const existing = await tx.tuitionSubjectOffering.findFirst({

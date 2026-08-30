@@ -1,0 +1,22 @@
+{
+  "subjects": {
+    "title": "Subjects",
+    "addSubject": "Add Subject",
+    "editSubject": "Edit Subject",
+    "archive": "Archive",
+    "restore": "Restore",
+    "addToSection": "Add Subject to Section",
+    "addToBatch": "Add Subject to Batch",
+    "assignTeacher": "Assign Teacher",
+    "endAssignment": "End Assignment",
+    "teachingAssignments": "Teaching Assignments",
+    "noTeacherAssigned": "No teacher assigned",
+    "name": "Name",
+    "code": "Code",
+    "description": "Description",
+    "status": "Status",
+    "createdAt": "Created At",
+    "emptyState": "No subjects found.",
+    "errorState": "Failed to load subjects."
+  }
+}

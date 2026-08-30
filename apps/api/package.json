@@ -7,7 +7,7 @@
     "dev": "nest start --watch",
     "start": "node dist/main",
     "start:prod": "node dist/main",
-    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "test:integration": "jest --config ./test/jest-e2e.config.ts",
