@@ -19,7 +19,7 @@ export default function StaffDetailPage() {
 
   const { data: assignmentsData, isLoading: isAssignmentsLoading } = useQuery({
     queryKey: ["education.teachingAssignments.list", { staffId: id }],
-    queryFn: () => api.teachingAssignments.getByStaffMemberId(id as string, { staffId: id }),
+    queryFn: () => api.teachingAssignments.getByStaffMemberId(id as string),
     enabled: activeTab === "assignments" && !!id,
   });
 

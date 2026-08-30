@@ -9,18 +9,23 @@ import { subjectsApi } from "@sitehookz/api-client/src/subjects";
 import { subjectOfferingsApi } from "@sitehookz/api-client/src/subject-offerings";
 import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
 
-export function useApiClient() {
-  return {
-    courses: coursesApi,
-    batches: batchesApi,
-    classLevels: classLevelsApi,
-    sections: sectionsApi,
-    enrollments: enrollmentsApi,
-    students: studentsApi,
-    guardians: guardiansApi,
-    staff: staffApi,
-    subjects: subjectsApi,
-    subjectOfferings: subjectOfferingsApi,
-    teachingAssignments: teachingAssignmentsApi,
-  };
+
+const api = {
+  courses: coursesApi,
+  batches: batchesApi,
+  classLevels: classLevelsApi,
+  sections: sectionsApi,
+  enrollments: enrollmentsApi,
+  students: studentsApi,
+  guardians: guardiansApi,
+  staff: staffApi,
+  subjects: subjectsApi,
+  subjectOfferings: subjectOfferingsApi,
+  teachingAssignments: teachingAssignmentsApi,
+};
+
+export type ApiClientType = any;
+
+export function useApiClient(): ApiClientType {
+  return api;
 }
