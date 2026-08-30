@@ -38,7 +38,7 @@ describe("SubjectOfferingsService", () => {
 
   it("should block creation if tenant mismatch or missing", async () => {
     prisma.section.findFirst.mockResolvedValue(null);
-    const tenant = { organizationId: "org-1", userId: "u-1" };
+    const tenant: any = { organizationId: "org-1", userId: "u-1" };
     await expect(service.createSchoolOffering(tenant, { subjectId: "s1", sectionId: "sec1" }))
       .rejects.toThrow();
   });

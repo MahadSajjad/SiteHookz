@@ -32,7 +32,7 @@ describe("SubjectsService", () => {
   });
 
   it("should enforce tenant isolation and check duplicate code", async () => {
-    const tenant = { organizationId: "org-1", userId: "u-1" };
+    const tenant: any = { organizationId: "org-1", userId: "u-1" };
     repo.findByCode.mockResolvedValue({ id: "sub-1", code: "MATH101", organizationId: "org-1" });
 
     await expect(service.create(tenant, { name: "Math", code: "MATH101" }))
@@ -42,7 +42,7 @@ describe("SubjectsService", () => {
 
   it("should prevent archiving a subject that has active offerings", async () => {
     // We will just verify the mock calls if we mock findById
-    const tenant = { organizationId: "org-1", userId: "u-1" };
+    const tenant: any = { organizationId: "org-1", userId: "u-1" };
     repo.findById.mockResolvedValue({
       id: "sub-1",
       offerings: [{ status: "ACTIVE" }],

@@ -16,7 +16,7 @@ export class TeachingAssignmentsRepository {
         organizationId: tenant.organizationId,
         subjectOfferingId: data.subjectOfferingId,
         staffMemberId: data.staffMemberId,
-        startDate: new Date(data.startDate),
+        startDate: data.startDate ? new Date(data.startDate) : new Date(),
       },
     });
   }
@@ -88,7 +88,7 @@ export class TeachingAssignmentsRepository {
         organizationId: tenant.organizationId,
       },
       data: {
-        endDate: new Date(data.endDate),
+        endDate: data.endDate ? new Date(data.endDate) : new Date(),
       },
     });
   }
