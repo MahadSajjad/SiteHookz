@@ -1,33 +1,35 @@
-import { JobTypes } from "@sitehookz/jobs";
-import { Worker } from "bullmq";
+import { Worker, Job } from "bullmq";
+import Redis from "ioredis";
 
-import { config } from "../config";
+export function setupEmailWorker(connection: Redis) {
+  const worker = new Worker(
+    "email-queue",
+    async (job: Job) => {
+      console.log(`Processing email job ${job.id}`);
+      const { to, subject, template, data } = job.data;
 
-export const emailWorker = new Worker(
-  "email",
-  async (job) => {
-    const { type, data } = job.data;
-    
-    switch (type) {
-      case JobTypes.SEND_WELCOME_EMAIL:
-        console.log(`Sending welcome email to ${data.email}`);
-        break;
-      case JobTypes.SEND_INVITATION_EMAIL:
-        console.log(`Sending invitation email to ${data.email}`);
-        break;
-      default:
-        console.log(`Unknown email job type: ${type}`);
-    }
-  },
-  {
-    connection: config.redis,
-  }
-);
+      // In development: log email details
+      console.log("=== EMAIL DISPATCHED ===");
+      console.log(`To: ${to}`);
+      console.log(`Subject: ${subject}`);
+      console.log(`Template: ${template}`);
+      console.log("========================");
 
-emailWorker.on("completed", (job) => {
-  console.log(`Email job ${job.id} completed successfully`);
-});
+      // Never log tokens or secrets here in production!
+    },
+    {
+      connection,
+      concurrency: 5,
+    },
+  );
 
-emailWorker.on("failed", (job, err) => {
-  console.error(`Email job ${job?.id} failed with error ${err.message}`);
-});
+  worker.on("completed", (job) => {
+    console.log(`Email job ${job.id} completed successfully`);
+  });
+
+  worker.on("failed", (job, err) => {
+    console.error(`Email job ${job?.id} failed:`, err.message);
+  });
+
+  return worker;
+}
