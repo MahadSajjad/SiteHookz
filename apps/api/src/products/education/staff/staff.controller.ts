@@ -8,19 +8,21 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { StaffService } from "./staff.service";
+
+import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import { RequirePermission } from "../../../platform/authorization/permission.guard";
 import { PermissionGuard } from "../../../platform/authorization/permission.guard";
 import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
-import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
+
 import {
   createStaffSchema,
   createPositionSchema,
   assignBranchSchema,
 } from "./dto/staff.dto";
+import { StaffService } from "./staff.service";
 
 @Controller("education")
 @UseGuards(PermissionGuard)

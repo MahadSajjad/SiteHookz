@@ -5,11 +5,15 @@ export const createSchoolSubjectOfferingSchema = z.object({
   sectionId: z.string().uuid(),
 });
 
-export type CreateSchoolSubjectOfferingDto = z.infer<typeof createSchoolSubjectOfferingSchema>;
+export type CreateSchoolSubjectOfferingDto = z.infer<
+  typeof createSchoolSubjectOfferingSchema
+>;
 
 export const createTuitionSubjectOfferingSchema = z.object({
   subjectId: z.string().uuid(),
   batchId: z.string().uuid(),
 });
 
-export type CreateTuitionSubjectOfferingDto = z.infer<typeof createTuitionSubjectOfferingSchema>;
+export type CreateTuitionSubjectOfferingDto = z.infer<
+  typeof createTuitionSubjectOfferingSchema
+>;

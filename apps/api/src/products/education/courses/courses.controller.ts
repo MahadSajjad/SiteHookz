@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { CoursesService } from "./courses.service";
+
 import {
   RequirePermission,
   PermissionGuard,
@@ -17,6 +17,8 @@ import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
+import { CoursesService } from "./courses.service";
 
 @Controller("education/courses")
 @UseGuards(PermissionGuard)

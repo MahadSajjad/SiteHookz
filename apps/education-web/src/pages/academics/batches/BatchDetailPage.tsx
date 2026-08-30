@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
 
-
 export default function BatchDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
@@ -106,8 +105,7 @@ export default function BatchDetailPage() {
                       </td>
                     </tr>
                   ))}
-                  {(!subjectsData ||
-                    subjectsData.length === 0) && (
+                  {(!subjectsData || subjectsData.length === 0) && (
                     <tr>
                       <td
                         colSpan={4}

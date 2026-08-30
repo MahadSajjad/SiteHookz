@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import { useAuth } from "../../hooks/useAuth";
 
-
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),

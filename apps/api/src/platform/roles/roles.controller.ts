@@ -1,10 +1,12 @@
 import { Controller, Get, Post, Delete, Body, Param } from "@nestjs/common";
-import { RolesService } from "./roles.service";
+
 import { TenantContext as TenantContextDecorator } from "../../common/decorators/tenant-context.decorator";
-import { RequirePermission } from "../authorization/permission.guard";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
-import { CreateRoleDto, createRoleSchema } from "./dto/create-role.dto";
+import { RequirePermission } from "../authorization/permission.guard";
 import { TenantContext } from "../tenancy/tenant.guard";
+
+import { CreateRoleDto, createRoleSchema } from "./dto/create-role.dto";
+import { RolesService } from "./roles.service";
 
 @Controller("roles")
 export class RolesController {

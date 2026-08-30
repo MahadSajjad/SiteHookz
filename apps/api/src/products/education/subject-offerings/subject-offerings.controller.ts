@@ -1,16 +1,18 @@
 import { Controller, Get, Post, Body, Param } from "@nestjs/common";
-import { SubjectOfferingsService } from "./subject-offerings.service";
 import {
   CreateSchoolSubjectOfferingDto,
   CreateTuitionSubjectOfferingDto,
   createSchoolSubjectOfferingSchema,
-  createTuitionSubjectOfferingSchema
+  createTuitionSubjectOfferingSchema,
 } from "@sitehookz/education";
+
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
+import { SubjectOfferingsService } from "./subject-offerings.service";
 
 @Controller("education/subject-offerings")
 export class SubjectOfferingsController {
@@ -21,7 +23,8 @@ export class SubjectOfferingsController {
   @Post("school")
   createSchoolOffering(
     @CurrentTenant() tenant: TenantContext,
-    @Body(new ZodValidationPipe(createSchoolSubjectOfferingSchema)) createDto: CreateSchoolSubjectOfferingDto,
+    @Body(new ZodValidationPipe(createSchoolSubjectOfferingSchema))
+    createDto: CreateSchoolSubjectOfferingDto,
   ) {
     return this.subjectOfferingsService.createSchoolOffering(tenant, createDto);
   }
@@ -29,7 +32,8 @@ export class SubjectOfferingsController {
   @Post("tuition")
   createTuitionOffering(
     @CurrentTenant() tenant: TenantContext,
-    @Body(new ZodValidationPipe(createTuitionSubjectOfferingSchema)) createDto: CreateTuitionSubjectOfferingDto,
+    @Body(new ZodValidationPipe(createTuitionSubjectOfferingSchema))
+    createDto: CreateTuitionSubjectOfferingDto,
   ) {
     return this.subjectOfferingsService.createTuitionOffering(
       tenant,

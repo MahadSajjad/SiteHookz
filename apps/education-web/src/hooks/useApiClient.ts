@@ -8,7 +8,6 @@ import { subjectOfferingsApi } from "@sitehookz/api-client/src/subject-offerings
 import { subjectsApi } from "@sitehookz/api-client/src/subjects";
 import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
 
-
 const api = {
   courses: coursesApi,
   batches: batchesApi,

@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { SubjectsRepository } from "./subjects.repository";
-import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import { CreateSubjectDto, UpdateSubjectDto } from "@sitehookz/education";
+import { P } from "@sitehookz/platform-permissions";
+
 import { BusinessException } from "../../../common/exceptions/business.exception";
 import { AuthorizationService } from "../../../platform/authorization/authorization.service";
-import { P } from "@sitehookz/platform-permissions";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
+
+import { SubjectsRepository } from "./subjects.repository";
 
 @Injectable()
 export class SubjectsService {

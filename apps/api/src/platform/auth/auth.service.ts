@@ -1,13 +1,17 @@
+import * as crypto from "crypto";
+
 import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as argon2 from "argon2";
+
+import { BusinessException } from "../../common/exceptions/business.exception";
 import { PrismaService } from "../../infrastructure/database/prisma.service";
 import { MailService } from "../../infrastructure/mail/mail.service";
-import { RegisterDto } from "./dto/register.dto";
+
 import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
 import { VerifyEmailDto } from "./dto/verify-email.dto";
-import { BusinessException } from "../../common/exceptions/business.exception";
-import * as argon2 from "argon2";
-import * as crypto from "crypto";
-import { JwtService } from "@nestjs/jwt";
+
 
 @Injectable()
 export class AuthService {

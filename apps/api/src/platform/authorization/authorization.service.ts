@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
+
+import { BusinessException } from "../../common/exceptions/business.exception";
 import { PrismaService } from "../../infrastructure/database/prisma.service";
 import { TenantContext } from "../tenancy/tenant.guard";
-import { BusinessException } from "../../common/exceptions/business.exception";
 
 @Injectable()
 export class AuthorizationService {

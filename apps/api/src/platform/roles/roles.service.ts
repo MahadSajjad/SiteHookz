@@ -1,8 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../infrastructure/database/prisma.service";
+
 import { BusinessException } from "../../common/exceptions/business.exception";
-import { CreateRoleDto } from "./dto/create-role.dto";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
 import { TenantContext } from "../tenancy/tenant.guard";
+
+import { CreateRoleDto } from "./dto/create-role.dto";
+
 
 @Injectable()
 export class RolesService {

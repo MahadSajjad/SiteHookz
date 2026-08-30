@@ -1,14 +1,16 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { SubjectOfferingsRepository } from "./subject-offerings.repository";
-import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import {
   CreateSchoolSubjectOfferingDto,
   CreateTuitionSubjectOfferingDto,
 } from "@sitehookz/education";
-import { BusinessException } from "../../../common/exceptions/business.exception";
-import { AuthorizationService } from "../../../platform/authorization/authorization.service";
 import { P } from "@sitehookz/platform-permissions";
+
+import { BusinessException } from "../../../common/exceptions/business.exception";
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import { AuthorizationService } from "../../../platform/authorization/authorization.service";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
+
+import { SubjectOfferingsRepository } from "./subject-offerings.repository";
 
 @Injectable()
 export class SubjectOfferingsService {
@@ -50,10 +52,25 @@ export class SubjectOfferingsService {
     throw new Error("Invalid offering");
   }
 
+  private async validateSubjectActive(subjectId: string): Promise<void> {
+    const subject = await this.prisma.subject.findUnique({
+      where: { id: subjectId },
+    });
+    if (!subject) throw new NotFoundException("Subject not found");
+    if (subject.archivedAt !== null) {
+      throw new BusinessException(
+        "SUBJECT_ARCHIVED",
+        400,
+        "Cannot create an offering for an archived subject.",
+      );
+    }
+  }
+
   async createSchoolOffering(
     tenant: TenantContext,
     data: CreateSchoolSubjectOfferingDto,
   ) {
+    await this.validateSubjectActive(data.subjectId);
     const branchId = await this.getBranchIdForSection(data.sectionId);
     await this.authorizationService.assertPermission(
       tenant,
@@ -76,6 +93,7 @@ export class SubjectOfferingsService {
     tenant: TenantContext,
     data: CreateTuitionSubjectOfferingDto,
   ) {
+    await this.validateSubjectActive(data.subjectId);
     const branchId = await this.getBranchIdForBatch(data.batchId);
     await this.authorizationService.assertPermission(
       tenant,

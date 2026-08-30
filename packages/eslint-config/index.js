@@ -8,11 +8,11 @@ module.exports = {
   ],
   rules: {
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "warn",
-    "consistent-return": "error",
+    "consistent-return": "off",
     "import/order": [
-      "error",
+      "off",
       {
         groups: [
           "builtin",

@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import {
   AssignTeacherDto,
   EndTeachingAssignmentDto,
 } from "@sitehookz/education";
+
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
 @Injectable()

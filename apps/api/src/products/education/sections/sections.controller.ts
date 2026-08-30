@@ -8,7 +8,7 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { SectionsService } from "./sections.service";
+
 import {
   RequirePermission,
   PermissionGuard,
@@ -17,6 +17,8 @@ import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
+import { SectionsService } from "./sections.service";
 
 @Controller("education/sections")
 @UseGuards(PermissionGuard)

@@ -1,8 +1,9 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import * as helmetImport from "helmet";
-import cookieParser from "cookie-parser";
 import { ValidationPipe, Logger } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import cookieParser from "cookie-parser";
+import * as helmetImport from "helmet";
+
+import { AppModule } from "./app.module";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 import { RequestIdMiddleware } from "./common/middleware/request-id.middleware";
 

@@ -8,21 +8,23 @@ import {
   Req,
 } from "@nestjs/common";
 import { Request, Response } from "express";
+
+import { Public } from "../../common/decorators/public.decorator";
 import { BusinessException } from "../../common/exceptions/business.exception";
+import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+
 import { AuthService } from "./auth.service";
-import { RegisterDto, registerSchema } from "./dto/register.dto";
-import { LoginDto, loginSchema } from "./dto/login.dto";
-import { VerifyEmailDto, verifyEmailSchema } from "./dto/verify-email.dto";
 import {
   ForgotPasswordDto,
   forgotPasswordSchema,
 } from "./dto/forgot-password.dto";
+import { LoginDto, loginSchema } from "./dto/login.dto";
+import { RegisterDto, registerSchema } from "./dto/register.dto";
 import {
   ResetPasswordDto,
   resetPasswordSchema,
 } from "./dto/reset-password.dto";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
-import { Public } from "../../common/decorators/public.decorator";
+import { VerifyEmailDto, verifyEmailSchema } from "./dto/verify-email.dto";
 
 @Controller("auth")
 export class AuthController {

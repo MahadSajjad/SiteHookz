@@ -6,11 +6,13 @@ import {
   SetMetadata,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { IS_PUBLIC_KEY } from "../../common/decorators/public.decorator";
-import { PrismaService } from "../../infrastructure/database/prisma.service";
-import { TenantResolverService } from "./tenant-resolver.service";
-import { BusinessException } from "../../common/exceptions/business.exception";
 import { RoleScopeType } from "@sitehookz/database";
+
+import { IS_PUBLIC_KEY } from "../../common/decorators/public.decorator";
+import { BusinessException } from "../../common/exceptions/business.exception";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
+
+import { TenantResolverService } from "./tenant-resolver.service";
 
 export const SKIP_TENANT_KEY = "skipTenant";
 export const SkipTenant = () => SetMetadata(SKIP_TENANT_KEY, true);

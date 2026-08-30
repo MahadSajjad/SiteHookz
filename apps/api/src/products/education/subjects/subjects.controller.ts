@@ -7,13 +7,15 @@ import {
   Param,
   UseGuards,
 } from "@nestjs/common";
-import { SubjectsService } from "./subjects.service";
 import { CreateSubjectDto, UpdateSubjectDto, createSubjectSchema, updateSubjectSchema } from "@sitehookz/education";
+
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
+import { SubjectsService } from "./subjects.service";
 
 @Controller("education/subjects")
 export class SubjectsController {

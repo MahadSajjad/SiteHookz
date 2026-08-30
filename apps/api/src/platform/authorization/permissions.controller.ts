@@ -1,4 +1,5 @@
 import { Controller, Get } from "@nestjs/common";
+
 import { RequirePermission } from "./permission.guard";
 
 @Controller("permissions")

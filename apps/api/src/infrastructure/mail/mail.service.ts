@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+
 import { ConsoleMailAdapter } from "./adapters/console-mail.adapter";
 
 @Injectable()

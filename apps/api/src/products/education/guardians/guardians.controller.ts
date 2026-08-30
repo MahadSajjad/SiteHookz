@@ -9,14 +9,15 @@ import {
   UseGuards,
   Delete,
 } from "@nestjs/common";
-import { GuardiansService } from "./guardians.service";
+
+import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import { RequirePermission } from "../../../platform/authorization/permission.guard";
 import { PermissionGuard } from "../../../platform/authorization/permission.guard";
-import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
 import {
   createGuardianSchema,
   CreateGuardianDto,
@@ -25,6 +26,7 @@ import {
   linkGuardianSchema,
   LinkGuardianDto,
 } from "./dto/create-guardian.dto";
+import { GuardiansService } from "./guardians.service";
 
 @Controller("education")
 @UseGuards(PermissionGuard)

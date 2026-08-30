@@ -1,8 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../../infrastructure/database/prisma.service";
 import { Request } from "express";
+
 import { BusinessException } from "../../common/exceptions/business.exception";
+import { PrismaService } from "../../infrastructure/database/prisma.service";
 
 @Injectable()
 export class TenantResolverService {

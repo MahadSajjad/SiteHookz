@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body } from "@nestjs/common";
-import { AcademicSessionsService } from "./academic-sessions.service";
+
 import { TenantContext } from "../../../common/decorators/tenant-context.decorator";
 import { RequirePermission } from "../../../platform/authorization/permission.guard";
+
+import { AcademicSessionsService } from "./academic-sessions.service";
 
 @Controller("education/academic-sessions")
 export class AcademicSessionsController {

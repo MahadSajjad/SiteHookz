@@ -1,15 +1,17 @@
 import { Controller, Post, Get, Body } from "@nestjs/common";
-import { OrganizationsService } from "./organizations.service";
-import {
-  CreateOrganizationDto,
-  createOrganizationSchema,
-} from "./dto/create-organization.dto";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
-import { SkipTenant } from "../tenancy/tenant.guard";
+
 import {
   CurrentUser,
   UserContext,
 } from "../../common/decorators/current-user.decorator";
+import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { SkipTenant } from "../tenancy/tenant.guard";
+
+import {
+  CreateOrganizationDto,
+  createOrganizationSchema,
+} from "./dto/create-organization.dto";
+import { OrganizationsService } from "./organizations.service";
 
 @Controller("organizations")
 export class OrganizationsController {

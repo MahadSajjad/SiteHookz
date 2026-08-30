@@ -1,4 +1,5 @@
 import { Module, Global } from "@nestjs/common";
+
 import { TenantResolverService } from "./tenant-resolver.service";
 import { TenantGuard } from "./tenant.guard";
 

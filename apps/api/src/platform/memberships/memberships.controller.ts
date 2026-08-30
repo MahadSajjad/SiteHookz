@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Param } from "@nestjs/common";
-import { MembershipsService } from "./memberships.service";
+
 import { TenantContext } from "../../common/decorators/tenant-context.decorator";
 import { RequirePermission } from "../authorization/permission.guard";
+
+import { MembershipsService } from "./memberships.service";
 
 @Controller("memberships")
 export class MembershipsController {

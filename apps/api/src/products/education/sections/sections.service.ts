@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
+
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
@@ -10,7 +11,7 @@ import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 export class SectionsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(tenant: TenantContext, query: any) {
+  async findAll(tenant: TenantContext, ) {
     return this.prisma.section.findMany({
       where: { organizationId: tenant.organizationId },
     });

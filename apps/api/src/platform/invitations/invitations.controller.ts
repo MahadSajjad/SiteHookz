@@ -1,8 +1,10 @@
 import { Controller, Post, Body, Req } from "@nestjs/common";
-import { InvitationsService } from "./invitations.service";
+
+import { Public } from "../../common/decorators/public.decorator";
 import { TenantContext } from "../../common/decorators/tenant-context.decorator";
 import { RequirePermission } from "../authorization/permission.guard";
-import { Public } from "../../common/decorators/public.decorator";
+
+import { InvitationsService } from "./invitations.service";
 
 @Controller("invitations")
 export class InvitationsController {

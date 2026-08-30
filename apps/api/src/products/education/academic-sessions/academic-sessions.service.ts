@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../infrastructure/database/prisma.service";
+
 import { BusinessException } from "../../../common/exceptions/business.exception";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
 
 @Injectable()
 export class AcademicSessionsService {

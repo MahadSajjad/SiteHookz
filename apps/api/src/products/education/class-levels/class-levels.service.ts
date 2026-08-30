@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
+
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 

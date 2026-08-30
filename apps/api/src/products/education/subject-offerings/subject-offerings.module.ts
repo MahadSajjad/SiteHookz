@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
+
 import { SubjectOfferingsController } from "./subject-offerings.controller";
-import { SubjectOfferingsService } from "./subject-offerings.service";
 import { SubjectOfferingsRepository } from "./subject-offerings.repository";
+import { SubjectOfferingsService } from "./subject-offerings.service";
 
 @Module({
   controllers: [SubjectOfferingsController],

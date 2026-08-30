@@ -1,9 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../../../infrastructure/database/prisma.service";
-import { CreateStudentDto, UpdateStudentDto } from "./dto/create-student.dto";
-import { TenantContext } from "../../../platform/tenancy/tenant.guard";
-import { AuthorizationService } from "../../../platform/authorization/authorization.service";
+
 import { BusinessException } from "../../../common/exceptions/business.exception";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import { AuthorizationService } from "../../../platform/authorization/authorization.service";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
+
+import { CreateStudentDto, UpdateStudentDto } from "./dto/create-student.dto";
+
 
 @Injectable()
 export class StudentsService {

@@ -1,8 +1,10 @@
+import * as crypto from "crypto";
+
 import { Injectable } from "@nestjs/common";
+
+import { BusinessException } from "../../common/exceptions/business.exception";
 import { PrismaService } from "../../infrastructure/database/prisma.service";
 import { MailService } from "../../infrastructure/mail/mail.service";
-import { BusinessException } from "../../common/exceptions/business.exception";
-import * as crypto from "crypto";
 
 @Injectable()
 export class InvitationsService {

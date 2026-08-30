@@ -1,9 +1,11 @@
 import { Controller, Post, Get, Body, Param } from "@nestjs/common";
+
+import { TenantContext } from "../../common/decorators/tenant-context.decorator";
+import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
+import { RequirePermission } from "../authorization/permission.guard";
+
 import { BranchesService } from "./branches.service";
 import { CreateBranchDto, createBranchSchema } from "./dto/create-branch.dto";
-import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe";
-import { TenantContext } from "../../common/decorators/tenant-context.decorator";
-import { RequirePermission } from "../authorization/permission.guard";
 
 @Controller("branches")
 export class BranchesController {

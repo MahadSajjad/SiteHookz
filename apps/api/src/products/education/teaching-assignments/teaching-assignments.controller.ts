@@ -1,16 +1,18 @@
 import { Controller, Get, Post, Body, Param } from "@nestjs/common";
-import { TeachingAssignmentsService } from "./teaching-assignments.service";
 import {
   AssignTeacherDto,
   EndTeachingAssignmentDto,
   assignTeacherSchema,
-  endTeachingAssignmentSchema
+  endTeachingAssignmentSchema,
 } from "@sitehookz/education";
+
 import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
+import { TeachingAssignmentsService } from "./teaching-assignments.service";
 
 @Controller("education/teaching-assignments")
 export class TeachingAssignmentsController {
@@ -21,7 +23,8 @@ export class TeachingAssignmentsController {
   @Post()
   assign(
     @CurrentTenant() tenant: TenantContext,
-    @Body(new ZodValidationPipe(assignTeacherSchema)) assignTeacherDto: AssignTeacherDto,
+    @Body(new ZodValidationPipe(assignTeacherSchema))
+    assignTeacherDto: AssignTeacherDto,
   ) {
     return this.teachingAssignmentsService.assign(tenant, assignTeacherDto);
   }
@@ -52,7 +55,8 @@ export class TeachingAssignmentsController {
   endAssignment(
     @CurrentTenant() tenant: TenantContext,
     @Param("id") id: string,
-    @Body(new ZodValidationPipe(endTeachingAssignmentSchema)) endDto: EndTeachingAssignmentDto,
+    @Body(new ZodValidationPipe(endTeachingAssignmentSchema))
+    endDto: EndTeachingAssignmentDto,
   ) {
     return this.teachingAssignmentsService.endAssignment(tenant, id, endDto);
   }

@@ -1,4 +1,5 @@
 import Redis from "ioredis";
+
 import { env } from "./config";
 import { setupEmailWorker } from "./workers/email.worker";
 

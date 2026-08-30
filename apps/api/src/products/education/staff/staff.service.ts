@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
-import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import { AuthorizationService } from "../../../platform/authorization/authorization.service";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 
 @Injectable()
 export class StaffService {
@@ -10,7 +11,7 @@ export class StaffService {
     private auth: AuthorizationService,
   ) {}
 
-  async findAll(tenant: TenantContext, query: any) {
+  async findAll(tenant: TenantContext, ) {
     return {
       items: await this.prisma.staffMember.findMany({
         where: { organizationId: tenant.organizationId, archivedAt: null },

@@ -18,7 +18,6 @@ import StaffDetailPage from "../pages/people/staff/StaffDetailPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicOnlyRoute } from "./PublicOnlyRoute";
 
-
 export const router = createBrowserRouter([
   {
     path: "/",

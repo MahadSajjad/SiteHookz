@@ -1,5 +1,5 @@
+import { StaffPositionCategory } from "@sitehookz/database";
 import { z } from "zod";
-import { EmploymentStatus, StaffPositionCategory } from "@sitehookz/database";
 
 export const createStaffSchema = z.object({
   firstName: z.string().min(1),

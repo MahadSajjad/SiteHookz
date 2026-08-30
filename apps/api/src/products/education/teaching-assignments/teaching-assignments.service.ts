@@ -1,14 +1,16 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { TeachingAssignmentsRepository } from "./teaching-assignments.repository";
-import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import {
   AssignTeacherDto,
   EndTeachingAssignmentDto,
 } from "@sitehookz/education";
-import { BusinessException } from "../../../common/exceptions/business.exception";
-import { AuthorizationService } from "../../../platform/authorization/authorization.service";
 import { P } from "@sitehookz/platform-permissions";
+
+import { BusinessException } from "../../../common/exceptions/business.exception";
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
+import { AuthorizationService } from "../../../platform/authorization/authorization.service";
+import { TenantContext } from "../../../platform/tenancy/tenant.guard";
+
+import { TeachingAssignmentsRepository } from "./teaching-assignments.repository";
 
 @Injectable()
 export class TeachingAssignmentsService {
@@ -74,7 +76,18 @@ export class TeachingAssignmentsService {
       );
     }
 
-    return this.repository.assign(tenant, data);
+    try {
+      return await this.repository.assign(tenant, data);
+    } catch (error: any) {
+      if (error.code === "P2002") {
+        throw new BusinessException(
+          "TEACHING_ASSIGNMENT_DUPLICATE",
+          400,
+          "This staff member is already actively assigned to teach this subject offering.",
+        );
+      }
+      throw error;
+    }
   }
 
   async findBySubjectOfferingId(

@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { Gender, StudentStatus } from "@sitehookz/database";
+import { z } from "zod";
 
 export const createStudentSchema = z.object({
   firstName: z.string().min(1).max(255),

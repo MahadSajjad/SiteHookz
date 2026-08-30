@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
 
-
 export default function StaffDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
@@ -113,17 +112,16 @@ export default function StaffDetailPage() {
                       </td>
                     </tr>
                   ))}
-                  {(!assignmentsData ||
-                    assignmentsData.length === 0) && (
-                      <tr>
-                        <td
-                          colSpan={4}
-                          className="p-4 text-center text-sm text-gray-500"
-                        >
-                          No teaching assignments found.
-                        </td>
-                      </tr>
-                    )}
+                  {(!assignmentsData || assignmentsData.length === 0) && (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="p-4 text-center text-sm text-gray-500"
+                      >
+                        No teaching assignments found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

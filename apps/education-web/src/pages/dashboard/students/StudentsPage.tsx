@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
 
-
 export default function StudentsPage() {
   const { t } = useTranslation();
   const api = useApiClient();

@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from "@nestjs/common";
-import { EnrollmentsService } from "./enrollments.service";
+
 import {
   RequirePermission,
   PermissionGuard,
@@ -8,6 +8,8 @@ import {
   CurrentTenant,
   TenantContext,
 } from "../../../platform/tenancy/tenant.guard";
+
+import { EnrollmentsService } from "./enrollments.service";
 
 @Controller("education")
 @UseGuards(PermissionGuard)

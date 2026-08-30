@@ -5,10 +5,12 @@ import {
   SetMetadata,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
+
 import { IS_PUBLIC_KEY } from "../../common/decorators/public.decorator";
 import { BusinessException } from "../../common/exceptions/business.exception";
-import { AuthorizationService } from "./authorization.service";
 import { TenantContext } from "../tenancy/tenant.guard";
+
+import { AuthorizationService } from "./authorization.service";
 
 export const REQUIRE_PERMISSION_KEY = "requirePermission";
 export const RequirePermission = (permission: string) =>

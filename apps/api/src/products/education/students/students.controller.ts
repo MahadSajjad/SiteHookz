@@ -8,21 +8,24 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { StudentsService } from "./students.service";
+import { z } from "zod";
+
+import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
 import { RequirePermission } from "../../../platform/authorization/permission.guard";
 import { PermissionGuard } from "../../../platform/authorization/permission.guard";
-import { ZodValidationPipe } from "../../../common/pipes/zod-validation.pipe";
+import {
+  CurrentTenant,
+  TenantContext,
+} from "../../../platform/tenancy/tenant.guard";
+
 import {
   createStudentSchema,
   CreateStudentDto,
   updateStudentSchema,
   UpdateStudentDto,
 } from "./dto/create-student.dto";
-import {
-  CurrentTenant,
-  TenantContext,
-} from "../../../platform/tenancy/tenant.guard";
-import { z } from "zod";
+import { StudentsService } from "./students.service";
+
 
 const querySchema = z.object({
   search: z.string().optional(),

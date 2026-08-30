@@ -6,7 +6,6 @@ import { z } from "zod";
 
 import { useAuth } from "../../hooks/useAuth";
 
-
 const registerSchema = z
   .object({
     email: z.string().email(),
