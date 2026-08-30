@@ -545,6 +545,9 @@ importers:
       class-validator:
         specifier: ^0.15.1
         version: 0.15.1
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@sitehookz/typescript-config':
         specifier: workspace:*
