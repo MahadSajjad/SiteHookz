@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SubjectOfferingsService } from "./subject-offerings.service";
 import { SubjectOfferingsRepository } from "./subject-offerings.repository";
 import { AuthorizationService } from "../../../platform/authorization/authorization.service";
-import { BusinessException } from "../../../common/exceptions/business.exception";
+import { PrismaService } from "../../../infrastructure/database/prisma.service";
 
 describe("SubjectOfferingsService", () => {
   let service: SubjectOfferingsService;
@@ -19,7 +19,7 @@ describe("SubjectOfferingsService", () => {
       assertPermission: jest.fn().mockResolvedValue(true),
     };
     prisma = {
-      section: { findFirst: jest.fn() },
+      section: { findUnique: jest.fn() },
       batch: { findFirst: jest.fn() },
       subject: { findFirst: jest.fn() },
     };
@@ -29,7 +29,7 @@ describe("SubjectOfferingsService", () => {
         SubjectOfferingsService,
         { provide: SubjectOfferingsRepository, useValue: repo },
         { provide: AuthorizationService, useValue: authService },
-        { provide: 'PrismaService', useValue: prisma },
+        { provide: PrismaService, useValue: prisma },
       ],
     }).compile();
 
@@ -37,9 +37,9 @@ describe("SubjectOfferingsService", () => {
   });
 
   it("should block creation if tenant mismatch or missing", async () => {
-    prisma.section.findFirst.mockResolvedValue(null);
+    prisma.section.findUnique.mockResolvedValue(null);
     const tenant: any = { organizationId: "org-1", userId: "u-1" };
     await expect(service.createSchoolOffering(tenant, { subjectId: "s1", sectionId: "sec1" }))
-      .rejects.toThrow();
+      .rejects.toThrow("Section not found");
   });
 });
