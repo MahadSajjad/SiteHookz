@@ -6,7 +6,7 @@ export function setupEmailWorker(connection: Redis) {
     "email-queue",
     async (job: Job) => {
       console.log(`Processing email job ${job.id}`);
-      const { to, subject, template, data } = job.data;
+      const { to, subject, template } = job.data;
 
       // In development: log email details
       console.log("=== EMAIL DISPATCHED ===");
