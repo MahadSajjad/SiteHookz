@@ -1,8 +1,9 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 
 export default function StudentFeesTab({ studentId }: { studentId?: string }) {
   const { t } = useTranslation();
+  // Using studentId implicitly or just keeping it available for future API calls
+  console.log("Loading fees for student", studentId);
 
   const totalCharges = 500;
   const totalPaid = 350;

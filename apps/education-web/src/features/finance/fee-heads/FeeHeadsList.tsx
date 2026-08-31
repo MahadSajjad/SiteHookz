@@ -1,7 +1,4 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
-import { CustomButton } from "../../../../components/ui/CustomButton"; // Assume standard UI component path or adjust later
-// using native html table for placeholder since @sitehookz/ui path might differ
 
 export default function FeeHeadsList() {
   const { t } = useTranslation();
