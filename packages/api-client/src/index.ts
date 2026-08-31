@@ -19,3 +19,6 @@ export * from "./attendance-sessions";
 export * from "./student-attendance";
 
 export * from "./timetables";
+
+export * from "./fees";
+export * from "./payments";
