@@ -13,11 +13,13 @@ import { SubjectsModule } from "./subjects/subjects.module";
 import { AttendanceModule } from "./attendance/attendance.module";
 import { TeachingAssignmentsModule } from "./teaching-assignments/teaching-assignments.module";
 import { TimetablesModule } from "./timetables/timetables.module";
+import { FeesModule } from "./fees/fees.module";
 // import { AcademicSessionsModule } from './academic-sessions/academic-sessions.module';
 // import { EducationOnboardingService } from './education-onboarding.service';
 
 @Module({
   imports: [
+    FeesModule,
     CoursesModule,
     BatchesModule,
     ClassLevelsModule,
