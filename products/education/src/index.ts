@@ -12,3 +12,4 @@ export * from "./contracts/attendance";
 export * from "./permissions/education-permissions-registry";
 
 export * from "./contracts/timetables";
+export * from "./contracts/fees";
