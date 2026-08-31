@@ -44,3 +44,25 @@ export const EDUCATION_TEACHING_ASSIGNMENTS_PERMISSIONS = {
 
 // Re-export old ones for compatibility until they are moved over.
 
+
+export const EDUCATION_FEES_PERMISSIONS = {
+  READ_FEE_HEADS: "education.fee_heads.read",
+  CREATE_FEE_HEADS: "education.fee_heads.create",
+  UPDATE_FEE_HEADS: "education.fee_heads.update",
+  ARCHIVE_FEE_HEADS: "education.fee_heads.archive",
+  RESTORE_FEE_HEADS: "education.fee_heads.restore",
+  READ_FEE_PLANS: "education.fee_plans.read",
+  CREATE_FEE_PLANS: "education.fee_plans.create",
+  UPDATE_FEE_PLANS: "education.fee_plans.update",
+  ACTIVATE_FEE_PLANS: "education.fee_plans.activate",
+  ARCHIVE_FEE_PLANS: "education.fee_plans.archive",
+  READ_FEE_ASSIGNMENTS: "education.fee_assignments.read",
+  CREATE_FEE_ASSIGNMENTS: "education.fee_assignments.create",
+  END_FEE_ASSIGNMENTS: "education.fee_assignments.end",
+  READ_FEE_CHARGES: "education.fee_charges.read",
+  GENERATE_FEE_CHARGES: "education.fee_charges.generate",
+  VOID_FEE_CHARGES: "education.fee_charges.void",
+  READ_PAYMENTS: "education.payments.read",
+  CREATE_PAYMENTS: "education.payments.create",
+  VOID_PAYMENTS: "education.payments.void",
+} as const;

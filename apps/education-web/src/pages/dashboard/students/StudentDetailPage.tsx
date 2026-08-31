@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
+import StudentFeesTab from "../../../features/students/components/student-fees-tab";
 
 function StudentAttendanceTab({ studentId }: { studentId: string }) {
   const { t } = useTranslation();
@@ -155,6 +156,16 @@ export default function StudentDetailPage() {
           >
             {t("nav.attendance", "Attendance")}
           </button>
+          <button
+            onClick={() => setActiveTab("fees")}
+            className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === "fees"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            }`}
+          >
+            {t("nav.fees", "Fees")}
+          </button>
         </nav>
       </div>
 
@@ -186,6 +197,11 @@ export default function StudentDetailPage() {
 
       {activeTab === "attendance" && id && (
         <StudentAttendanceTab studentId={id} />
+      )}
+      {activeTab === "fees" && id && (
+        <div className="bg-white rounded shadow">
+          <StudentFeesTab studentId={id} />
+        </div>
       )}
     </div>
   );

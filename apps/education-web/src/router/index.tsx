@@ -17,6 +17,9 @@ import StudentsPage from "../pages/dashboard/students/StudentsPage";
 import StudentDetailPage from "../pages/dashboard/students/StudentDetailPage";
 import { CreateOrganizationPage } from "../pages/onboarding/CreateOrganizationPage";
 import StaffDetailPage from "../pages/people/staff/StaffDetailPage";
+import FeeHeadsList from "../features/finance/fee-heads/FeeHeadsList";
+import FeePlansList from "../features/finance/fee-plans/FeePlansList";
+import PaymentsList from "../features/finance/payments/PaymentsList";
 
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicOnlyRoute } from "./PublicOnlyRoute";
@@ -96,6 +99,9 @@ export const router = createBrowserRouter([
         element: <BatchDetailPage />,
       },
       { path: "/dashboard/staff/:id", element: <StaffDetailPage /> },
+      { path: "/dashboard/finance/fee-heads", element: <FeeHeadsList /> },
+      { path: "/dashboard/finance/fee-plans", element: <FeePlansList /> },
+      { path: "/dashboard/finance/payments", element: <PaymentsList /> },
       { path: "subjects", element: <SubjectsPage /> },
     ],
   },

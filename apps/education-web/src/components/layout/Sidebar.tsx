@@ -16,6 +16,18 @@ export function Sidebar() {
       name: t("attendance.tuitionAttendance", "Tuition Attendance"),
       href: "/dashboard/attendance/tuition",
     },
+    {
+      name: t("finance.feeHeads", "Fee Heads"),
+      href: "/dashboard/finance/fee-heads",
+    },
+    {
+      name: t("finance.feePlans", "Fee Plans"),
+      href: "/dashboard/finance/fee-plans",
+    },
+    {
+      name: t("finance.payments", "Payments"),
+      href: "/dashboard/finance/payments",
+    },
   ];
 
   return (

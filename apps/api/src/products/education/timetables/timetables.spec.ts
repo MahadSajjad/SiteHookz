@@ -15,7 +15,7 @@ describe("TimetablesService & TimetableEntriesService", () => {
   let entriesService: TimetableEntriesService;
 
   const mockTenant = ({ organizationId: "org-1", membershipId: "mem-1" } as any) as any;
-  const mockTenant2 = { organizationId: "org-2", membershipId: "mem-2" };
+  const mockTenant2 = { organizationId: "org-2", membershipId: "mem-2" } as any;
 
   const mockAuthService = {
     assertPermission: jest.fn().mockResolvedValue(true),
