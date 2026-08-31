@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { FeePlanItemSchema } from './fee-plan';
+import { z } from "zod";
+import { FeePlanItemSchema } from "./fee-plan";
 
 export const FeeChargeSchema = z.object({
   id: z.string().uuid(),
@@ -21,7 +21,7 @@ export const FeeChargeSchema = z.object({
   feePlanItem: FeePlanItemSchema.optional(),
 
   // Computed field from backend
-  status: z.enum(['UNPAID', 'PARTIALLY_PAID', 'PAID', 'VOIDED']).optional(),
+  status: z.enum(["UNPAID", "PARTIALLY_PAID", "PAID", "VOIDED"]).optional(),
   amountPaid: z.string().optional(),
   amountOutstanding: z.string().optional(),
 });

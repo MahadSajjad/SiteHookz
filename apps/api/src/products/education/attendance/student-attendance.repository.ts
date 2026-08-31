@@ -29,7 +29,6 @@ export class StudentAttendanceRepository {
             status: record.status as StudentAttendanceStatus,
             note: record.note,
             markedByMembershipId: tenant.membershipId,
-            
           },
           create: {
             organizationId: tenant.organizationId,
@@ -38,7 +37,6 @@ export class StudentAttendanceRepository {
             status: record.status as StudentAttendanceStatus,
             note: record.note,
             markedByMembershipId: tenant.membershipId,
-            
           },
         });
         results.push(upserted);

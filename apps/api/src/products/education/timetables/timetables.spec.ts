@@ -14,7 +14,10 @@ describe("TimetablesService & TimetableEntriesService", () => {
   let timetablesService: TimetablesService;
   let entriesService: TimetableEntriesService;
 
-  const mockTenant = ({ organizationId: "org-1", membershipId: "mem-1" } as any) as any;
+  const mockTenant = {
+    organizationId: "org-1",
+    membershipId: "mem-1",
+  } as any as any;
   const mockTenant2 = { organizationId: "org-2", membershipId: "mem-2" } as any;
 
   const mockAuthService = {
@@ -23,16 +26,14 @@ describe("TimetablesService & TimetableEntriesService", () => {
 
   const mockPrismaTransaction = jest.fn().mockImplementation((cb) =>
     cb({
-      $queryRaw: jest
-        .fn()
-        .mockResolvedValue([
-          {
-            id: "sched-1",
-            status: "DRAFT",
-            effectiveFrom: new Date(),
-            effectiveTo: null,
-          },
-        ]),
+      $queryRaw: jest.fn().mockResolvedValue([
+        {
+          id: "sched-1",
+          status: "DRAFT",
+          effectiveFrom: new Date(),
+          effectiveTo: null,
+        },
+      ]),
     }),
   );
   const mockPrisma = {

@@ -114,4 +114,44 @@ export const EDUCATION_PERMISSIONS_REGISTRY = [
     description: "Mark student attendance",
     category: "Education",
   },
+  {
+    key: "education.assessments.read",
+    description: "Read assessments",
+    category: "Education",
+  },
+  {
+    key: "education.assessments.create",
+    description: "Create assessments",
+    category: "Education",
+  },
+  {
+    key: "education.assessments.update",
+    description: "Update assessments",
+    category: "Education",
+  },
+  {
+    key: "education.assessments.activate",
+    description: "Activate assessments",
+    category: "Education",
+  },
+  {
+    key: "education.assessments.publish_results",
+    description: "Publish assessment results",
+    category: "Education",
+  },
+  {
+    key: "education.assessments.archive",
+    description: "Archive assessments",
+    category: "Education",
+  },
+  {
+    key: "education.assessment_results.read",
+    description: "Read assessment results",
+    category: "Education",
+  },
+  {
+    key: "education.assessment_results.grade",
+    description: "Grade assessment results",
+    category: "Education",
+  },
 ];

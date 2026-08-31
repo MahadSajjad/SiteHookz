@@ -1,12 +1,26 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
-import { PrismaService } from '../../../../platform/database/prisma.service';
-import { CreateEnrollmentFeePlanAssignmentDto, EnrollmentFeePlanAssignment, FeePlanStatus, FeeFrequency } from '@sitehookz/education';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from "@nestjs/common";
+import { PrismaService } from "../../../../infrastructure/database/prisma.service";
+import {
+  CreateEnrollmentFeePlanAssignmentDto,
+  EnrollmentFeePlanAssignment,
+  FeePlanStatus,
+  FeeFrequency,
+} from "@sitehookz/education";
 
 @Injectable()
 export class FeeAssignmentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(organizationId: string, membershipId: string, data: CreateEnrollmentFeePlanAssignmentDto): Promise<EnrollmentFeePlanAssignment> {
+  async create(
+    organizationId: string,
+    membershipId: string,
+    data: CreateEnrollmentFeePlanAssignmentDto,
+  ): Promise<EnrollmentFeePlanAssignment> {
     return await this.prisma.$transaction(async (tx) => {
       // 1. Validate Enrollment
       const enrollment = await tx.studentEnrollment.findUnique({
@@ -18,7 +32,7 @@ export class FeeAssignmentsService {
       });
 
       if (!enrollment) {
-        throw new NotFoundException('Student enrollment not found');
+        throw new NotFoundException("Student enrollment not found");
       }
 
       // 2. Validate Fee Plan
@@ -32,19 +46,22 @@ export class FeeAssignmentsService {
       });
 
       if (!plan) {
-        throw new NotFoundException('Fee plan not found');
+        throw new NotFoundException("Fee plan not found");
       }
 
       if (plan.status !== FeePlanStatus.ACTIVE) {
-        throw new BadRequestException('Cannot assign a non-active fee plan');
+        throw new BadRequestException("Cannot assign a non-active fee plan");
       }
 
       // 3. Match Context
-      if (plan.planType === 'SCHOOL') {
+      if (plan.planType === "SCHOOL") {
         if (!enrollment.schoolPlacement) {
-          throw new BadRequestException('Enrollment is not a school placement');
+          throw new BadRequestException("Enrollment is not a school placement");
         }
-        if (enrollment.schoolPlacement.sectionId !== plan.schoolContext?.classLevelId) {
+        if (
+          enrollment.schoolPlacement.sectionId !==
+          plan.schoolContext?.classLevelId
+        ) {
           // This is a naive check. A real check would traverse Section -> ClassLevel
           // But as per instructions "validate context (branch, class, session matching exactly)".
           // We will assume it's checked or we can query it.
@@ -62,7 +79,9 @@ export class FeeAssignmentsService {
       });
 
       if (existing) {
-        throw new ConflictException('This fee plan is already actively assigned to this enrollment');
+        throw new ConflictException(
+          "This fee plan is already actively assigned to this enrollment",
+        );
       }
 
       // 5. Create Assignment
@@ -76,8 +95,10 @@ export class FeeAssignmentsService {
       });
 
       // 6. Generate ONE_TIME charges immediately
-      const oneTimeItems = plan.items.filter(item => item.frequency === FeeFrequency.ONE_TIME);
-      
+      const oneTimeItems = plan.items.filter(
+        (item) => item.frequency === FeeFrequency.ONE_TIME,
+      );
+
       if (oneTimeItems.length > 0) {
         const currentDate = new Date();
         const dueDate = new Date();
@@ -85,10 +106,10 @@ export class FeeAssignmentsService {
           dueDate.setDate(plan.defaultDueDay);
         }
 
-        const billingPeriodKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-OT`;
+        const billingPeriodKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-OT`;
 
         await tx.feeCharge.createMany({
-          data: oneTimeItems.map(item => ({
+          data: oneTimeItems.map((item) => ({
             organizationId,
             enrollmentFeePlanAssignmentId: assignment.id,
             feePlanItemId: item.id,
@@ -106,13 +127,16 @@ export class FeeAssignmentsService {
     });
   }
 
-  async findAll(organizationId: string, studentEnrollmentId?: string): Promise<EnrollmentFeePlanAssignment[]> {
+  async findAll(
+    organizationId: string,
+    studentEnrollmentId?: string,
+  ): Promise<EnrollmentFeePlanAssignment[]> {
     const assignments = await this.prisma.enrollmentFeePlanAssignment.findMany({
       where: {
         organizationId,
         ...(studentEnrollmentId ? { studentEnrollmentId } : {}),
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return assignments as unknown as EnrollmentFeePlanAssignment[];
   }

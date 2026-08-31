@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { FeeChargeSchema } from './fee-charge';
-import { PaymentSchema } from './payment';
+import { z } from "zod";
+import { FeeChargeSchema } from "./fee-charge";
+import { PaymentSchema } from "./payment";
 
 export const StudentFinancialSummarySchema = z.object({
   studentId: z.string().uuid(),
@@ -11,4 +11,6 @@ export const StudentFinancialSummarySchema = z.object({
   recentPayments: z.array(PaymentSchema),
 });
 
-export type StudentFinancialSummary = z.infer<typeof StudentFinancialSummarySchema>;
+export type StudentFinancialSummary = z.infer<
+  typeof StudentFinancialSummarySchema
+>;

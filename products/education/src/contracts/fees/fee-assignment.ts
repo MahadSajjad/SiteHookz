@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const EnrollmentFeePlanAssignmentSchema = z.object({
   id: z.string().uuid(),
@@ -12,18 +12,24 @@ export const EnrollmentFeePlanAssignmentSchema = z.object({
   updatedAt: z.coerce.date(),
 });
 
-export type EnrollmentFeePlanAssignment = z.infer<typeof EnrollmentFeePlanAssignmentSchema>;
+export type EnrollmentFeePlanAssignment = z.infer<
+  typeof EnrollmentFeePlanAssignmentSchema
+>;
 
 export const CreateEnrollmentFeePlanAssignmentDtoSchema = z.object({
   studentEnrollmentId: z.string().uuid(),
   feePlanId: z.string().uuid(),
 });
 
-export type CreateEnrollmentFeePlanAssignmentDto = z.infer<typeof CreateEnrollmentFeePlanAssignmentDtoSchema>;
+export type CreateEnrollmentFeePlanAssignmentDto = z.infer<
+  typeof CreateEnrollmentFeePlanAssignmentDtoSchema
+>;
 
 export const EnrollmentFeePlanAssignmentListResponseSchema = z.object({
   data: z.array(EnrollmentFeePlanAssignmentSchema),
   total: z.number(),
 });
 
-export type EnrollmentFeePlanAssignmentListResponse = z.infer<typeof EnrollmentFeePlanAssignmentListResponseSchema>;
+export type EnrollmentFeePlanAssignmentListResponse = z.infer<
+  typeof EnrollmentFeePlanAssignmentListResponseSchema
+>;

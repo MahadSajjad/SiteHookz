@@ -1,12 +1,23 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../../platform/database/prisma.service';
-import { CreateFeeHeadDto, UpdateFeeHeadDto, FeeHead } from '@sitehookz/education';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
+import { PrismaService } from "../../../../infrastructure/database/prisma.service";
+import {
+  CreateFeeHeadDto,
+  UpdateFeeHeadDto,
+  FeeHead,
+} from "@sitehookz/education";
 
 @Injectable()
 export class FeeHeadsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(organizationId: string, data: CreateFeeHeadDto): Promise<FeeHead> {
+  async create(
+    organizationId: string,
+    data: CreateFeeHeadDto,
+  ): Promise<FeeHead> {
     const existing = await this.prisma.feeHead.findUnique({
       where: {
         organizationId_code: {
@@ -17,7 +28,9 @@ export class FeeHeadsService {
     });
 
     if (existing) {
-      throw new ConflictException(`Fee head with code ${data.code} already exists`);
+      throw new ConflictException(
+        `Fee head with code ${data.code} already exists`,
+      );
     }
 
     const created = await this.prisma.feeHead.create({
@@ -37,7 +50,7 @@ export class FeeHeadsService {
   async findAll(organizationId: string): Promise<FeeHead[]> {
     const records = await this.prisma.feeHead.findMany({
       where: { organizationId, archivedAt: null },
-      orderBy: { name: 'asc' },
+      orderBy: { name: "asc" },
     });
     return records as unknown as FeeHead[];
   }
@@ -47,12 +60,16 @@ export class FeeHeadsService {
       where: { id, organizationId, archivedAt: null },
     });
     if (!record) {
-      throw new NotFoundException('Fee head not found');
+      throw new NotFoundException("Fee head not found");
     }
     return record as unknown as FeeHead;
   }
 
-  async update(organizationId: string, id: string, data: UpdateFeeHeadDto): Promise<FeeHead> {
+  async update(
+    organizationId: string,
+    id: string,
+    data: UpdateFeeHeadDto,
+  ): Promise<FeeHead> {
     await this.findOne(organizationId, id);
 
     if (data.code) {
@@ -64,7 +81,9 @@ export class FeeHeadsService {
         },
       });
       if (existing) {
-        throw new ConflictException(`Fee head with code ${data.code} already exists`);
+        throw new ConflictException(
+          `Fee head with code ${data.code} already exists`,
+        );
       }
     }
 

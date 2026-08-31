@@ -1,15 +1,15 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export enum PaymentMethod {
-  CASH = 'CASH',
-  BANK_TRANSFER = 'BANK_TRANSFER',
-  CARD = 'CARD',
-  OTHER = 'OTHER',
+  CASH = "CASH",
+  BANK_TRANSFER = "BANK_TRANSFER",
+  CARD = "CARD",
+  OTHER = "OTHER",
 }
 
 export enum PaymentStatus {
-  POSTED = 'POSTED',
-  VOIDED = 'VOIDED',
+  POSTED = "POSTED",
+  VOIDED = "VOIDED",
 }
 
 export const PaymentAllocationSchema = z.object({
@@ -52,7 +52,9 @@ export const PaymentAllocationInputSchema = z.object({
   amount: z.string().regex(/^\d+(\.\d{1,2})?$/),
 });
 
-export type PaymentAllocationInput = z.infer<typeof PaymentAllocationInputSchema>;
+export type PaymentAllocationInput = z.infer<
+  typeof PaymentAllocationInputSchema
+>;
 
 export const CreatePaymentDtoSchema = z.object({
   branchId: z.string().uuid(),

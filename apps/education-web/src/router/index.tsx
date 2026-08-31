@@ -20,6 +20,8 @@ import StaffDetailPage from "../pages/people/staff/StaffDetailPage";
 import FeeHeadsList from "../features/finance/fee-heads/FeeHeadsList";
 import FeePlansList from "../features/finance/fee-plans/FeePlansList";
 import PaymentsList from "../features/finance/payments/PaymentsList";
+import AssessmentsPage from "../features/academics/assessments/AssessmentsPage";
+import AssessmentDetailPage from "../features/academics/assessments/AssessmentDetailPage";
 
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicOnlyRoute } from "./PublicOnlyRoute";
@@ -102,6 +104,14 @@ export const router = createBrowserRouter([
       { path: "/dashboard/finance/fee-heads", element: <FeeHeadsList /> },
       { path: "/dashboard/finance/fee-plans", element: <FeePlansList /> },
       { path: "/dashboard/finance/payments", element: <PaymentsList /> },
+      {
+        path: "/dashboard/academics/assessments",
+        element: <AssessmentsPage />,
+      },
+      {
+        path: "/dashboard/academics/assessments/:id",
+        element: <AssessmentDetailPage />,
+      },
       { path: "subjects", element: <SubjectsPage /> },
     ],
   },

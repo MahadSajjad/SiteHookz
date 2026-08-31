@@ -44,7 +44,6 @@ export const EDUCATION_TEACHING_ASSIGNMENTS_PERMISSIONS = {
 
 // Re-export old ones for compatibility until they are moved over.
 
-
 export const EDUCATION_FEES_PERMISSIONS = {
   READ_FEE_HEADS: "education.fee_heads.read",
   CREATE_FEE_HEADS: "education.fee_heads.create",
@@ -65,4 +64,17 @@ export const EDUCATION_FEES_PERMISSIONS = {
   READ_PAYMENTS: "education.payments.read",
   CREATE_PAYMENTS: "education.payments.create",
   VOID_PAYMENTS: "education.payments.void",
+} as const;
+export const EDUCATION_ASSESSMENTS_PERMISSIONS = {
+  READ: "education.assessments.read",
+  CREATE: "education.assessments.create",
+  UPDATE: "education.assessments.update",
+  ACTIVATE: "education.assessments.activate",
+  PUBLISH_RESULTS: "education.assessments.publish_results",
+  ARCHIVE: "education.assessments.archive",
+} as const;
+
+export const EDUCATION_ASSESSMENT_RESULTS_PERMISSIONS = {
+  READ: "education.assessment_results.read",
+  GRADE: "education.assessment_results.grade",
 } as const;

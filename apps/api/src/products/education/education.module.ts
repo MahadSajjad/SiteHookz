@@ -14,6 +14,7 @@ import { AttendanceModule } from "./attendance/attendance.module";
 import { TeachingAssignmentsModule } from "./teaching-assignments/teaching-assignments.module";
 import { TimetablesModule } from "./timetables/timetables.module";
 import { FeesModule } from "./fees/fees.module";
+import { AssessmentsModule } from "./assessments/assessments.module";
 // import { AcademicSessionsModule } from './academic-sessions/academic-sessions.module';
 // import { EducationOnboardingService } from './education-onboarding.service';
 
@@ -33,6 +34,7 @@ import { FeesModule } from "./fees/fees.module";
     TeachingAssignmentsModule,
     AttendanceModule,
     TimetablesModule,
+    AssessmentsModule,
 
     // AcademicSessionsModule
   ],

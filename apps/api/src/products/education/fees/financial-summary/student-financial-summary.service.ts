@@ -1,30 +1,44 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../../platform/database/prisma.service';
-import { StudentFinancialSummary, FeeCharge, Payment } from '@sitehookz/education';
-import { Decimal } from '@prisma/client/runtime/library';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "../../../../infrastructure/database/prisma.service";
+import {
+  StudentFinancialSummary,
+  FeeCharge,
+  Payment,
+} from "@sitehookz/education";
+import { Prisma } from "@sitehookz/database";
+const Decimal = Prisma.Decimal;
 
 @Injectable()
 export class StudentFinancialSummaryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getSummary(organizationId: string, studentId: string): Promise<StudentFinancialSummary> {
-    const student = await this.prisma.student.findUnique({ where: { id: studentId, organizationId } });
-    if (!student) throw new NotFoundException('Student not found');
+  async getSummary(
+    organizationId: string,
+    studentId: string,
+  ): Promise<StudentFinancialSummary> {
+    const student = await this.prisma.student.findUnique({
+      where: { id: studentId, organizationId },
+    });
+    if (!student) throw new NotFoundException("Student not found");
 
     const enrollments = await this.prisma.studentEnrollment.findMany({
       where: { studentId, organizationId },
       select: { id: true },
     });
-    const enrollmentIds = enrollments.map(e => e.id);
+    const enrollmentIds = enrollments.map((e) => e.id);
 
     const charges = await this.prisma.feeCharge.findMany({
-      where: { studentEnrollmentId: { in: enrollmentIds }, organizationId, voidedAt: null },
+      where: {
+        studentEnrollmentId: { in: enrollmentIds },
+        organizationId,
+        voidedAt: null,
+      },
       include: {
         paymentAllocations: {
           include: { payment: true },
         },
       },
-      orderBy: { dueDate: 'desc' },
+      orderBy: { dueDate: "desc" },
     });
 
     let totalCharges = new Decimal(0);
@@ -33,7 +47,7 @@ export class StudentFinancialSummaryService {
     for (const charge of charges) {
       totalCharges = totalCharges.plus(charge.amount);
       const chargePaid = charge.paymentAllocations
-        .filter(a => !a.payment.voidedAt)
+        .filter((a) => !a.payment.voidedAt)
         .reduce((sum, a) => sum.plus(a.amount), new Decimal(0));
       totalPaid = totalPaid.plus(chargePaid);
     }
@@ -42,7 +56,7 @@ export class StudentFinancialSummaryService {
 
     const payments = await this.prisma.payment.findMany({
       where: { studentId, organizationId, voidedAt: null },
-      orderBy: { paymentDate: 'desc' },
+      orderBy: { paymentDate: "desc" },
       take: 5,
     });
 

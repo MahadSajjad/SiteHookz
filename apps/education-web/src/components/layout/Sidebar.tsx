@@ -28,6 +28,10 @@ export function Sidebar() {
       name: t("finance.payments", "Payments"),
       href: "/dashboard/finance/payments",
     },
+    {
+      name: t("nav.assessments", "Assessments"),
+      href: "/dashboard/academics/assessments",
+    },
   ];
 
   return (

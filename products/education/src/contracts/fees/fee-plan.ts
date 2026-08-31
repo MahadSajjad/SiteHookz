@@ -1,19 +1,19 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export enum FeePlanType {
-  SCHOOL = 'SCHOOL',
-  TUITION = 'TUITION',
+  SCHOOL = "SCHOOL",
+  TUITION = "TUITION",
 }
 
 export enum FeePlanStatus {
-  DRAFT = 'DRAFT',
-  ACTIVE = 'ACTIVE',
-  ARCHIVED = 'ARCHIVED',
+  DRAFT = "DRAFT",
+  ACTIVE = "ACTIVE",
+  ARCHIVED = "ARCHIVED",
 }
 
 export enum FeeFrequency {
-  ONE_TIME = 'ONE_TIME',
-  MONTHLY = 'MONTHLY',
+  ONE_TIME = "ONE_TIME",
+  MONTHLY = "MONTHLY",
 }
 
 export const SchoolFeePlanContextSchema = z.object({

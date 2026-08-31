@@ -9,6 +9,7 @@ import { subjectsApi } from "@sitehookz/api-client/src/subjects";
 import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
 import { AttendanceSessionsApi } from "@sitehookz/api-client/src/attendance-sessions";
 import { StudentAttendanceApi } from "@sitehookz/api-client/src/student-attendance";
+import { AssessmentsApi } from "@sitehookz/api-client/src/assessments";
 import { apiClient } from "@sitehookz/api-client/src/client";
 
 const api = {
@@ -25,6 +26,7 @@ const api = {
   teachingAssignments: teachingAssignmentsApi,
   attendanceSessions: new AttendanceSessionsApi(apiClient),
   studentAttendance: new StudentAttendanceApi(apiClient),
+  assessments: new AssessmentsApi(apiClient),
 };
 
 export type ApiClientType = any;

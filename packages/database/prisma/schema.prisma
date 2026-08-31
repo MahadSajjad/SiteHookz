@@ -42,6 +42,8 @@ model Organization {
 
   students                  Student[]
   guardians                 Guardian[]
+  assessments               Assessment[]
+  assessmentResults         AssessmentResult[]
   studentGuardians          StudentGuardian[]
   staffMembers              StaffMember[]
   staffPositions            StaffPosition[]
@@ -823,6 +825,7 @@ model StudentEnrollment {
   attendanceRecords StudentAttendanceRecord[]
   enrollmentFeePlanAssignments EnrollmentFeePlanAssignment[]
   feeCharges FeeCharge[]
+  assessmentResults AssessmentResult[]
 }
 
 model SchoolEnrollmentPlacement {
@@ -911,6 +914,7 @@ model SubjectOffering {
 
   organization Organization @relation(fields: [organizationId], references: [id])
   subject      Subject      @relation(fields: [subjectId], references: [id])
+  assessments  Assessment[]
 
   schoolOffering  SchoolSubjectOffering?
   tuitionOffering TuitionSubjectOffering?
@@ -1445,4 +1449,86 @@ model PaymentReceiptSequence {
   branch Branch @relation(fields: [branchId], references: [id])
 
   @@unique([organizationId, branchId])
+}
+
+// ============================================
+// LAYER 7: ASSESSMENTS & RESULTS
+// ============================================
+
+enum AssessmentType {
+  QUIZ
+  ASSIGNMENT
+  TEST
+  MIDTERM
+  FINAL
+  PRACTICAL
+  OTHER
+}
+
+enum AssessmentStatus {
+  DRAFT
+  ACTIVE
+  RESULTS_PUBLISHED
+  ARCHIVED
+}
+
+enum AssessmentResultStatus {
+  GRADED
+  ABSENT
+  EXEMPT
+}
+
+model Assessment {
+  id String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  subjectOfferingId String @db.Uuid
+  title String
+  assessmentType AssessmentType
+  assessmentDate DateTime @db.Date
+  maximumMarks Decimal @db.Decimal(10, 2)
+  passingMarks Decimal? @db.Decimal(10, 2)
+  status AssessmentStatus @default(DRAFT)
+  description String?
+  createdByMembershipId String @db.Uuid
+  activatedAt DateTime?
+  activatedByMembershipId String? @db.Uuid
+  resultsPublishedAt DateTime?
+  resultsPublishedByMembershipId String? @db.Uuid
+  archivedAt DateTime?
+  archivedByMembershipId String? @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  subjectOffering SubjectOffering @relation(fields: [subjectOfferingId], references: [id])
+  results AssessmentResult[]
+
+  @@index([organizationId])
+  @@index([subjectOfferingId])
+  @@index([assessmentDate])
+  @@index([assessmentType])
+  @@index([status])
+}
+
+model AssessmentResult {
+  id String @id @default(uuid()) @db.Uuid
+  organizationId String @db.Uuid
+  assessmentId String @db.Uuid
+  studentEnrollmentId String @db.Uuid
+  resultStatus AssessmentResultStatus
+  marksObtained Decimal? @db.Decimal(10, 2)
+  comment String?
+  gradedByMembershipId String @db.Uuid
+  gradedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  assessment Assessment @relation(fields: [assessmentId], references: [id])
+  studentEnrollment StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
+
+  @@unique([assessmentId, studentEnrollmentId])
+  @@index([organizationId])
+  @@index([assessmentId])
+  @@index([studentEnrollmentId])
 }

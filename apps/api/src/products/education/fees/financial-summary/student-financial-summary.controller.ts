@@ -1,19 +1,27 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
-import { StudentFinancialSummaryService } from './student-financial-summary.service';
-import { RequirePermission } from '../../../../platform/auth/decorators/require-permission.decorator';
-import { CurrentTenant, TenantContext } from '../../../../platform/auth/decorators/current-tenant.decorator';
+import { Controller, Get, Param, ParseUUIDPipe } from "@nestjs/common";
+import { StudentFinancialSummaryService } from "./student-financial-summary.service";
+import { RequirePermission } from "../../../../platform/authorization/permission.guard";
+import {
+  CurrentTenant,
+  TenantContext,
+} from "../../../../platform/tenancy/tenant.guard";
 
-@Controller('education/students/:studentId/financial-summary')
+@Controller("education/students/:studentId/financial-summary")
 export class StudentFinancialSummaryController {
-  constructor(private readonly summaryService: StudentFinancialSummaryService) {}
+  constructor(
+    private readonly summaryService: StudentFinancialSummaryService,
+  ) {}
 
   @Get()
-  @RequirePermission('education.financial_summary.read')
+  @RequirePermission("education.financial_summary.read")
   async getSummary(
     @CurrentTenant() tenant: TenantContext,
-    @Param('studentId', ParseUUIDPipe) studentId: string,
+    @Param("studentId", ParseUUIDPipe) studentId: string,
   ) {
-    const data = await this.summaryService.getSummary(tenant.organizationId, studentId);
+    const data = await this.summaryService.getSummary(
+      tenant.organizationId,
+      studentId,
+    );
     return { data };
   }
 }
