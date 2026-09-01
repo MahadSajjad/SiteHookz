@@ -33,13 +33,18 @@ export class AssessmentsService {
     const offering = await this.prisma.subjectOffering.findUnique({
       where: { id: subjectOfferingId, organizationId: ctx.organizationId },
       include: {
-        section: {
+        schoolOffering: {
           include: {
-            batch: {
+            section: {
               include: {
                 academicSession: true,
               },
             },
+          },
+        },
+        tuitionOffering: {
+          include: {
+            batch: true,
           },
         },
       },
@@ -47,12 +52,21 @@ export class AssessmentsService {
 
     if (!offering) throw new NotFoundException("Subject offering not found");
 
-    const session = offering.section.batch.academicSession;
     const date = new Date(assessmentDate);
-    if (date < session.startDate || date > session.endDate) {
-      throw new BadRequestException(
-        "Assessment date must be within the academic session boundaries.",
-      );
+    if (offering.schoolOffering) {
+      const session = offering.schoolOffering.section.academicSession;
+      if (session && (date < session.startDate || date > session.endDate)) {
+        throw new BadRequestException(
+          "Assessment date must be within the academic session boundaries.",
+        );
+      }
+    } else if (offering.tuitionOffering) {
+      const batch = offering.tuitionOffering.batch;
+      if (date < batch.startDate || (batch.endDate && date > batch.endDate)) {
+        throw new BadRequestException(
+          "Assessment date must be within the batch boundaries.",
+        );
+      }
     }
 
     const assessment = await this.prisma.assessment.create({
@@ -83,8 +97,17 @@ export class AssessmentsService {
       include: {
         subjectOffering: {
           include: {
-            section: {
-              include: { batch: { include: { academicSession: true } } },
+            schoolOffering: {
+              include: {
+                section: {
+                  include: { academicSession: true },
+                },
+              },
+            },
+            tuitionOffering: {
+              include: {
+                batch: true,
+              },
             },
           },
         },
@@ -111,12 +134,22 @@ export class AssessmentsService {
     }
 
     if (dto.assessmentDate) {
-      const session = assessment.subjectOffering.section.batch.academicSession;
       const date = new Date(dto.assessmentDate);
-      if (date < session.startDate || date > session.endDate) {
-        throw new BadRequestException(
-          "Assessment date must be within the academic session boundaries.",
-        );
+      if (assessment.subjectOffering.schoolOffering) {
+        const session =
+          assessment.subjectOffering.schoolOffering.section.academicSession;
+        if (session && (date < session.startDate || date > session.endDate)) {
+          throw new BadRequestException(
+            "Assessment date must be within the academic session boundaries.",
+          );
+        }
+      } else if (assessment.subjectOffering.tuitionOffering) {
+        const batch = assessment.subjectOffering.tuitionOffering.batch;
+        if (date < batch.startDate || (batch.endDate && date > batch.endDate)) {
+          throw new BadRequestException(
+            "Assessment date must be within the batch boundaries.",
+          );
+        }
       }
     }
 
@@ -200,7 +233,7 @@ export class AssessmentsService {
     const assessments = await this.prisma.assessment.findMany({
       where: {
         organizationId: ctx.organizationId,
-        subjectOffering: { sectionId },
+        subjectOffering: { schoolOffering: { sectionId } },
       },
       orderBy: { assessmentDate: "desc" },
     });
@@ -214,7 +247,7 @@ export class AssessmentsService {
     const assessments = await this.prisma.assessment.findMany({
       where: {
         organizationId: ctx.organizationId,
-        subjectOffering: { section: { batchId } },
+        subjectOffering: { tuitionOffering: { batchId } },
       },
       orderBy: { assessmentDate: "desc" },
     });

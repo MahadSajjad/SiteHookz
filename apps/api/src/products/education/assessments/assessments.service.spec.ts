@@ -43,8 +43,8 @@ describe("AssessmentsService", () => {
   it("should throw BadRequestException if assessment date is out of academic session bounds", async () => {
     prisma.subjectOffering.findUnique.mockResolvedValue({
       id: "so1",
-      section: {
-        batch: {
+      schoolOffering: {
+        section: {
           academicSession: {
             startDate: new Date("2026-01-01"),
             endDate: new Date("2026-12-31"),

@@ -34,14 +34,12 @@ export class AssessmentResultsService {
     const enrollments = await this.prisma.studentEnrollment.findMany({
       where: {
         organizationId: ctx.organizationId,
-        sectionId: assessment.subjectOffering.sectionId,
-        status: { in: ["ACTIVE", "ALUMNI"] },
+        status: { in: ["ACTIVE", "COMPLETED"] },
       },
       include: {
-        student: { include: { profile: true } },
+        student: true,
         assessmentResults: {
           where: { assessmentId },
-          include: { gradedByMembership: { include: { user: true } } },
         },
       },
     });
@@ -53,14 +51,12 @@ export class AssessmentResultsService {
         return {
           studentEnrollmentId: e.id,
           studentId: e.studentId,
-          studentName: `${e.student.profile.firstName} ${e.student.profile.lastName}`,
+          studentName: e.student.name,
           rollNumber: e.rollNumber,
           resultStatus: result ? (result.resultStatus as any) : null,
           marksObtained: result?.marksObtained?.toString() || null,
           comment: result?.comment || null,
-          gradedByName: result?.gradedByMembership
-            ? `${result.gradedByMembership.user.firstName} ${result.gradedByMembership.user.lastName}`
-            : null,
+          gradedByName: null,
           gradedAt: result?.gradedAt || null,
         };
       });

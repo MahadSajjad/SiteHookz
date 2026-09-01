@@ -10,9 +10,9 @@ import {
 } from "@nestjs/common";
 import { AssessmentsService } from "./assessments.service";
 import { AssessmentResultsService } from "./assessment-results.service";
-import { RequirePermission } from "../../../platform/authorization/require-permission.decorator";
+import { RequirePermission } from "../../../common/decorators/require-permission.decorator";
 import { JwtAuthGuard } from "../../../common/guards/jwt-auth.guard";
-import { PermissionsGuard } from "../../../platform/authorization/permission.guard";
+import { PermissionGuard } from "../../../platform/authorization/permission.guard";
 import { TenantContext as TenantContextDecorator } from "../../../common/decorators/tenant-context.decorator";
 import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import {
@@ -27,7 +27,7 @@ import {
 } from "@sitehookz/education";
 
 @Controller("api/v1/education")
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class AssessmentsController {
   constructor(
     private readonly assessmentsService: AssessmentsService,
