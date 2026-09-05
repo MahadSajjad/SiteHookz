@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApiClient } from "../../../hooks/useApiClient";
-import { AssessmentType } from "@sitehookz/api-client/src/assessments";
+import { AssessmentType } from "@sitehookz/api-client";
 
 interface Props {
   isOpen: boolean;

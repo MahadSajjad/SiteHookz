@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import {
@@ -11,6 +7,8 @@ import {
   Assessment,
 } from "@sitehookz/education";
 import { Prisma } from "@sitehookz/database";
+import { BusinessException } from "../../../common/exceptions/business.exception";
+
 const Decimal = Prisma.Decimal;
 
 @Injectable()
@@ -21,17 +19,33 @@ export class AssessmentsService {
     const { subjectOfferingId, maximumMarks, passingMarks, assessmentDate } =
       dto;
 
-    if (
-      passingMarks &&
-      new Decimal(passingMarks).greaterThan(new Decimal(maximumMarks))
-    ) {
-      throw new BadRequestException(
-        "Passing marks cannot exceed maximum marks.",
+    if (new Decimal(maximumMarks).lessThanOrEqualTo(0)) {
+      throw new BusinessException(
+        "ASSESSMENT_INVALID_MARKS",
+        400,
+        "Maximum marks must be greater than 0",
       );
     }
 
+    if (passingMarks) {
+      if (new Decimal(passingMarks).lessThan(0)) {
+        throw new BusinessException(
+          "ASSESSMENT_INVALID_MARKS",
+          400,
+          "Passing marks cannot be negative",
+        );
+      }
+      if (new Decimal(passingMarks).greaterThan(new Decimal(maximumMarks))) {
+        throw new BusinessException(
+          "ASSESSMENT_INVALID_MARKS",
+          400,
+          "Passing marks cannot exceed maximum marks",
+        );
+      }
+    }
+
     const offering = await this.prisma.subjectOffering.findUnique({
-      where: { id: subjectOfferingId, organizationId: ctx.organizationId },
+      where: { id: subjectOfferingId },
       include: {
         schoolOffering: {
           include: {
@@ -50,21 +64,102 @@ export class AssessmentsService {
       },
     });
 
-    if (!offering) throw new NotFoundException("Subject offering not found");
+    if (!offering) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Subject offering not found",
+      );
+    }
+
+    if (offering.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
+
+    if (!offering.schoolOffering && !offering.tuitionOffering) {
+      throw new BusinessException(
+        "ASSESSMENT_CONTEXT_MISMATCH",
+        400,
+        "Subject offering lacks an academic context",
+      );
+    }
+
+    // Check institution mismatch if context or profile has institutionType
+    if ((ctx as any).institutionType) {
+      if (
+        (ctx as any).institutionType === "SCHOOL" &&
+        !offering.schoolOffering
+      ) {
+        throw new BusinessException(
+          "ASSESSMENT_CONTEXT_MISMATCH",
+          400,
+          "Institution type mismatch: SCHOOL cannot use tuition offering",
+        );
+      }
+      if (
+        (ctx as any).institutionType === "TUITION_CENTER" &&
+        !offering.tuitionOffering
+      ) {
+        throw new BusinessException(
+          "ASSESSMENT_CONTEXT_MISMATCH",
+          400,
+          "Institution type mismatch: TUITION_CENTER cannot use school offering",
+        );
+      }
+    }
+
+    const profile = await this.prisma.educationOrganizationProfile.findUnique({
+      where: { organizationId: ctx.organizationId },
+    });
+    if (profile) {
+      if (profile.institutionType === "SCHOOL" && !offering.schoolOffering) {
+        throw new BusinessException(
+          "ASSESSMENT_CONTEXT_MISMATCH",
+          400,
+          "Institution type mismatch: School organization cannot create assessment on Tuition offering",
+        );
+      }
+      if (
+        profile.institutionType === "TUITION_CENTER" &&
+        !offering.tuitionOffering
+      ) {
+        throw new BusinessException(
+          "ASSESSMENT_CONTEXT_MISMATCH",
+          400,
+          "Institution type mismatch: Tuition organization cannot create assessment on School offering",
+        );
+      }
+    }
 
     const date = new Date(assessmentDate);
+    if (isNaN(date.getTime())) {
+      throw new BusinessException(
+        "ASSESSMENT_DATE_OUTSIDE_ACADEMIC_CONTEXT",
+        400,
+        "Invalid assessment date",
+      );
+    }
+
     if (offering.schoolOffering) {
       const session = offering.schoolOffering.section.academicSession;
       if (session && (date < session.startDate || date > session.endDate)) {
-        throw new BadRequestException(
-          "Assessment date must be within the academic session boundaries.",
+        throw new BusinessException(
+          "ASSESSMENT_DATE_OUTSIDE_ACADEMIC_CONTEXT",
+          400,
+          "Assessment date must be within academic session boundaries",
         );
       }
     } else if (offering.tuitionOffering) {
       const batch = offering.tuitionOffering.batch;
       if (date < batch.startDate || (batch.endDate && date > batch.endDate)) {
-        throw new BadRequestException(
-          "Assessment date must be within the batch boundaries.",
+        throw new BusinessException(
+          "ASSESSMENT_DATE_OUTSIDE_ACADEMIC_CONTEXT",
+          400,
+          "Assessment date must be within batch boundaries",
         );
       }
     }
@@ -93,7 +188,7 @@ export class AssessmentsService {
     dto: UpdateAssessment,
   ): Promise<Assessment> {
     const assessment = await this.prisma.assessment.findUnique({
-      where: { id, organizationId: ctx.organizationId },
+      where: { id },
       include: {
         subjectOffering: {
           include: {
@@ -114,9 +209,39 @@ export class AssessmentsService {
       },
     });
 
-    if (!assessment) throw new NotFoundException("Assessment not found");
-    if (assessment.status !== "DRAFT")
-      throw new BadRequestException("Can only update DRAFT assessments");
+    if (!assessment) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Assessment not found",
+      );
+    }
+
+    if (assessment.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
+
+    // ACTIVE structural immutability check
+    if (assessment.status !== "DRAFT") {
+      const isStructuralChange =
+        (dto as any).subjectOfferingId !== undefined ||
+        dto.assessmentType !== undefined ||
+        dto.assessmentDate !== undefined ||
+        dto.maximumMarks !== undefined ||
+        dto.passingMarks !== undefined;
+
+      if (isStructuralChange) {
+        throw new BusinessException(
+          "ASSESSMENT_INVALID_STATE",
+          400,
+          "Cannot modify structural fields (type, date, marks, offering) when assessment is not in DRAFT",
+        );
+      }
+    }
 
     const maxMarks = dto.maximumMarks || assessment.maximumMarks.toString();
     const passMarks =
@@ -124,30 +249,57 @@ export class AssessmentsService {
         ? dto.passingMarks
         : assessment.passingMarks?.toString();
 
-    if (
-      passMarks &&
-      new Decimal(passMarks).greaterThan(new Decimal(maxMarks))
-    ) {
-      throw new BadRequestException(
-        "Passing marks cannot exceed maximum marks.",
+    if (new Decimal(maxMarks).lessThanOrEqualTo(0)) {
+      throw new BusinessException(
+        "ASSESSMENT_INVALID_MARKS",
+        400,
+        "Maximum marks must be greater than 0",
       );
+    }
+
+    if (passMarks) {
+      if (new Decimal(passMarks).lessThan(0)) {
+        throw new BusinessException(
+          "ASSESSMENT_INVALID_MARKS",
+          400,
+          "Passing marks cannot be negative",
+        );
+      }
+      if (new Decimal(passMarks).greaterThan(new Decimal(maxMarks))) {
+        throw new BusinessException(
+          "ASSESSMENT_INVALID_MARKS",
+          400,
+          "Passing marks cannot exceed maximum marks",
+        );
+      }
     }
 
     if (dto.assessmentDate) {
       const date = new Date(dto.assessmentDate);
+      if (isNaN(date.getTime())) {
+        throw new BusinessException(
+          "ASSESSMENT_DATE_OUTSIDE_ACADEMIC_CONTEXT",
+          400,
+          "Invalid assessment date",
+        );
+      }
       if (assessment.subjectOffering.schoolOffering) {
         const session =
           assessment.subjectOffering.schoolOffering.section.academicSession;
         if (session && (date < session.startDate || date > session.endDate)) {
-          throw new BadRequestException(
-            "Assessment date must be within the academic session boundaries.",
+          throw new BusinessException(
+            "ASSESSMENT_DATE_OUTSIDE_ACADEMIC_CONTEXT",
+            400,
+            "Assessment date must be within academic session boundaries",
           );
         }
       } else if (assessment.subjectOffering.tuitionOffering) {
         const batch = assessment.subjectOffering.tuitionOffering.batch;
         if (date < batch.startDate || (batch.endDate && date > batch.endDate)) {
-          throw new BadRequestException(
-            "Assessment date must be within the batch boundaries.",
+          throw new BusinessException(
+            "ASSESSMENT_DATE_OUTSIDE_ACADEMIC_CONTEXT",
+            400,
+            "Assessment date must be within batch boundaries",
           );
         }
       }
@@ -172,11 +324,29 @@ export class AssessmentsService {
 
   async activate(ctx: TenantContext, id: string): Promise<Assessment> {
     const assessment = await this.prisma.assessment.findUnique({
-      where: { id, organizationId: ctx.organizationId },
+      where: { id },
     });
-    if (!assessment) throw new NotFoundException("Assessment not found");
-    if (assessment.status !== "DRAFT")
-      throw new BadRequestException("Assessment must be in DRAFT to activate");
+    if (!assessment) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Assessment not found",
+      );
+    }
+    if (assessment.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
+    if (assessment.status !== "DRAFT") {
+      throw new BusinessException(
+        "ASSESSMENT_INVALID_STATE",
+        400,
+        "Assessment must be in DRAFT to activate",
+      );
+    }
 
     const updated = await this.prisma.assessment.update({
       where: { id },
@@ -192,9 +362,22 @@ export class AssessmentsService {
 
   async archive(ctx: TenantContext, id: string): Promise<Assessment> {
     const assessment = await this.prisma.assessment.findUnique({
-      where: { id, organizationId: ctx.organizationId },
+      where: { id },
     });
-    if (!assessment) throw new NotFoundException("Assessment not found");
+    if (!assessment) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Assessment not found",
+      );
+    }
+    if (assessment.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
 
     const updated = await this.prisma.assessment.update({
       where: { id },
@@ -209,9 +392,22 @@ export class AssessmentsService {
 
   async findById(ctx: TenantContext, id: string): Promise<Assessment> {
     const assessment = await this.prisma.assessment.findUnique({
-      where: { id, organizationId: ctx.organizationId },
+      where: { id },
     });
-    if (!assessment) throw new NotFoundException("Assessment not found");
+    if (!assessment) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Assessment not found",
+      );
+    }
+    if (assessment.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
     return this.mapToDto(assessment);
   }
 

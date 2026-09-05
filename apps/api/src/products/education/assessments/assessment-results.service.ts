@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../infrastructure/database/prisma.service";
 import { TenantContext } from "../../../platform/tenancy/tenant.guard";
 import {
@@ -12,6 +8,8 @@ import {
 } from "@sitehookz/education";
 import { AssessmentsService } from "./assessments.service";
 import { Prisma } from "@sitehookz/database";
+import { BusinessException } from "../../../common/exceptions/business.exception";
+
 const Decimal = Prisma.Decimal;
 
 @Injectable()
@@ -26,40 +24,96 @@ export class AssessmentResultsService {
     assessmentId: string,
   ): Promise<AssessmentRosterItem[]> {
     const assessment = await this.prisma.assessment.findUnique({
-      where: { id: assessmentId, organizationId: ctx.organizationId },
-      include: { subjectOffering: true },
+      where: { id: assessmentId },
+      include: {
+        subjectOffering: {
+          include: {
+            schoolOffering: true,
+            tuitionOffering: true,
+          },
+        },
+      },
     });
-    if (!assessment) throw new NotFoundException("Assessment not found");
+    if (!assessment) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Assessment not found",
+      );
+    }
+    if (assessment.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
+
+    let whereClause: Prisma.StudentEnrollmentWhereInput;
+    if (assessment.subjectOffering.schoolOffering) {
+      const sectionId = assessment.subjectOffering.schoolOffering.sectionId;
+      whereClause = {
+        organizationId: ctx.organizationId,
+        placementType: "SCHOOL",
+        schoolPlacement: { sectionId },
+        startDate: { lte: assessment.assessmentDate },
+        OR: [
+          { endDate: null },
+          { endDate: { gte: assessment.assessmentDate } },
+        ],
+      };
+    } else if (assessment.subjectOffering.tuitionOffering) {
+      const batchId = assessment.subjectOffering.tuitionOffering.batchId;
+      whereClause = {
+        organizationId: ctx.organizationId,
+        placementType: "TUITION",
+        tuitionPlacement: { batchId },
+        startDate: { lte: assessment.assessmentDate },
+        OR: [
+          { endDate: null },
+          { endDate: { gte: assessment.assessmentDate } },
+        ],
+      };
+    } else {
+      throw new BusinessException(
+        "ASSESSMENT_CONTEXT_MISMATCH",
+        400,
+        "Subject offering lacks academic context",
+      );
+    }
 
     const enrollments = await this.prisma.studentEnrollment.findMany({
-      where: {
-        organizationId: ctx.organizationId,
-        status: { in: ["ACTIVE", "COMPLETED"] },
-      },
+      where: whereClause,
       include: {
         student: true,
+        schoolPlacement: true,
         assessmentResults: {
           where: { assessmentId },
         },
       },
+      orderBy: {
+        student: { firstName: "asc" },
+      },
     });
 
-    return enrollments
-      .filter((e: any) => e.placementDate <= assessment.assessmentDate)
-      .map((e: any) => {
-        const result = e.assessmentResults[0];
-        return {
-          studentEnrollmentId: e.id,
-          studentId: e.studentId,
-          studentName: e.student.name,
-          rollNumber: e.rollNumber,
-          resultStatus: result ? (result.resultStatus as any) : null,
-          marksObtained: result?.marksObtained?.toString() || null,
-          comment: result?.comment || null,
-          gradedByName: null,
-          gradedAt: result?.gradedAt || null,
-        };
-      });
+    return enrollments.map((e) => {
+      const result = e.assessmentResults[0];
+      const studentName =
+        [e.student.firstName, e.student.middleName, e.student.lastName]
+          .filter(Boolean)
+          .join(" ") || "Student";
+      return {
+        studentEnrollmentId: e.id,
+        studentId: e.studentId,
+        studentName,
+        rollNumber: e.schoolPlacement?.rollNumber || null,
+        resultStatus: result ? (result.resultStatus as any) : null,
+        marksObtained: result?.marksObtained?.toString() || null,
+        comment: result?.comment || null,
+        gradedByName: null,
+        gradedAt: result?.gradedAt || null,
+      };
+    });
   }
 
   async bulkGrade(
@@ -68,28 +122,158 @@ export class AssessmentResultsService {
     dto: BulkAssessmentResults,
   ): Promise<void> {
     const assessment = await this.prisma.assessment.findUnique({
-      where: { id: assessmentId, organizationId: ctx.organizationId },
+      where: { id: assessmentId },
+      include: {
+        subjectOffering: {
+          include: {
+            schoolOffering: true,
+            tuitionOffering: true,
+          },
+        },
+      },
     });
-    if (!assessment) throw new NotFoundException("Assessment not found");
-    if (assessment.status !== "ACTIVE")
-      throw new BadRequestException("Assessment must be ACTIVE to grade");
+
+    if (!assessment) {
+      throw new BusinessException(
+        "ASSESSMENT_NOT_FOUND",
+        404,
+        "Assessment not found",
+      );
+    }
+    if (assessment.organizationId !== ctx.organizationId) {
+      throw new BusinessException(
+        "EDUCATION_CROSS_TENANT_REFERENCE",
+        403,
+        "Cross-tenant reference not allowed",
+      );
+    }
+
+    if (assessment.status === "RESULTS_PUBLISHED") {
+      throw new BusinessException(
+        "ASSESSMENT_RESULTS_PUBLISHED",
+        400,
+        "Results have already been published and cannot be modified",
+      );
+    }
+
+    if (assessment.status !== "ACTIVE") {
+      throw new BusinessException(
+        "ASSESSMENT_INVALID_STATE",
+        400,
+        "Assessment must be ACTIVE to grade",
+      );
+    }
 
     const maxMarks = new Decimal(assessment.maximumMarks);
 
-    await this.prisma.$transaction(
-      dto.results.map((r: any) => {
-        if (r.resultStatus === "GRADED") {
-          if (!r.marksObtained)
-            throw new BadRequestException(
-              "Marks obtained is required for GRADED status",
-            );
-          if (new Decimal(r.marksObtained).greaterThan(maxMarks)) {
-            throw new BadRequestException(
-              "Marks obtained cannot exceed maximum marks",
-            );
-          }
+    // Validate results items
+    for (const r of dto.results) {
+      if (r.resultStatus === "GRADED") {
+        if (r.marksObtained === undefined || r.marksObtained === null) {
+          throw new BusinessException(
+            "ASSESSMENT_RESULT_INVALID",
+            400,
+            "Marks obtained is required for GRADED status",
+          );
         }
+        const marks = new Decimal(r.marksObtained);
+        if (marks.lessThan(0)) {
+          throw new BusinessException(
+            "ASSESSMENT_INVALID_MARKS",
+            400,
+            "Marks obtained cannot be negative",
+          );
+        }
+        if (marks.greaterThan(maxMarks)) {
+          throw new BusinessException(
+            "ASSESSMENT_INVALID_MARKS",
+            400,
+            "Marks obtained cannot exceed maximum marks",
+          );
+        }
+      } else if (r.resultStatus === "ABSENT" || r.resultStatus === "EXEMPT") {
+        if (r.marksObtained !== undefined && r.marksObtained !== null) {
+          throw new BusinessException(
+            "ASSESSMENT_RESULT_INVALID",
+            400,
+            `${r.resultStatus} status must not have marks obtained`,
+          );
+        }
+      } else {
+        throw new BusinessException(
+          "ASSESSMENT_RESULT_INVALID",
+          400,
+          "Invalid result status",
+        );
+      }
 
+      // Check enrollment eligibility
+      const enrollment = await this.prisma.studentEnrollment.findUnique({
+        where: { id: r.studentEnrollmentId },
+        include: {
+          schoolPlacement: true,
+          tuitionPlacement: true,
+        },
+      });
+
+      if (!enrollment) {
+        throw new BusinessException(
+          "ASSESSMENT_ENROLLMENT_NOT_ELIGIBLE",
+          404,
+          `Student enrollment ${r.studentEnrollmentId} not found`,
+        );
+      }
+
+      if (enrollment.organizationId !== ctx.organizationId) {
+        throw new BusinessException(
+          "EDUCATION_CROSS_TENANT_REFERENCE",
+          403,
+          "Cross-tenant enrollment not allowed",
+        );
+      }
+
+      const assessmentDate = assessment.assessmentDate;
+      const isDateEligible =
+        enrollment.startDate <= assessmentDate &&
+        (enrollment.endDate === null || enrollment.endDate >= assessmentDate);
+
+      if (!isDateEligible) {
+        throw new BusinessException(
+          "ASSESSMENT_ENROLLMENT_NOT_ELIGIBLE",
+          400,
+          "Enrollment is not historically active on assessment date",
+        );
+      }
+
+      if (assessment.subjectOffering.schoolOffering) {
+        if (
+          enrollment.placementType !== "SCHOOL" ||
+          enrollment.schoolPlacement?.sectionId !==
+            assessment.subjectOffering.schoolOffering.sectionId
+        ) {
+          throw new BusinessException(
+            "ASSESSMENT_ENROLLMENT_NOT_ELIGIBLE",
+            400,
+            "Enrollment does not belong to the assessment's section",
+          );
+        }
+      } else if (assessment.subjectOffering.tuitionOffering) {
+        if (
+          enrollment.placementType !== "TUITION" ||
+          enrollment.tuitionPlacement?.batchId !==
+            assessment.subjectOffering.tuitionOffering.batchId
+        ) {
+          throw new BusinessException(
+            "ASSESSMENT_ENROLLMENT_NOT_ELIGIBLE",
+            400,
+            "Enrollment does not belong to the assessment's batch",
+          );
+        }
+      }
+    }
+
+    await this.prisma.$transaction(
+      dto.results.map((r) => {
         return this.prisma.assessmentResult.upsert({
           where: {
             assessmentId_studentEnrollmentId: {
@@ -100,7 +284,7 @@ export class AssessmentResultsService {
           update: {
             resultStatus: r.resultStatus as any,
             marksObtained: r.resultStatus === "GRADED" ? r.marksObtained : null,
-            comment: r.comment,
+            comment: r.comment ?? null,
             gradedByMembershipId: ctx.membershipId!,
             gradedAt: new Date(),
           },
@@ -110,7 +294,7 @@ export class AssessmentResultsService {
             studentEnrollmentId: r.studentEnrollmentId,
             resultStatus: r.resultStatus as any,
             marksObtained: r.resultStatus === "GRADED" ? r.marksObtained : null,
-            comment: r.comment,
+            comment: r.comment ?? null,
             gradedByMembershipId: ctx.membershipId!,
             gradedAt: new Date(),
           },
@@ -123,21 +307,118 @@ export class AssessmentResultsService {
     ctx: TenantContext,
     assessmentId: string,
   ): Promise<void> {
-    const roster = await this.getRoster(ctx, assessmentId);
-    const incomplete = roster.some((r: any) => !r.resultStatus);
-    if (incomplete) {
-      throw new BadRequestException(
-        "Cannot publish results. Some students are not graded.",
+    await this.prisma.$transaction(async (tx) => {
+      // 1. Row-lock using parameterized raw query
+      const locked = await tx.$queryRaw<Array<{ id: string }>>(
+        Prisma.sql`SELECT id FROM "Assessment" WHERE id = ${assessmentId}::uuid AND "organizationId" = ${ctx.organizationId}::uuid FOR UPDATE`,
       );
-    }
 
-    await this.prisma.assessment.update({
-      where: { id: assessmentId },
-      data: {
-        status: "RESULTS_PUBLISHED",
-        resultsPublishedAt: new Date(),
-        resultsPublishedByMembershipId: ctx.membershipId,
-      },
+      if (!locked || locked.length === 0) {
+        throw new BusinessException(
+          "ASSESSMENT_NOT_FOUND",
+          404,
+          "Assessment not found",
+        );
+      }
+
+      const assessment = await tx.assessment.findUnique({
+        where: { id: assessmentId, organizationId: ctx.organizationId },
+        include: {
+          subjectOffering: {
+            include: {
+              schoolOffering: true,
+              tuitionOffering: true,
+            },
+          },
+        },
+      });
+
+      if (!assessment) {
+        throw new BusinessException(
+          "ASSESSMENT_NOT_FOUND",
+          404,
+          "Assessment not found",
+        );
+      }
+
+      // If already published, deterministic idempotent return
+      if (assessment.status === "RESULTS_PUBLISHED") {
+        return;
+      }
+
+      if (assessment.status !== "ACTIVE") {
+        throw new BusinessException(
+          "ASSESSMENT_INVALID_STATE",
+          400,
+          "Assessment must be ACTIVE to publish results",
+        );
+      }
+
+      let whereClause: Prisma.StudentEnrollmentWhereInput;
+      if (assessment.subjectOffering.schoolOffering) {
+        const sectionId = assessment.subjectOffering.schoolOffering.sectionId;
+        whereClause = {
+          organizationId: ctx.organizationId,
+          placementType: "SCHOOL",
+          schoolPlacement: { sectionId },
+          startDate: { lte: assessment.assessmentDate },
+          OR: [
+            { endDate: null },
+            { endDate: { gte: assessment.assessmentDate } },
+          ],
+        };
+      } else if (assessment.subjectOffering.tuitionOffering) {
+        const batchId = assessment.subjectOffering.tuitionOffering.batchId;
+        whereClause = {
+          organizationId: ctx.organizationId,
+          placementType: "TUITION",
+          tuitionPlacement: { batchId },
+          startDate: { lte: assessment.assessmentDate },
+          OR: [
+            { endDate: null },
+            { endDate: { gte: assessment.assessmentDate } },
+          ],
+        };
+      } else {
+        throw new BusinessException(
+          "ASSESSMENT_CONTEXT_MISMATCH",
+          400,
+          "Subject offering lacks academic context",
+        );
+      }
+
+      const enrollments = await tx.studentEnrollment.findMany({
+        where: whereClause,
+        include: {
+          assessmentResults: {
+            where: { assessmentId },
+          },
+        },
+      });
+
+      const incomplete = enrollments.some(
+        (e) =>
+          !e.assessmentResults ||
+          e.assessmentResults.length === 0 ||
+          !e.assessmentResults[0]?.resultStatus,
+      );
+
+      if (incomplete) {
+        throw new BusinessException(
+          "ASSESSMENT_RESULTS_INCOMPLETE",
+          400,
+          "Cannot publish results. Some eligible students are not graded.",
+        );
+      }
+
+      await tx.assessment.update({
+        where: { id: assessmentId },
+        data: {
+          status: "RESULTS_PUBLISHED",
+          resultsPublishedAt: new Date(),
+          resultsPublishedByMembershipId: ctx.membershipId,
+        },
+      });
     });
   }
 

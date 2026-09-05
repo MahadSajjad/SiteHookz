@@ -26,7 +26,7 @@ import {
   EDUCATION_ASSESSMENT_RESULTS_PERMISSIONS,
 } from "@sitehookz/education";
 
-@Controller("api/v1/education")
+@Controller("education")
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class AssessmentsController {
   constructor(

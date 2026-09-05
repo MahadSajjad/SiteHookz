@@ -40,47 +40,47 @@ model Organization {
   academicSessions AcademicSession[]
   educationProfile EducationOrganizationProfile?
 
-  students                  Student[]
-  guardians                 Guardian[]
-  assessments               Assessment[]
-  assessmentResults         AssessmentResult[]
-  studentGuardians          StudentGuardian[]
-  staffMembers              StaffMember[]
-  staffPositions            StaffPosition[]
-  staffBranchAssignments    StaffBranchAssignment[]
-  studentAdmissionSequences StudentAdmissionSequence[]
-  classLevels               ClassLevel[]
-  sections                  Section[]
-  courses                   Course[]
-  batches                   Batch[]
-  studentEnrollments        StudentEnrollment[]
-  schoolPlacements          SchoolEnrollmentPlacement[]
-  tuitionPlacements         TuitionEnrollmentPlacement[]
-  subjects                  Subject[]
-  subjectOfferings          SubjectOffering[]
-  schoolSubjectOfferings    SchoolSubjectOffering[]
-  tuitionSubjectOfferings   TuitionSubjectOffering[]
-  teachingAssignments       TeachingAssignment[]
+  students                     Student[]
+  guardians                    Guardian[]
+  assessments                  Assessment[]
+  assessmentResults            AssessmentResult[]
+  studentGuardians             StudentGuardian[]
+  staffMembers                 StaffMember[]
+  staffPositions               StaffPosition[]
+  staffBranchAssignments       StaffBranchAssignment[]
+  studentAdmissionSequences    StudentAdmissionSequence[]
+  classLevels                  ClassLevel[]
+  sections                     Section[]
+  courses                      Course[]
+  batches                      Batch[]
+  studentEnrollments           StudentEnrollment[]
+  schoolPlacements             SchoolEnrollmentPlacement[]
+  tuitionPlacements            TuitionEnrollmentPlacement[]
+  subjects                     Subject[]
+  subjectOfferings             SubjectOffering[]
+  schoolSubjectOfferings       SchoolSubjectOffering[]
+  tuitionSubjectOfferings      TuitionSubjectOffering[]
+  teachingAssignments          TeachingAssignment[]
+  timetableSchedules           TimetableSchedule[]
+  schoolTimetableContexts      SchoolTimetableContext[]
+  tuitionTimetableContexts     TuitionTimetableContext[]
+  timetableEntries             TimetableEntry[]
+  attendanceSessions           AttendanceSession[]
+  schoolAttendanceContexts     SchoolAttendanceContext[]
+  tuitionAttendanceContexts    TuitionAttendanceContext[]
+  studentAttendanceRecords     StudentAttendanceRecord[]
+  feeHeads                     FeeHead[]
+  feePlans                     FeePlan[]
+  schoolFeePlanContexts        SchoolFeePlanContext[]
+  tuitionFeePlanContexts       TuitionFeePlanContext[]
+  feePlanItems                 FeePlanItem[]
+  enrollmentFeePlanAssignments EnrollmentFeePlanAssignment[]
+  feeCharges                   FeeCharge[]
+  payments                     Payment[]
+  paymentAllocations           PaymentAllocation[]
+  paymentReceiptSequences      PaymentReceiptSequence[]
 
   @@index([status])
-  timetableSchedules        TimetableSchedule[]
-  schoolTimetableContexts   SchoolTimetableContext[]
-  tuitionTimetableContexts  TuitionTimetableContext[]
-  timetableEntries          TimetableEntry[]
-  attendanceSessions AttendanceSession[]
-  schoolAttendanceContexts SchoolAttendanceContext[]
-  tuitionAttendanceContexts TuitionAttendanceContext[]
-  studentAttendanceRecords StudentAttendanceRecord[]
-  feeHeads FeeHead[]
-  feePlans FeePlan[]
-  schoolFeePlanContexts SchoolFeePlanContext[]
-  tuitionFeePlanContexts TuitionFeePlanContext[]
-  feePlanItems FeePlanItem[]
-  enrollmentFeePlanAssignments EnrollmentFeePlanAssignment[]
-  feeCharges FeeCharge[]
-  payments Payment[]
-  paymentAllocations PaymentAllocation[]
-  paymentReceiptSequences PaymentReceiptSequence[]
 }
 
 enum BranchStatus {
@@ -116,15 +116,15 @@ model Branch {
   sections                  Section[]
   batches                   Batch[]
   studentEnrollments        StudentEnrollment[]
+  timetableSchedules        TimetableSchedule[]
+  attendanceSessions        AttendanceSession[]
+  schoolFeePlanContexts     SchoolFeePlanContext[]
+  feeCharges                FeeCharge[]
+  payments                  Payment[]
+  paymentReceiptSequences   PaymentReceiptSequence[]
 
   @@unique([organizationId, code])
   @@index([organizationId])
-  timetableSchedules TimetableSchedule[]
-  attendanceSessions AttendanceSession[]
-  schoolFeePlanContexts SchoolFeePlanContext[]
-  feeCharges FeeCharge[]
-  payments Payment[]
-  paymentReceiptSequences PaymentReceiptSequence[]
 }
 
 enum UserAccountStatus {
@@ -390,13 +390,13 @@ model AcademicSession {
   updatedAt      DateTime              @updatedAt
   archivedAt     DateTime?
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  sections     Section[]
-  batches      Batch[]
+  organization          Organization           @relation(fields: [organizationId], references: [id])
+  sections              Section[]
+  batches               Batch[]
+  schoolFeePlanContexts SchoolFeePlanContext[]
 
   @@unique([organizationId, code])
   @@index([organizationId])
-  schoolFeePlanContexts SchoolFeePlanContext[]
 }
 
 enum StudentStatus {
@@ -459,12 +459,12 @@ model Student {
   userAccount        UserAccount?        @relation(fields: [userAccountId], references: [id])
   userAccountId      String?             @db.Uuid
   studentEnrollments StudentEnrollment[]
+  payments           Payment[]
 
   @@unique([organizationId, admissionNumber])
   @@index([organizationId])
   @@index([organizationId, status])
   @@index([organizationId, admissionBranchId])
-  payments Payment[]
 }
 
 model Guardian {
@@ -708,11 +708,11 @@ model ClassLevel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  sections     Section[]
+  organization          Organization           @relation(fields: [organizationId], references: [id])
+  sections              Section[]
+  schoolFeePlanContexts SchoolFeePlanContext[]
 
   @@unique([organizationId, code])
-  schoolFeePlanContexts SchoolFeePlanContext[]
 }
 
 model Section {
@@ -732,16 +732,16 @@ model Section {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization           Organization                @relation(fields: [organizationId], references: [id])
-  academicSession        AcademicSession             @relation(fields: [academicSessionId], references: [id])
-  branch                 Branch                      @relation(fields: [branchId], references: [id])
-  classLevel             ClassLevel                  @relation(fields: [classLevelId], references: [id])
-  schoolPlacements       SchoolEnrollmentPlacement[]
-  schoolSubjectOfferings SchoolSubjectOffering[]
+  organization             Organization                @relation(fields: [organizationId], references: [id])
+  academicSession          AcademicSession             @relation(fields: [academicSessionId], references: [id])
+  branch                   Branch                      @relation(fields: [branchId], references: [id])
+  classLevel               ClassLevel                  @relation(fields: [classLevelId], references: [id])
+  schoolPlacements         SchoolEnrollmentPlacement[]
+  schoolSubjectOfferings   SchoolSubjectOffering[]
+  schoolTimetableContexts  SchoolTimetableContext[]
+  schoolAttendanceContexts SchoolAttendanceContext[]
 
   @@unique([organizationId, academicSessionId, branchId, classLevelId, code])
-  schoolTimetableContexts SchoolTimetableContext[]
-  schoolAttendanceContexts SchoolAttendanceContext[]
 }
 
 model Course {
@@ -783,17 +783,17 @@ model Batch {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization            Organization                 @relation(fields: [organizationId], references: [id])
-  course                  Course                       @relation(fields: [courseId], references: [id])
-  branch                  Branch                       @relation(fields: [branchId], references: [id])
-  academicSession         AcademicSession?             @relation(fields: [academicSessionId], references: [id])
-  tuitionPlacements       TuitionEnrollmentPlacement[]
-  tuitionSubjectOfferings TuitionSubjectOffering[]
+  organization              Organization                 @relation(fields: [organizationId], references: [id])
+  course                    Course                       @relation(fields: [courseId], references: [id])
+  branch                    Branch                       @relation(fields: [branchId], references: [id])
+  academicSession           AcademicSession?             @relation(fields: [academicSessionId], references: [id])
+  tuitionPlacements         TuitionEnrollmentPlacement[]
+  tuitionSubjectOfferings   TuitionSubjectOffering[]
+  tuitionTimetableContexts  TuitionTimetableContext[]
+  tuitionAttendanceContexts TuitionAttendanceContext[]
+  tuitionFeePlanContexts    TuitionFeePlanContext[]
 
   @@unique([organizationId, courseId, branchId, academicSessionId, code])
-  tuitionTimetableContexts TuitionTimetableContext[]
-  tuitionAttendanceContexts TuitionAttendanceContext[]
-  tuitionFeePlanContexts TuitionFeePlanContext[]
 }
 
 model StudentEnrollment {
@@ -816,16 +816,16 @@ model StudentEnrollment {
   student      Student      @relation(fields: [studentId], references: [id])
   branch       Branch       @relation(fields: [branchId], references: [id])
 
-  schoolPlacement  SchoolEnrollmentPlacement?
-  tuitionPlacement TuitionEnrollmentPlacement?
+  schoolPlacement              SchoolEnrollmentPlacement?
+  tuitionPlacement             TuitionEnrollmentPlacement?
+  attendanceRecords            StudentAttendanceRecord[]
+  enrollmentFeePlanAssignments EnrollmentFeePlanAssignment[]
+  feeCharges                   FeeCharge[]
+  assessmentResults            AssessmentResult[]
 
   @@index([organizationId])
   @@index([studentId, status])
   @@index([organizationId, branchId])
-  attendanceRecords StudentAttendanceRecord[]
-  enrollmentFeePlanAssignments EnrollmentFeePlanAssignment[]
-  feeCharges FeeCharge[]
-  assessmentResults AssessmentResult[]
 }
 
 model SchoolEnrollmentPlacement {
@@ -919,13 +919,13 @@ model SubjectOffering {
   schoolOffering  SchoolSubjectOffering?
   tuitionOffering TuitionSubjectOffering?
 
-  teachingAssignments TeachingAssignment[]
+  teachingAssignments       TeachingAssignment[]
+  timetableEntries          TimetableEntry[]
+  schoolAttendanceContexts  SchoolAttendanceContext[]
+  tuitionAttendanceContexts TuitionAttendanceContext[]
 
   @@index([organizationId])
   @@index([subjectId])
-  timetableEntries TimetableEntry[]
-  schoolAttendanceContexts SchoolAttendanceContext[]
-  tuitionAttendanceContexts TuitionAttendanceContext[]
 }
 
 model SchoolSubjectOffering {
@@ -977,14 +977,14 @@ model TeachingAssignment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization    Organization    @relation(fields: [organizationId], references: [id])
-  subjectOffering SubjectOffering @relation(fields: [subjectOfferingId], references: [id])
-  staffMember     StaffMember     @relation(fields: [staffMemberId], references: [id])
+  organization     Organization     @relation(fields: [organizationId], references: [id])
+  subjectOffering  SubjectOffering  @relation(fields: [subjectOfferingId], references: [id])
+  staffMember      StaffMember      @relation(fields: [staffMemberId], references: [id])
+  timetableEntries TimetableEntry[]
 
   @@index([organizationId])
   @@index([subjectOfferingId])
   @@index([staffMemberId])
-  timetableEntries TimetableEntry[]
 }
 
 // ============================================
@@ -1104,9 +1104,9 @@ model TimetableEntry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization       Organization       @relation(fields: [organizationId], references: [id])
-  timetableSchedule  TimetableSchedule  @relation(fields: [timetableScheduleId], references: [id])
-  subjectOffering    SubjectOffering    @relation(fields: [subjectOfferingId], references: [id])
+  organization       Organization        @relation(fields: [organizationId], references: [id])
+  timetableSchedule  TimetableSchedule   @relation(fields: [timetableScheduleId], references: [id])
+  subjectOffering    SubjectOffering     @relation(fields: [subjectOfferingId], references: [id])
   teachingAssignment TeachingAssignment? @relation(fields: [teachingAssignmentId], references: [id])
 
   @@index([organizationId])
@@ -1124,86 +1124,96 @@ enum AttendanceMode {
   SCHOOL
   TUITION
 }
+
 enum AttendanceSessionStatus {
   DRAFT
   FINALIZED
   CANCELLED
 }
+
 enum StudentAttendanceStatus {
   PRESENT
   ABSENT
   LATE
   EXCUSED
 }
+
 model AttendanceSession {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  branchId String @db.Uuid
-  mode AttendanceMode
-  attendanceDate DateTime @db.Date
-  occurrenceNumber Int @default(1)
-  note String?
-  status AttendanceSessionStatus @default(DRAFT)
-  finalizedAt DateTime?
-  finalizedByMembershipId String? @db.Uuid
-  cancelledAt DateTime?
-  cancelledByMembershipId String? @db.Uuid
-  createdByMembershipId String @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  organization Organization @relation(fields: [organizationId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
-  schoolContext SchoolAttendanceContext?
-  tuitionContext TuitionAttendanceContext?
-  records StudentAttendanceRecord[]
+  id                      String                    @id @default(uuid()) @db.Uuid
+  organizationId          String                    @db.Uuid
+  branchId                String                    @db.Uuid
+  mode                    AttendanceMode
+  attendanceDate          DateTime                  @db.Date
+  occurrenceNumber        Int                       @default(1)
+  note                    String?
+  status                  AttendanceSessionStatus   @default(DRAFT)
+  finalizedAt             DateTime?
+  finalizedByMembershipId String?                   @db.Uuid
+  cancelledAt             DateTime?
+  cancelledByMembershipId String?                   @db.Uuid
+  createdByMembershipId   String                    @db.Uuid
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  organization            Organization              @relation(fields: [organizationId], references: [id])
+  branch                  Branch                    @relation(fields: [branchId], references: [id])
+  schoolContext           SchoolAttendanceContext?
+  tuitionContext          TuitionAttendanceContext?
+  records                 StudentAttendanceRecord[]
+
   @@index([organizationId])
   @@index([branchId])
   @@index([attendanceDate])
   @@index([status])
 }
+
 model SchoolAttendanceContext {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  attendanceSessionId String @unique @db.Uuid
-  sectionId String @db.Uuid
-  subjectOfferingId String? @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  organization Organization @relation(fields: [organizationId], references: [id])
-  attendanceSession AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
-  section Section @relation(fields: [sectionId], references: [id])
-  subjectOffering SubjectOffering? @relation(fields: [subjectOfferingId], references: [id])
+  id                  String            @id @default(uuid()) @db.Uuid
+  organizationId      String            @db.Uuid
+  attendanceSessionId String            @unique @db.Uuid
+  sectionId           String            @db.Uuid
+  subjectOfferingId   String?           @db.Uuid
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  organization        Organization      @relation(fields: [organizationId], references: [id])
+  attendanceSession   AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
+  section             Section           @relation(fields: [sectionId], references: [id])
+  subjectOffering     SubjectOffering?  @relation(fields: [subjectOfferingId], references: [id])
+
   @@index([organizationId])
   @@index([sectionId])
 }
+
 model TuitionAttendanceContext {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  attendanceSessionId String @unique @db.Uuid
-  batchId String @db.Uuid
-  subjectOfferingId String? @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  organization Organization @relation(fields: [organizationId], references: [id])
-  attendanceSession AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
-  batch Batch @relation(fields: [batchId], references: [id])
-  subjectOffering SubjectOffering? @relation(fields: [subjectOfferingId], references: [id])
+  id                  String            @id @default(uuid()) @db.Uuid
+  organizationId      String            @db.Uuid
+  attendanceSessionId String            @unique @db.Uuid
+  batchId             String            @db.Uuid
+  subjectOfferingId   String?           @db.Uuid
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  organization        Organization      @relation(fields: [organizationId], references: [id])
+  attendanceSession   AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
+  batch               Batch             @relation(fields: [batchId], references: [id])
+  subjectOffering     SubjectOffering?  @relation(fields: [subjectOfferingId], references: [id])
+
   @@index([organizationId])
   @@index([batchId])
 }
+
 model StudentAttendanceRecord {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  attendanceSessionId String @db.Uuid
-  studentEnrollmentId String @db.Uuid
-  status StudentAttendanceStatus
-  note String?
-  markedByMembershipId String @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  organization Organization @relation(fields: [organizationId], references: [id])
-  attendanceSession AttendanceSession @relation(fields: [attendanceSessionId], references: [id])
-  studentEnrollment StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
+  id                   String                  @id @default(uuid()) @db.Uuid
+  organizationId       String                  @db.Uuid
+  attendanceSessionId  String                  @db.Uuid
+  studentEnrollmentId  String                  @db.Uuid
+  status               StudentAttendanceStatus
+  note                 String?
+  markedByMembershipId String                  @db.Uuid
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  organization         Organization            @relation(fields: [organizationId], references: [id])
+  attendanceSession    AttendanceSession       @relation(fields: [attendanceSessionId], references: [id])
+  studentEnrollment    StudentEnrollment       @relation(fields: [studentEnrollmentId], references: [id])
+
   @@unique([attendanceSessionId, studentEnrollmentId])
   @@index([organizationId])
   @@index([studentEnrollmentId])
@@ -1242,17 +1252,17 @@ enum PaymentStatus {
 }
 
 model FeeHead {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  name String
-  code String
-  description String?
-  isActive Boolean @default(true)
-  archivedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  organization Organization @relation(fields: [organizationId], references: [id])
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @db.Uuid
+  name           String
+  code           String
+  description    String?
+  isActive       Boolean   @default(true)
+  archivedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id])
   feePlanItems FeePlanItem[]
 
   @@unique([organizationId, code])
@@ -1261,21 +1271,21 @@ model FeeHead {
 }
 
 model FeePlan {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  name String
-  planType FeePlanType
-  status FeePlanStatus @default(DRAFT)
-  defaultDueDay Int?
-  archivedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String        @id @default(uuid()) @db.Uuid
+  organizationId String        @db.Uuid
+  name           String
+  planType       FeePlanType
+  status         FeePlanStatus @default(DRAFT)
+  defaultDueDay  Int?
+  archivedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  schoolContext SchoolFeePlanContext?
+  organization   Organization                  @relation(fields: [organizationId], references: [id])
+  schoolContext  SchoolFeePlanContext?
   tuitionContext TuitionFeePlanContext?
-  items FeePlanItem[]
-  assignments EnrollmentFeePlanAssignment[]
+  items          FeePlanItem[]
+  assignments    EnrollmentFeePlanAssignment[]
 
   @@index([organizationId])
   @@index([status])
@@ -1283,20 +1293,20 @@ model FeePlan {
 }
 
 model SchoolFeePlanContext {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  feePlanId String @unique @db.Uuid
-  academicSessionId String @db.Uuid
-  branchId String @db.Uuid
-  classLevelId String @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(uuid()) @db.Uuid
+  organizationId    String   @db.Uuid
+  feePlanId         String   @unique @db.Uuid
+  academicSessionId String   @db.Uuid
+  branchId          String   @db.Uuid
+  classLevelId      String   @db.Uuid
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  feePlan FeePlan @relation(fields: [feePlanId], references: [id])
+  organization    Organization    @relation(fields: [organizationId], references: [id])
+  feePlan         FeePlan         @relation(fields: [feePlanId], references: [id])
   academicSession AcademicSession @relation(fields: [academicSessionId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
-  classLevel ClassLevel @relation(fields: [classLevelId], references: [id])
+  branch          Branch          @relation(fields: [branchId], references: [id])
+  classLevel      ClassLevel      @relation(fields: [classLevelId], references: [id])
 
   @@index([branchId])
   @@index([academicSessionId])
@@ -1304,55 +1314,55 @@ model SchoolFeePlanContext {
 }
 
 model TuitionFeePlanContext {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  feePlanId String @unique @db.Uuid
-  batchId String @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  feePlanId      String   @unique @db.Uuid
+  batchId        String   @db.Uuid
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  feePlan FeePlan @relation(fields: [feePlanId], references: [id])
-  batch Batch @relation(fields: [batchId], references: [id])
+  feePlan      FeePlan      @relation(fields: [feePlanId], references: [id])
+  batch        Batch        @relation(fields: [batchId], references: [id])
 
   @@index([batchId])
 }
 
 model FeePlanItem {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  feePlanId String @db.Uuid
-  feeHeadId String @db.Uuid
-  amount Decimal @db.Decimal(14, 2)
-  frequency FeeFrequency
-  description String?
-  sortOrder Int @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  feePlanId      String       @db.Uuid
+  feeHeadId      String       @db.Uuid
+  amount         Decimal      @db.Decimal(14, 2)
+  frequency      FeeFrequency
+  description    String?
+  sortOrder      Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  feePlan FeePlan @relation(fields: [feePlanId], references: [id])
-  feeHead FeeHead @relation(fields: [feeHeadId], references: [id])
-  feeCharges FeeCharge[]
+  feePlan      FeePlan      @relation(fields: [feePlanId], references: [id])
+  feeHead      FeeHead      @relation(fields: [feeHeadId], references: [id])
+  feeCharges   FeeCharge[]
 
   @@unique([feePlanId, feeHeadId, frequency])
 }
 
 model EnrollmentFeePlanAssignment {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  studentEnrollmentId String @db.Uuid
-  feePlanId String @db.Uuid
-  assignedAt DateTime @default(now())
-  assignedByMembershipId String @db.Uuid
-  endedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String    @id @default(uuid()) @db.Uuid
+  organizationId         String    @db.Uuid
+  studentEnrollmentId    String    @db.Uuid
+  feePlanId              String    @db.Uuid
+  assignedAt             DateTime  @default(now())
+  assignedByMembershipId String    @db.Uuid
+  endedAt                DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
+  organization      Organization      @relation(fields: [organizationId], references: [id])
   studentEnrollment StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
-  feePlan FeePlan @relation(fields: [feePlanId], references: [id])
-  feeCharges FeeCharge[]
+  feePlan           FeePlan           @relation(fields: [feePlanId], references: [id])
+  feeCharges        FeeCharge[]
 
   @@index([organizationId])
   @@index([studentEnrollmentId])
@@ -1360,27 +1370,27 @@ model EnrollmentFeePlanAssignment {
 }
 
 model FeeCharge {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  enrollmentFeePlanAssignmentId String @db.Uuid
-  feePlanItemId String @db.Uuid
-  studentEnrollmentId String @db.Uuid
-  branchId String @db.Uuid
-  billingPeriodKey String
-  amount Decimal @db.Decimal(14, 2)
-  dueDate DateTime @db.Date
-  description String?
-  voidedAt DateTime?
-  voidedByMembershipId String? @db.Uuid
-  voidReason String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                            String    @id @default(uuid()) @db.Uuid
+  organizationId                String    @db.Uuid
+  enrollmentFeePlanAssignmentId String    @db.Uuid
+  feePlanItemId                 String    @db.Uuid
+  studentEnrollmentId           String    @db.Uuid
+  branchId                      String    @db.Uuid
+  billingPeriodKey              String
+  amount                        Decimal   @db.Decimal(14, 2)
+  dueDate                       DateTime  @db.Date
+  description                   String?
+  voidedAt                      DateTime?
+  voidedByMembershipId          String?   @db.Uuid
+  voidReason                    String?
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  assignment EnrollmentFeePlanAssignment @relation(fields: [enrollmentFeePlanAssignmentId], references: [id])
-  feePlanItem FeePlanItem @relation(fields: [feePlanItemId], references: [id])
-  studentEnrollment StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
+  organization       Organization                @relation(fields: [organizationId], references: [id])
+  assignment         EnrollmentFeePlanAssignment @relation(fields: [enrollmentFeePlanAssignmentId], references: [id])
+  feePlanItem        FeePlanItem                 @relation(fields: [feePlanItemId], references: [id])
+  studentEnrollment  StudentEnrollment           @relation(fields: [studentEnrollmentId], references: [id])
+  branch             Branch                      @relation(fields: [branchId], references: [id])
   paymentAllocations PaymentAllocation[]
 
   @@unique([enrollmentFeePlanAssignmentId, feePlanItemId, billingPeriodKey])
@@ -1392,28 +1402,28 @@ model FeeCharge {
 }
 
 model Payment {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  branchId String @db.Uuid
-  studentId String @db.Uuid
-  receiptNumber String
-  amount Decimal @db.Decimal(14, 2)
-  paymentDate DateTime
-  method PaymentMethod
-  reference String?
-  note String?
-  status PaymentStatus @default(POSTED)
-  receivedByMembershipId String @db.Uuid
-  voidedAt DateTime?
-  voidedByMembershipId String? @db.Uuid
-  voidReason String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String        @id @default(uuid()) @db.Uuid
+  organizationId         String        @db.Uuid
+  branchId               String        @db.Uuid
+  studentId              String        @db.Uuid
+  receiptNumber          String
+  amount                 Decimal       @db.Decimal(14, 2)
+  paymentDate            DateTime
+  method                 PaymentMethod
+  reference              String?
+  note                   String?
+  status                 PaymentStatus @default(POSTED)
+  receivedByMembershipId String        @db.Uuid
+  voidedAt               DateTime?
+  voidedByMembershipId   String?       @db.Uuid
+  voidReason             String?
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
-  student Student @relation(fields: [studentId], references: [id])
-  allocations PaymentAllocation[]
+  organization Organization        @relation(fields: [organizationId], references: [id])
+  branch       Branch              @relation(fields: [branchId], references: [id])
+  student      Student             @relation(fields: [studentId], references: [id])
+  allocations  PaymentAllocation[]
 
   @@index([organizationId])
   @@index([studentId])
@@ -1423,30 +1433,30 @@ model Payment {
 }
 
 model PaymentAllocation {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  paymentId String @db.Uuid
-  feeChargeId String @db.Uuid
-  amount Decimal @db.Decimal(14, 2)
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  paymentId      String   @db.Uuid
+  feeChargeId    String   @db.Uuid
+  amount         Decimal  @db.Decimal(14, 2)
+  createdAt      DateTime @default(now())
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  payment Payment @relation(fields: [paymentId], references: [id])
-  feeCharge FeeCharge @relation(fields: [feeChargeId], references: [id])
+  payment      Payment      @relation(fields: [paymentId], references: [id])
+  feeCharge    FeeCharge    @relation(fields: [feeChargeId], references: [id])
 
   @@unique([paymentId, feeChargeId])
 }
 
 model PaymentReceiptSequence {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  branchId String @db.Uuid
-  nextValue Int @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  branchId       String   @db.Uuid
+  nextValue      Int      @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [organizationId], references: [id])
-  branch Branch @relation(fields: [branchId], references: [id])
+  branch       Branch       @relation(fields: [branchId], references: [id])
 
   @@unique([organizationId, branchId])
 }
@@ -1479,29 +1489,29 @@ enum AssessmentResultStatus {
 }
 
 model Assessment {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  subjectOfferingId String @db.Uuid
-  title String
-  assessmentType AssessmentType
-  assessmentDate DateTime @db.Date
-  maximumMarks Decimal @db.Decimal(10, 2)
-  passingMarks Decimal? @db.Decimal(10, 2)
-  status AssessmentStatus @default(DRAFT)
-  description String?
-  createdByMembershipId String @db.Uuid
-  activatedAt DateTime?
-  activatedByMembershipId String? @db.Uuid
-  resultsPublishedAt DateTime?
-  resultsPublishedByMembershipId String? @db.Uuid
-  archivedAt DateTime?
-  archivedByMembershipId String? @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                             String           @id @default(uuid()) @db.Uuid
+  organizationId                 String           @db.Uuid
+  subjectOfferingId              String           @db.Uuid
+  title                          String
+  assessmentType                 AssessmentType
+  assessmentDate                 DateTime         @db.Date
+  maximumMarks                   Decimal          @db.Decimal(10, 2)
+  passingMarks                   Decimal?         @db.Decimal(10, 2)
+  status                         AssessmentStatus @default(DRAFT)
+  description                    String?
+  createdByMembershipId          String           @db.Uuid
+  activatedAt                    DateTime?
+  activatedByMembershipId        String?          @db.Uuid
+  resultsPublishedAt             DateTime?
+  resultsPublishedByMembershipId String?          @db.Uuid
+  archivedAt                     DateTime?
+  archivedByMembershipId         String?          @db.Uuid
+  createdAt                      DateTime         @default(now())
+  updatedAt                      DateTime         @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  subjectOffering SubjectOffering @relation(fields: [subjectOfferingId], references: [id])
-  results AssessmentResult[]
+  organization    Organization       @relation(fields: [organizationId], references: [id])
+  subjectOffering SubjectOffering    @relation(fields: [subjectOfferingId], references: [id])
+  results         AssessmentResult[]
 
   @@index([organizationId])
   @@index([subjectOfferingId])
@@ -1511,20 +1521,20 @@ model Assessment {
 }
 
 model AssessmentResult {
-  id String @id @default(uuid()) @db.Uuid
-  organizationId String @db.Uuid
-  assessmentId String @db.Uuid
-  studentEnrollmentId String @db.Uuid
-  resultStatus AssessmentResultStatus
-  marksObtained Decimal? @db.Decimal(10, 2)
-  comment String?
-  gradedByMembershipId String @db.Uuid
-  gradedAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String                 @id @default(uuid()) @db.Uuid
+  organizationId       String                 @db.Uuid
+  assessmentId         String                 @db.Uuid
+  studentEnrollmentId  String                 @db.Uuid
+  resultStatus         AssessmentResultStatus
+  marksObtained        Decimal?               @db.Decimal(10, 2)
+  comment              String?
+  gradedByMembershipId String                 @db.Uuid
+  gradedAt             DateTime
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
 
-  organization Organization @relation(fields: [organizationId], references: [id])
-  assessment Assessment @relation(fields: [assessmentId], references: [id])
+  organization      Organization      @relation(fields: [organizationId], references: [id])
+  assessment        Assessment        @relation(fields: [assessmentId], references: [id])
   studentEnrollment StudentEnrollment @relation(fields: [studentEnrollmentId], references: [id])
 
   @@unique([assessmentId, studentEnrollmentId])

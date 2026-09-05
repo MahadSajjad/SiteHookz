@@ -9,8 +9,7 @@ import { subjectsApi } from "@sitehookz/api-client/src/subjects";
 import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
 import { AttendanceSessionsApi } from "@sitehookz/api-client/src/attendance-sessions";
 import { StudentAttendanceApi } from "@sitehookz/api-client/src/student-attendance";
-import { AssessmentsApi } from "@sitehookz/api-client/src/assessments";
-import { apiClient } from "@sitehookz/api-client/src/client";
+import { AssessmentsApi, apiClient } from "@sitehookz/api-client";
 
 const api = {
   courses: coursesApi,

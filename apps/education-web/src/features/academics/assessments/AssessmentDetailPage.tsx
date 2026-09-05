@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { useApiClient } from "../../../hooks/useApiClient";
-import { AssessmentResultStatus } from "@sitehookz/api-client/src/assessments";
+import { AssessmentResultStatus } from "@sitehookz/api-client";
 
 export default function AssessmentDetailPage() {
   const { id } = useParams<{ id: string }>();

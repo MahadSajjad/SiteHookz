@@ -1,4 +1,4 @@
-﻿-- This is an empty migration.
+-- This is an empty migration.
 
 
 -- Partial unique index for active TeachingAssignment
