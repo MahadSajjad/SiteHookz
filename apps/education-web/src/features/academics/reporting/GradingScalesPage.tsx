@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CustomButton } from "@sitehookz/ui";
 import {
   GradingScale,
-  GradingScaleBand,
   GradingScaleStatus,
   CreateGradingScaleBandDto,
 } from "@sitehookz/api-client";
@@ -160,8 +159,10 @@ export default function GradingScalesPage() {
     field: keyof ScaleBandFormItem,
     value: string | number | boolean
   ) => {
+    const current = formBands[index];
+    if (!current) return;
     const updated = [...formBands];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...current, [field]: value };
     setFormBands(updated);
   };
 
@@ -181,15 +182,17 @@ export default function GradingScalesPage() {
       code: b.code.trim(),
       minimumPercentage: Number(b.minimumPercentage),
       isPassing: Boolean(b.isPassing),
-      remarks: b.remarks?.trim() || undefined,
+      ...(b.remarks?.trim() ? { remarks: b.remarks.trim() } : {}),
     }));
+
+    const description = formDescription.trim();
 
     if (editingScale) {
       updateMutation.mutate({
         id: editingScale.id,
         data: {
           name: formName.trim(),
-          description: formDescription.trim() || undefined,
+          ...(description ? { description } : {}),
           status: formStatus,
           bands: payloadBands,
         },
@@ -197,7 +200,7 @@ export default function GradingScalesPage() {
     } else {
       createMutation.mutate({
         name: formName.trim(),
-        description: formDescription.trim() || undefined,
+        ...(description ? { description } : {}),
         bands: payloadBands,
       });
     }
