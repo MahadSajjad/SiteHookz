@@ -192,6 +192,9 @@ importers:
       i18next-browser-languagedetector:
         specifier: ^8.0.0
         version: 8.2.1
+      lucide-react:
+        specifier: ^1.35.0
+        version: 1.35.0(react@19.2.8)
       react:
         specifier: ^19.0.0
         version: 19.2.8
@@ -9371,6 +9374,10 @@ snapshots:
   lucide-react@1.35.0(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  lucide-react@1.35.0(react@19.2.8):
+    dependencies:
+      react: 19.2.8
 
   luxon@3.7.2: {}
 

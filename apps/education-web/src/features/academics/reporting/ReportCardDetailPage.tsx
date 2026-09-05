@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,13 +14,13 @@ import {
   Printer,
   Send,
   Archive,
-  CheckCircle,
-  XCircle,
+  
+  
   AlertCircle,
-  Award,
+  
   Calendar,
-  Building,
-  User,
+  
+  
   GraduationCap,
 } from "lucide-react";
 
@@ -33,12 +33,7 @@ export default function ReportCardDetailPage() {
 
   const printRef = useRef<HTMLDivElement>(null);
 
-  const {
-    data: reportCard,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery<ReportCard>({
+  const { data: reportCard, isLoading, error } = useQuery<ReportCard>({
     queryKey: ["reportCard", id],
     queryFn: () => api.reportCards.get(id!),
     enabled: !!id,

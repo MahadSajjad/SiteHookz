@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -17,11 +17,11 @@ import {
   CheckSquare,
   Square,
   Search,
-  Filter,
+  
   Eye,
   Calendar,
   AlertCircle,
-  GraduationCap,
+  
 } from "lucide-react";
 
 export default function ReportCardsPage() {

@@ -16,9 +16,9 @@ import {
   Award,
   Trash2,
   X,
-  Check,
+  
   AlertCircle,
-  ChevronRight,
+  
 } from "lucide-react";
 
 interface ScaleBandFormItem {

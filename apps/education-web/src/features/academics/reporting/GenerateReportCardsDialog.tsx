@@ -3,15 +3,15 @@ import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { CustomButton } from "@sitehookz/ui";
 import { useApiClient } from "../../../hooks/useApiClient";
-import { X, AlertCircle, FileText, Calendar, Users } from "lucide-react";
+import { X, AlertCircle, FileText, Users } from "lucide-react";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   defaultAcademicSessionId?: string;
-  defaultSectionId?: string;
-  defaultBatchId?: string;
+  defaultSectionId?: string | undefined;
+  defaultBatchId?: string | undefined;
 }
 
 export function GenerateReportCardsDialog({
