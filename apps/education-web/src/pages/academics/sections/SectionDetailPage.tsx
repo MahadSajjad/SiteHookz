@@ -6,12 +6,13 @@ import { useParams } from "react-router-dom";
 import { useApiClient } from "../../../hooks/useApiClient";
 import { SectionTimetablesTab } from "./SectionTimetablesTab";
 import { SectionAssessmentsTab } from "./SectionAssessmentsTab";
+import { SectionReportCardsTab } from "./SectionReportCardsTab";
 
 export default function SectionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
   const [activeTab, setActiveTab] = useState<
-    "details" | "subjects" | "timetables" | "assessments"
+    "details" | "subjects" | "timetables" | "assessments" | "report-cards"
   >("details");
 
   const { data: section, isLoading } = useQuery({
@@ -59,6 +60,12 @@ export default function SectionDetailPage() {
           onClick={() => setActiveTab("assessments")}
         >
           Assessments
+        </button>
+        <button
+          className={`pb-2 px-1 ${activeTab === "report-cards" ? "border-b-2 border-primary font-semibold text-primary" : "text-gray-500"}`}
+          onClick={() => setActiveTab("report-cards")}
+        >
+          Report Cards
         </button>
       </div>
 
@@ -141,6 +148,10 @@ export default function SectionDetailPage() {
 
       {activeTab === "assessments" && (
         <SectionAssessmentsTab sectionId={id as string} />
+      )}
+
+      {activeTab === "report-cards" && (
+        <SectionReportCardsTab sectionId={id as string} />
       )}
     </div>
   );

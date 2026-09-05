@@ -59,5 +59,18 @@ export const P = {
       UPDATE: "education.teaching_assignments.update",
       ARCHIVE: "education.teaching_assignments.archive",
     },
+    GRADING_SCALES: {
+      READ: "education.grading_scales.read",
+      MANAGE: "education.grading_scales.manage",
+      CREATE: "education.grading_scales.create",
+      UPDATE: "education.grading_scales.update",
+      ARCHIVE: "education.grading_scales.archive",
+    },
+    REPORT_CARDS: {
+      READ: "education.report_cards.read",
+      GENERATE: "education.report_cards.generate",
+      PUBLISH: "education.report_cards.publish",
+      ARCHIVE: "education.report_cards.archive",
+    },
   },
 } as const;

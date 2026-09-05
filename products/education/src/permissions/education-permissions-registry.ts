@@ -154,4 +154,49 @@ export const EDUCATION_PERMISSIONS_REGISTRY = [
     description: "Grade assessment results",
     category: "Education",
   },
+  {
+    key: "education.grading_scales.read",
+    description: "Read grading scales",
+    category: "Education",
+  },
+  {
+    key: "education.grading_scales.manage",
+    description: "Manage grading scales",
+    category: "Education",
+  },
+  {
+    key: "education.grading_scales.create",
+    description: "Create grading scales",
+    category: "Education",
+  },
+  {
+    key: "education.grading_scales.update",
+    description: "Update grading scales",
+    category: "Education",
+  },
+  {
+    key: "education.grading_scales.archive",
+    description: "Archive grading scales",
+    category: "Education",
+  },
+  {
+    key: "education.report_cards.read",
+    description: "Read report cards",
+    category: "Education",
+  },
+  {
+    key: "education.report_cards.generate",
+    description: "Generate report cards",
+    category: "Education",
+  },
+  {
+    key: "education.report_cards.publish",
+    description: "Publish report cards",
+    category: "Education",
+  },
+  {
+    key: "education.report_cards.archive",
+    description: "Archive report cards",
+    category: "Education",
+  },
 ];

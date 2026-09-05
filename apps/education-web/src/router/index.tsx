@@ -22,6 +22,11 @@ import FeePlansList from "../features/finance/fee-plans/FeePlansList";
 import PaymentsList from "../features/finance/payments/PaymentsList";
 import AssessmentsPage from "../features/academics/assessments/AssessmentsPage";
 import AssessmentDetailPage from "../features/academics/assessments/AssessmentDetailPage";
+import {
+  GradingScalesPage,
+  ReportCardsPage,
+  ReportCardDetailPage,
+} from "../features/academics/reporting";
 
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicOnlyRoute } from "./PublicOnlyRoute";
@@ -111,6 +116,30 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/academics/assessments/:id",
         element: <AssessmentDetailPage />,
+      },
+      {
+        path: "/dashboard/academics/grading-scales",
+        element: <GradingScalesPage />,
+      },
+      {
+        path: "/academics/grading-scales",
+        element: <GradingScalesPage />,
+      },
+      {
+        path: "/dashboard/academics/report-cards",
+        element: <ReportCardsPage />,
+      },
+      {
+        path: "/academics/report-cards",
+        element: <ReportCardsPage />,
+      },
+      {
+        path: "/dashboard/academics/report-cards/:id",
+        element: <ReportCardDetailPage />,
+      },
+      {
+        path: "/academics/report-cards/:id",
+        element: <ReportCardDetailPage />,
       },
       { path: "subjects", element: <SubjectsPage /> },
     ],

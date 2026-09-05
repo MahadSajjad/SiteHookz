@@ -81,6 +81,8 @@ model Organization {
   paymentReceiptSequences      PaymentReceiptSequence[]
 
   @@index([status])
+  gradingScales GradingScale[]
+  reportCards ReportCard[]
 }
 
 enum BranchStatus {
@@ -397,6 +399,7 @@ model AcademicSession {
 
   @@unique([organizationId, code])
   @@index([organizationId])
+  reportCards ReportCard[]
 }
 
 enum StudentStatus {
@@ -742,6 +745,7 @@ model Section {
   schoolAttendanceContexts SchoolAttendanceContext[]
 
   @@unique([organizationId, academicSessionId, branchId, classLevelId, code])
+  reportCards ReportCard[]
 }
 
 model Course {
@@ -794,6 +798,7 @@ model Batch {
   tuitionFeePlanContexts    TuitionFeePlanContext[]
 
   @@unique([organizationId, courseId, branchId, academicSessionId, code])
+  reportCards ReportCard[]
 }
 
 model StudentEnrollment {
@@ -826,6 +831,7 @@ model StudentEnrollment {
   @@index([organizationId])
   @@index([studentId, status])
   @@index([organizationId, branchId])
+  reportCards ReportCard[]
 }
 
 model SchoolEnrollmentPlacement {
@@ -897,6 +903,7 @@ model Subject {
 
   @@unique([organizationId, code])
   @@index([organizationId])
+  reportCardResults ReportCardSubjectResult[]
 }
 
 model SubjectOffering {
@@ -1541,4 +1548,128 @@ model AssessmentResult {
   @@index([organizationId])
   @@index([assessmentId])
   @@index([studentEnrollmentId])
+}
+
+// -----------------------------------------
+// LAYER 8: Report Cards & Academic Reports
+// -----------------------------------------
+
+enum GradingScaleStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ReportCardStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ReportCardPassStatus {
+  PASS
+  FAIL
+  EXEMPT
+  NOT_GRADED
+}
+
+model GradingScale {
+  id              String             @id @default(uuid()) @db.Uuid
+  organizationId  String @db.Uuid
+  name            String
+  status          GradingScaleStatus @default(DRAFT)
+  description     String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  bands           GradingScaleBand[]
+
+  organization    Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model GradingScaleBand {
+  id              String       @id @default(uuid()) @db.Uuid
+  gradingScaleId  String @db.Uuid
+  name            String
+  code            String
+  minimumPercentage Decimal    @db.Decimal(5, 2)
+  isPassing       Boolean
+  remarks         String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  gradingScale    GradingScale @relation(fields: [gradingScaleId], references: [id], onDelete: Cascade)
+
+  @@unique([gradingScaleId, code])
+  @@index([gradingScaleId])
+}
+
+model ReportCard {
+  id                String               @id @default(uuid()) @db.Uuid
+  organizationId    String @db.Uuid
+  academicSessionId String @db.Uuid
+  studentEnrollmentId String @db.Uuid
+  sectionId         String? @db.Uuid
+  batchId           String? @db.Uuid
+  
+  title             String
+  periodStart       DateTime
+  periodEnd         DateTime
+  status            ReportCardStatus     @default(DRAFT)
+  passStatus        ReportCardPassStatus @default(NOT_GRADED)
+  
+  totalObtainedMarks Decimal             @db.Decimal(8, 2)
+  totalMaximumMarks  Decimal             @db.Decimal(8, 2)
+  percentage         Decimal             @db.Decimal(5, 2)
+  overallGradeCode   String?
+  overallGradeName   String?
+  remarks            String?
+  
+  publishedAt       DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  organization      Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  academicSession   AcademicSession      @relation(fields: [academicSessionId], references: [id], onDelete: Cascade)
+  studentEnrollment StudentEnrollment    @relation(fields: [studentEnrollmentId], references: [id], onDelete: Cascade)
+  section           Section?             @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  batch             Batch?               @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  
+  subjectResults    ReportCardSubjectResult[]
+
+  @@index([organizationId])
+  @@index([studentEnrollmentId])
+  @@index([academicSessionId])
+  @@index([sectionId])
+  @@index([batchId])
+}
+
+model ReportCardSubjectResult {
+  id                String       @id @default(uuid()) @db.Uuid
+  reportCardId      String @db.Uuid
+  subjectId         String @db.Uuid
+  subjectName       String
+  subjectCode       String
+  
+  obtainedMarks     Decimal      @db.Decimal(8, 2)
+  maximumMarks      Decimal      @db.Decimal(8, 2)
+  percentage        Decimal      @db.Decimal(5, 2)
+  gradeCode         String?
+  gradeName         String?
+  isPassing         Boolean
+  
+  isExempt          Boolean      @default(false)
+  isAbsent          Boolean      @default(false)
+  
+  remarks           String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  reportCard        ReportCard   @relation(fields: [reportCardId], references: [id], onDelete: Cascade)
+  subject           Subject      @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([reportCardId, subjectId])
+  @@index([reportCardId])
 }

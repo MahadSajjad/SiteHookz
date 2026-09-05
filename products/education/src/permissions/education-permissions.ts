@@ -78,3 +78,6 @@ export const EDUCATION_ASSESSMENT_RESULTS_PERMISSIONS = {
   READ: "education.assessment_results.read",
   GRADE: "education.assessment_results.grade",
 } as const;
+
+export * from "./reporting-permissions";
+

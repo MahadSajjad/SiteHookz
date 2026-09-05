@@ -6,12 +6,13 @@ import { useParams } from "react-router-dom";
 import { useApiClient } from "../../../hooks/useApiClient";
 import { BatchTimetablesTab } from "./BatchTimetablesTab";
 import { BatchAssessmentsTab } from "./BatchAssessmentsTab";
+import { BatchReportCardsTab } from "./BatchReportCardsTab";
 
 export default function BatchDetailPage() {
   const { id } = useParams<{ id: string }>();
   const api = useApiClient();
   const [activeTab, setActiveTab] = useState<
-    "details" | "subjects" | "timetables" | "assessments"
+    "details" | "subjects" | "timetables" | "assessments" | "report-cards"
   >("details");
 
   const { data: batch, isLoading } = useQuery({
@@ -59,6 +60,12 @@ export default function BatchDetailPage() {
           onClick={() => setActiveTab("assessments")}
         >
           Assessments
+        </button>
+        <button
+          className={`pb-2 px-1 ${activeTab === "report-cards" ? "border-b-2 border-primary font-semibold text-primary" : "text-gray-500"}`}
+          onClick={() => setActiveTab("report-cards")}
+        >
+          Report Cards
         </button>
       </div>
 
@@ -144,6 +151,10 @@ export default function BatchDetailPage() {
 
       {activeTab === "assessments" && (
         <BatchAssessmentsTab batchId={id as string} />
+      )}
+
+      {activeTab === "report-cards" && (
+        <BatchReportCardsTab batchId={id as string} />
       )}
     </div>
   );

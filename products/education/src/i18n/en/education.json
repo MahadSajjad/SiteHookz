@@ -14,5 +14,13 @@
   "teachingAssignment": {
     "title": "Teaching Assignment",
     "plural": "Teaching Assignments"
+  },
+  "gradingScale": {
+    "title": "Grading Scale",
+    "plural": "Grading Scales"
+  },
+  "reportCard": {
+    "title": "Report Card",
+    "plural": "Report Cards"
   }
 }

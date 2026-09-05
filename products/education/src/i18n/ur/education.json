@@ -14,5 +14,13 @@
   "teachingAssignment": {
     "title": "تدریسی ذمہ داری",
     "plural": "تدریسی ذمہ داریاں"
+  },
+  "gradingScale": {
+    "title": "گریڈنگ اسکیل",
+    "plural": "گریڈنگ اسکیلز"
+  },
+  "reportCard": {
+    "title": "رپورٹ کارڈ",
+    "plural": "رپورٹ کارڈز"
   }
 }

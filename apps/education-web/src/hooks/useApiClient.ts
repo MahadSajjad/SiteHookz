@@ -9,9 +9,10 @@ import { subjectsApi } from "@sitehookz/api-client/src/subjects";
 import { teachingAssignmentsApi } from "@sitehookz/api-client/src/teaching-assignments";
 import { AttendanceSessionsApi } from "@sitehookz/api-client/src/attendance-sessions";
 import { StudentAttendanceApi } from "@sitehookz/api-client/src/student-attendance";
-import { AssessmentsApi, apiClient } from "@sitehookz/api-client";
+import { AssessmentsApi, GradingScalesApi, ReportCardsApi, academicSessionsApi, apiClient } from "@sitehookz/api-client";
 
 const api = {
+  academicSessions: academicSessionsApi,
   courses: coursesApi,
   batches: batchesApi,
   classLevels: classLevelsApi,
@@ -26,6 +27,8 @@ const api = {
   attendanceSessions: new AttendanceSessionsApi(apiClient),
   studentAttendance: new StudentAttendanceApi(apiClient),
   assessments: new AssessmentsApi(apiClient),
+  gradingScales: new GradingScalesApi(apiClient),
+  reportCards: new ReportCardsApi(apiClient),
 };
 
 export type ApiClientType = any;

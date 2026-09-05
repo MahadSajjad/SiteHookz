@@ -23,3 +23,4 @@ export * from "./timetables";
 export * from "./fees";
 export * from "./payments";
 export * from "./assessments";
+export * from "./reporting";

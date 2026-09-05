@@ -17,7 +17,9 @@
     "loading": "لوڈ ہو رہا ہے..."
   },
   "nav": {
-    "dashboard": "ڈیش بورڈ"
+    "dashboard": "ڈیش بورڈ",
+    "gradingScales": "گریڈنگ اسکیلز",
+    "reportCards": "رپورٹ کارڈز"
   },
   "dashboard": {
     "title": "ڈیش بورڈ"

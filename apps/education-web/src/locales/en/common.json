@@ -17,7 +17,9 @@
     "loading": "Loading..."
   },
   "nav": {
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "gradingScales": "Grading Scales",
+    "reportCards": "Report Cards"
   },
   "dashboard": {
     "title": "Dashboard"

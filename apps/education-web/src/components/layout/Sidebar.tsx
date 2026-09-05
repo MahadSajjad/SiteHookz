@@ -32,6 +32,14 @@ export function Sidebar() {
       name: t("nav.assessments", "Assessments"),
       href: "/dashboard/academics/assessments",
     },
+    {
+      name: t("nav.gradingScales", "Grading Scales"),
+      href: "/dashboard/academics/grading-scales",
+    },
+    {
+      name: t("nav.reportCards", "Report Cards"),
+      href: "/dashboard/academics/report-cards",
+    },
   ];
 
   return (
